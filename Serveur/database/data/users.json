@@ -1,0 +1,27 @@
+[
+    {
+      "name": "Alice Dupont",
+      "email": "alice.dupont@example.com",
+      "password": "hashedPassword1"
+    },
+    {
+      "name": "Bob Martin",
+      "email": "bob.martin@example.com",
+      "password": "hashedPassword2"
+    },
+    {
+      "name": "Caroline Leroy",
+      "email": "caroline.leroy@example.com",
+      "password": "hashedPassword3"
+    },
+    {
+      "name": "David Bernard",
+      "email": "david.bernard@example.com",
+      "password": "hashedPassword4"
+    },
+    {
+      "name": "Émilie Rousseau",
+      "email": "emilie.rousseau@example.com",
+      "password": "hashedPassword5"
+    }
+  ]

@@ -1,0 +1,37 @@
+GET http://localhost:3000/
+
+###
+
+GET http://localhost:3000/665005be500ec29dc91a2436
+
+###
+
+GET http://localhost:3000/name/Carotte
+
+###
+POST http://localhost:3000/
+Content-Type: application/json
+
+{ 
+  "nom" : "Carotte",
+  "couleur" : "Rouge",
+  "nutrition" : {
+  "vitamines" : ["A","C","D"],
+  "mineraux" : ["Fer", "Manganèse"]
+  },
+  "ingredientSalade" : true
+}
+
+###
+
+PATCH http://localhost:3000/6655f4cd177d2c1da47ddd73
+Content-Type: application/json
+
+{
+  "nom" : "Patate",
+  "couleur" : "Tricolore"
+}
+
+###
+
+DELETE http://localhost:3000/665005be500ec29dc91a2435
