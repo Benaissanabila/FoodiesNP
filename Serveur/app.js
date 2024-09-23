@@ -9,10 +9,10 @@ import express from "express";
 // importe tous les "exports" du fichier index.js 
 // inclut la fonction connect et la constante connectionString
 import * as db from "./database/index.js";
-
+import cors from 'cors'; 
 // création de l'application serveur elle même
 const app = express();
-
+app.use(cors());
 // permet au serveur de comprendre les requêtes en JSON
 app.use(express.json());
 // permet au serveur de comprendre les requêtes en x-form-urlencoded
