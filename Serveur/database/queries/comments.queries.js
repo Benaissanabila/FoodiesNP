@@ -14,3 +14,11 @@ export const getCommentQuery = async id => {
 export const getAllCommentsQuery = async () => {
     return Comment.find({})
 }
+
+export const deleteCommentQuery = async id => {
+    return Comment.findByIdAndDelete(id)
+}
+
+export const updateCommentQuery = async (id, comment) => {
+    return Comment.findByIdAndUpdate(id, comment)
+}

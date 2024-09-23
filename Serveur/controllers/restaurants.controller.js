@@ -29,3 +29,30 @@ export const getAllRestaurants = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const updateRestaurant = async (req, res) => {
+  try {
+    const restaurant = await queries.updateRestaurantQuery(
+      req.params.id,
+      req.body
+    );
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+    res.status(200).json(restaurant);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteRestaurant = async (req, res) => {
+  try {
+    const restaurant = await queries.deleteRestaurantQuery(req.params.id);
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+    res.status(200).json(restaurant);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

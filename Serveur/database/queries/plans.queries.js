@@ -15,3 +15,10 @@ export const getPlanQuery = async (id) => {
   return Plan.findById(id);
 };
 
+export const deletePlanQuery = async (id) => {
+  return Plan.findByIdAndDelete(id);
+}
+
+export const  updatePlanQuery = async (id, plan) => {
+    return Plan.findByIdAndUpdate(id, plan)
+}

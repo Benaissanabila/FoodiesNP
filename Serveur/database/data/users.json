@@ -1,27 +1,44 @@
 [
-    {
-      "name": "Alice Dupont",
-      "email": "alice.dupont@example.com",
-      "password": "hashedPassword1"
-    },
-    {
-      "name": "Bob Martin",
-      "email": "bob.martin@example.com",
-      "password": "hashedPassword2"
-    },
-    {
-      "name": "Caroline Leroy",
-      "email": "caroline.leroy@example.com",
-      "password": "hashedPassword3"
-    },
-    {
-      "name": "David Bernard",
-      "email": "david.bernard@example.com",
-      "password": "hashedPassword4"
-    },
-    {
-      "name": "Émilie Rousseau",
-      "email": "emilie.rousseau@example.com",
-      "password": "hashedPassword5"
-    }
-  ]
+  {
+    "name": "Alice Dupont",
+    "email": "alice.dupont@example.com",
+    "password": "password123",
+    "UserPhoto": "https://www.jeancoutu.com/globalassets/revamp/photo/conseils-photo/20160302-01-reseaux-sociaux-profil/photo-profil.jpg",
+    "DOB": "1990-05-15T00:00:00Z"
+  },
+  {
+    "name": "Bob Martin",
+    "email": "bob.martin@example.com",
+    "password": "password456",
+    "UserPhoto": "https://www.jeancoutu.com/globalassets/revamp/photo/conseils-photo/20160302-01-reseaux-sociaux-profil/photo-profil_301783868.jpg",
+    "DOB": "1985-08-22T00:00:00Z"
+  },
+  {
+    "name": "Carla Moreau",
+    "email": "carla.moreau@example.com",
+    "password": "password789",
+    "UserPhoto": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
+    "DOB": "1992-12-30T00:00:00Z"
+  },
+  {
+    "name": "David Leroy",
+    "email": "david.leroy@example.com",
+    "password": "password321",
+    "UserPhoto": "https://plus.unsplash.com/premium_photo-1710911198710-3097c518f0e1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "DOB": "1995-03-10T00:00:00Z"
+  },
+  {
+    "name": "Eva Simon",
+    "email": "eva.simon@example.com",
+    "password": "password654",
+    "UserPhoto": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "DOB": "1988-07-19T00:00:00Z"
+  },
+  {
+    "name": "François Bernard",
+    "email": "francois.bernard@example.com",
+    "password": "password987",
+    "UserPhoto": "https://media.istockphoto.com/id/1682296067/photo/happy-studio-portrait-or-professional-man-real-estate-agent-or-asian-businessman-smile-for.jpg?s=612x612&w=is&k=20&c=gxWegZp9ng_RirNQR1Zin4goBShVf0fgJ8dbyeH794I=",
+    "DOB": "1993-11-05T00:00:00Z"
+  }
+]

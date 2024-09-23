@@ -6,13 +6,8 @@
       "description": "Plan gratuit avec fonctionnalités de base"
     },
     {
-      "type": "bronze",
-      "price": 9.99,
-      "description": "Plan bronze avec fonctionnalités avancées"
-    },
-    {
-      "type": "gold",
+      "type": "premium",
       "price": 19.99,
-      "description": "Plan gold avec toutes les fonctionnalités premium"
+      "description": "Plan premium avec toutes les fonctionnalités premium"
     }
   ]

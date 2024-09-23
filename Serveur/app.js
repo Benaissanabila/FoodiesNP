@@ -24,5 +24,9 @@ import router from "./router/index.js";
 app.use("/", router);
 
 // on se connecte à la database et ensuite (si réussi) on démarre le serveur
-
+db.connect(() => {
+    // met le serveur en mode écoute sur le port 3000.  (http://localhost:3000)
+    app.listen(process.env.SERVER_PORT, () => console.log("Serveur demarré sur port 3000"));
+  });
+  
 

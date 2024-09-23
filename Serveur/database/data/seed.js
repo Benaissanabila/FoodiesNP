@@ -151,11 +151,11 @@ for (const restaurant of dbRestaurants) {
 
     const newComment = new Comment({
       quality: randomComment.quality,
-      price: randomComment.price,
-      cleanliness: randomComment.cleanliness,
+      globalRating: randomComment.globalRating,
       service: randomComment.service,
       ambiance: randomComment.ambiance,
       upvotes: randomComment.upvotes,
+      downvotes: randomComment.downvotes,
       comment: randomComment.comment,
       createdAt: new Date(randomComment.createdAt),
       user: randomUser._id,

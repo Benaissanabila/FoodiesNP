@@ -14,3 +14,11 @@ export const getReservationQuery = async (id) => {
 export const getAllReservationsQuery = async () => {
     return Reservation.find({});
 }
+
+export const deleteReservationQuery = async id => {
+    return Reservation.findByIdAndDelete(id)
+}
+
+export const updateReservationQuery = async (id, reservation) => {
+    return Reservation.findByIdAndUpdate(id, reservation)
+}

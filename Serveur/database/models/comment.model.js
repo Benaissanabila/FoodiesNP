@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import User from "./user.model.js"; 
 import Reservation from "./reservation.model.js"; 
 
+
 const commentSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,18 +20,6 @@ const commentSchema = new mongoose.Schema({
     min: 1,
     max: 5,
   },
-  price: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 5,
-  },
-  cleanliness: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 5,
-  },
   service: {
     type: Number,
     required: true,
@@ -43,7 +32,17 @@ const commentSchema = new mongoose.Schema({
     min: 1,
     max: 5,
   },
+   globalRating: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5,  
+  },
   upvotes: {
+    type: Number,
+    default: 0,
+  },
+  downvotes: {
     type: Number,
     default: 0,
   },
