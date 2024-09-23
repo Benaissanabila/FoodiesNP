@@ -15,3 +15,11 @@ export const getRestaurantQuery = async (id) => {
 export const getAllRestaurantsQuery = async () => {
     return Restaurant.find({});
 }
+
+export const deleteRestaurantQuery = async id => {
+    return Restaurant.findByIdAndDelete(id)
+}
+
+export const updateRestaurantQuery = async (id, restaurant) => {
+    return Restaurant.findByIdAndUpdate(id, restaurant)
+}

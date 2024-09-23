@@ -30,3 +30,28 @@ export const getAllComments = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const deleteComment = async (req, res) => {
+  try {
+    const comment = await queries.deleteCommentQuery(req.params.id);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateComment = async (req, res) => {
+  try {
+    const comment = await queries.updateCommentQuery(req.params.id, req.body);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};  
+

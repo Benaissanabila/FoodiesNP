@@ -29,3 +29,30 @@ export const getAllReservations = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const updateReservation = async (req, res) => {
+  try {
+    const reservation = await queries.updateReservationQuery(
+      req.params.id,
+      req.body
+    );
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    res.status(200).json(reservation);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteReservation = async (req, res) => {
+  try {
+    const reservation = await queries.deleteReservationQuery(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    res.status(200).json(reservation);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

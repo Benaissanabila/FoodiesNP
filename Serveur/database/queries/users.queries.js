@@ -15,3 +15,10 @@ export const getUserQuery = async (id) => {
   return User.findById(id);
 };
 
+export const deleteUserQuery = async id => {
+  return User.findByIdAndDelete(id)
+}
+
+export const updateUserQuery = async (id, user) => {
+  return User.findByIdAndUpdate(id, user)
+}

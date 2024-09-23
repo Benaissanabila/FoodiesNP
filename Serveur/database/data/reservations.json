@@ -3,35 +3,34 @@
       "tableId": 1,
       "numberOfPersons": 4,
       "reservationDate": "2024-07-15T19:00:00.000Z",
-      "status": "confirmed",
-      "restaurant": "64a123b456789a0b1c2d3e4f"
+      "status": "confirmed"
+    
     },
     {
       "tableId": 3,
       "numberOfPersons": 2,
       "reservationDate": "2024-07-16T20:30:00.000Z",
-      "status": "pending",
-      "restaurant": "64a123b456789a0b1c2d3e50"
+      "status": "pending"
+      
     },
     {
       "tableId": 5,
       "numberOfPersons": 6,
       "reservationDate": "2024-07-17T18:45:00.000Z",
-      "status": "confirmed",
-      "restaurant": "64a123b456789a0b1c2d3e51"
+      "status": "confirmed"
+      
     },
     {
       "tableId": 2,
       "numberOfPersons": 3,
       "reservationDate": "2024-07-18T19:15:00.000Z",
-      "status": "cancelled",
-      "restaurant": "64a123b456789a0b1c2d3e4f"
+      "status": "cancelled"
+      
     },
     {
       "tableId": 4,
       "numberOfPersons": 5,
       "reservationDate": "2024-07-19T21:00:00.000Z",
-      "status": "confirmed",
-      "restaurant": "64a123b456789a0b1c2d3e50"
+      "status": "confirmed"
     }
   ]

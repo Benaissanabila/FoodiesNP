@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Owner } from "./owner.model.js";
+import comment from "./comment.model.js";
 
 const restaurantSchema = new mongoose.Schema({
   name: {
@@ -28,13 +29,26 @@ const restaurantSchema = new mongoose.Schema({
     ref: "Owner",
     required: true,
   },
+  comments: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Comment",
+  },
+  phoneNumber: {
+    type: String,
+    trim: true,
+  },
+  RestoPhoto: {
+    type: String,
+    trim: true,
+    required: true,
+  },
 });
 
-restaurantSchema.pre('save', async function(next) {
+restaurantSchema.pre("save", async function (next) {
   try {
     const owner = await Owner.findById(this.owner);
     if (!owner) {
-      throw new Error('Owner not found');
+      throw new Error("Owner not found");
     }
     next();
   } catch (error) {

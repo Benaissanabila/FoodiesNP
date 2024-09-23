@@ -14,3 +14,10 @@ export const getOwnerQuery = async id => {
 export const getAllOwnersQuery = async () => {
     return Owner.find({})
 }
+export const deleteOwnerQuery = async id => {
+    return Owner.findByIdAndDelete(id)
+}
+
+export const updateOwnerQuery = async (id, owner) => {
+    return Owner.findByIdAndUpdate(id, owner)
+}
