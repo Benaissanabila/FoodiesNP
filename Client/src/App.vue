@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
-import HelloWorld from './components/HelloWorld.vue';
-import RestaurantList from './components/restaurantList.vue'; // Importation du nouveau composant
+import RestaurantList from './components/RestaurantList.vue';
+import NavigationBar from './components/NavigationBar.vue'; // Importation de la NavigationBar
 </script>
 
 <template>
-  
-
-  
-    <!-- Ajout du composant RestaurantList -->
-    <RestaurantList />
-  
-
-  
+  <NavigationBar /> 
+  <RestaurantList />
 </template>
+
+<style scoped>
+
+</style>
 
