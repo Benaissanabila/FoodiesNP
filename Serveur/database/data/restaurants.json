@@ -1,0 +1,32 @@
+[
+    {
+      "name": "Le Gourmet",
+      "address": "123 Rue de la Paix, Paris",
+      "cuisineType": "French",
+      "schedule": "Mon-Sat: 12:00 - 22:00"
+    },
+    {
+      "name": "Pizza Bella",
+      "address": "456 Via Roma, Lyon",
+      "cuisineType": "Italian",
+      "schedule": "Mon-Sun: 11:00 - 23:00"
+    },
+    {
+      "name": "Sushi World",
+      "address": "789 Rue du, Marseille",
+      "cuisineType": "Japanese",
+      "schedule": "Tue-Sun: 12:00 - 21:00"
+    },
+    {
+      "name": "Burger King",
+      "address": "890 Avenue de l'Amérique, Montréal",
+      "cuisineType": "Burger",
+      "schedule": "Mon-Sun: 11:00 - 22:00"
+    },
+    {
+      "name": "KFC",
+      "address": "1010 Avenue des Canad, Québec",
+      "cuisineType": "Fast Food",
+      "schedule": "Mon-Sat: 10:00 - 22:00"
+    }
+  ]
