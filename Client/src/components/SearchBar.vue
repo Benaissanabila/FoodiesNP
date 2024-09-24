@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { onMounted } from 'vue';
-import { useSearchBarStore } from '@/stores/SearchBarStore'; // Chemin vers ton store Pinia
+import { useSearchBarStore } from '@/stores/RestaurantStore'; // Chemin vers ton store Pinia
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'; // Importation de l'interface IRestaurant
 
 // Initialisation du store
