@@ -4,13 +4,13 @@ import axios from 'axios'
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
 import type { IComment } from '@/shared/interfaces/CommentInterface'
 
-export const useSearchBarStore = defineStore('searchBar', {
+export const useRestaurantStore = defineStore('Restaurant', {
   state: () => ({
-    searchQuery: '',
-    restaurants: ref<IRestaurant[]>([]), // Utilisation de ref ici
-    comments: ref<IComment[]>([]), // Utilisation de ref ici
-    loading: false,
-    error: null as string | null,
+    searchQuery: '', 
+    restaurants: ref<IRestaurant[]>([]),
+    comments: ref<IComment[]>([]),
+    loading: true, 
+    error: null as string | null, 
   }),
 
   getters: {
