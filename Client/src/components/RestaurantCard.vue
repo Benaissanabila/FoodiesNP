@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { defineProps, onMounted, watch, watchEffect } from 'vue';
-import { useSearchBarStore } from '@/stores/RestaurantStore.js'; 
+import { useRestaurantStore } from '@/stores/RestaurantStore.js'; 
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
 
 const props = defineProps<{
   restaurant: IRestaurant;
 }>();
 
-const store = useSearchBarStore(); 
+const store = useRestaurantStore(); 
 
 onMounted(() => {
   store.fetchAverageRatingForRestaurant(props.restaurant._id);
