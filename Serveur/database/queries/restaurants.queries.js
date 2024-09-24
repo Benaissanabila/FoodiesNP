@@ -1,5 +1,5 @@
 import { Restaurant } from "../models/restaurant.model.js";
-
+import Comment from "../models/comment.model.js";
 
 // Créer un nouveau restaurant
 export const createRestaurantQuery = async restaurant => {
@@ -23,3 +23,13 @@ export const deleteRestaurantQuery = async id => {
 export const updateRestaurantQuery = async (id, restaurant) => {
     return Restaurant.findByIdAndUpdate(id, restaurant)
 }
+
+export const updateGlobalRatingQuery = async (id, globalRating) => {
+    return Restaurant.findByIdAndUpdate(id, { globalRating });
+}
+
+// Lire tous les commentaires d'un restaurant par ID
+export const getCommentsByRestaurantIdQuery = async (restaurantId) => {
+    return await Comment.find({ restaurant: restaurantId });
+  };
+

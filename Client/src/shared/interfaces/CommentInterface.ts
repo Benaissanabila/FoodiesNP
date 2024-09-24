@@ -1,6 +1,6 @@
 export interface IComment {
     _id: string;          
-    user: string;         
+    user: string;       
     reservation: string;  
     quality: number;     
     service: number;     
@@ -9,6 +9,7 @@ export interface IComment {
     upvotes?: number;     
     downvotes?: number;  
     comment: string;      
-    createdAt: Date;      
+    createdAt: Date; 
+    restaurant: string;    
   }
   

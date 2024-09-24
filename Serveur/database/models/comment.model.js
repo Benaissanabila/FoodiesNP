@@ -56,7 +56,24 @@ const commentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  restaurant: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Restaurant", 
+    required: true,
+  },
+
 });
+
+
+// Méthode pour calculer la moyenne des commentaires
+commentSchema.statics.calculateGlobalRating = async function(restaurantId) {
+  const comments = await this.find({ restaurant: restaurantId });
+
+  if (comments.length === 0) return 0; 
+
+  const totalRating = comments.reduce((sum, comment) => sum + comment.globalRating, 0);
+  return totalRating / comments.length; 
+};
 
 commentSchema.pre('save', async function(next) {
   try {

@@ -15,6 +15,8 @@ export const getAllCommentsQuery = async () => {
     return Comment.find({})
 }
 
+
+
 export const deleteCommentQuery = async id => {
     return Comment.findByIdAndDelete(id)
 }

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Owner } from "./owner.model.js";
-import comment from "./comment.model.js";
+
 
 const restaurantSchema = new mongoose.Schema({
   name: {
