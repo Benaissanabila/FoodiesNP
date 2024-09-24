@@ -1,15 +1,15 @@
 <script setup lang='ts'>
 import { onMounted, computed, ref } from 'vue';
-import { useSearchBarStore } from '@/stores/RestaurantStore'; // Chemin vers ton store Pinia
+import { useRestaurantStore } from '@/stores/RestaurantStore'; // Utilisation du store mis à jour
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'; // Importation de l'interface IRestaurant
 
 // Initialisation du store
-const searchBarStore = useSearchBarStore();
+const restaurantStore = useRestaurantStore();
 
 // Liaison des valeurs du store aux variables locales
 const searchQuery = ref(''); // Define searchQuery as a reactive reference
-const filteredRestaurants = computed(() => searchBarStore.getFilteredRestaurants as IRestaurant[]); // Typage des restaurants filtrés
-const loading = searchBarStore.loading;
+const filteredRestaurants = computed(() => restaurantStore.getFilteredRestaurants as IRestaurant[]); // Typage des restaurants filtrés
+const loading = computed(() => restaurantStore.loading);
 const showResults = ref(false); // Flag pour contrôler l'affichage des résultats
 
 // Actions du store
@@ -21,7 +21,7 @@ const performSearch = () => {
   }
 
   console.log('Searching for:', searchQuery.value); // Debug: Affiche la requête de recherche
-  searchBarStore.updateSearchQuery(searchQuery.value); // Met à jour la requête dans le store
+  restaurantStore.updateSearchQuery(searchQuery.value); // Met à jour la requête dans le store
   showResults.value = true; // Afficher les résultats après la recherche
 
   // Debug: Vérifiez les restaurants filtrés
@@ -30,7 +30,7 @@ const performSearch = () => {
 
 // Récupérer les restaurants lors de la montée du composant
 onMounted(() => {
-  searchBarStore.loadRestaurants();
+  restaurantStore.loadRestaurants();
 });
 </script>
 
@@ -44,7 +44,6 @@ onMounted(() => {
       placeholder="Search by name or cuisine..." 
     />
     <button @click="performSearch">Search</button> <!-- Lance la recherche en cliquant sur le bouton -->
-
 
     <!-- Affichage des résultats de recherche uniquement après une recherche -->
     <div v-if="filteredRestaurants.length && !loading && showResults">
