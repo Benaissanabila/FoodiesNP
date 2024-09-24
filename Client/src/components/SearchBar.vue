@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { onMounted, computed, ref } from 'vue';
-import { useSearchBarStore } from '@/stores/SearchBarStore'; // Chemin vers ton store Pinia
+import { useSearchBarStore } from '@/stores/RestaurantStore'; // Chemin vers ton store Pinia
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'; // Importation de l'interface IRestaurant
 
 // Initialisation du store
@@ -20,8 +20,12 @@ const performSearch = () => {
     return;
   }
 
+  console.log('Searching for:', searchQuery.value); // Debug: Affiche la requête de recherche
   searchBarStore.updateSearchQuery(searchQuery.value); // Met à jour la requête dans le store
   showResults.value = true; // Afficher les résultats après la recherche
+
+  // Debug: Vérifiez les restaurants filtrés
+  console.log('Filtered Restaurants:', filteredRestaurants.value);
 };
 
 // Récupérer les restaurants lors de la montée du composant

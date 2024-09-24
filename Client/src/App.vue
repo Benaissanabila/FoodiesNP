@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import RestaurantList from './components/RestaurantList.vue';
 import NavigationBar from './components/NavigationBar.vue';
+import CardSection from './components/CardSection.vue';
+
+
 </script>
 
 <template>
@@ -8,6 +11,7 @@ import NavigationBar from './components/NavigationBar.vue';
   <div class="content">
     <RestaurantList />
   </div>
+
 </template>
 
 <style scoped>

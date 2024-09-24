@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import type {IRestaurant} from '../shared/interfaces/RestaurantInterface.ts'
 import axios from 'axios';
+import CardSection from './CardSection.vue';
 
 // Déclaration de la variable pour stocker les restaurants
 const restaurants = ref<IRestaurant[]>([]);  
@@ -41,6 +42,7 @@ onMounted(fetchRestaurants);
       </li>
     </ul>
   </div>
+<CardSection :restaurants="restaurants" /> 
 </template>
 
 <style scoped>

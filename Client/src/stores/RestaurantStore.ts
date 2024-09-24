@@ -32,16 +32,17 @@ export const useSearchBarStore = defineStore("searchBar", {
 
     // Action pour récupérer les restaurants via l'API
     async loadRestaurants() {
-      this.loading = true;
-      try {
-        // Récupération des restaurants via axios
-        const response = await axios.get('http://localhost:3000/restaurants');
-        this.restaurants = response.data; // Stocke les données récupérées
-      } catch (error) {
-        console.error('Erreur lors de la récupération des restaurants:', error);
-      } finally {
-        this.loading = false;
+        this.loading = true;
+        try {
+          const response = await axios.get('http://localhost:3000/restaurants');
+          this.restaurants = response.data; // Stocke les données récupérées
+          console.log('Restaurants loaded:', this.restaurants); // Debug: Vérifie les restaurants récupérés
+        } catch (error) {
+          console.error('Erreur lors de la récupération des restaurants:', error);
+        } finally {
+          this.loading = false;
+        }
       }
-    },
+      ,
   },
 });
