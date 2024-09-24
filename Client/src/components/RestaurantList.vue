@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import type {Restaurant} from '../shared/interfaces/RestaurantInterface.ts'
+import type {IRestaurant} from '../shared/interfaces/RestaurantInterface.ts'
 import axios from 'axios';
 
 // Déclaration de la variable pour stocker les restaurants
-const restaurants = ref<Restaurant[]>([]);  
+const restaurants = ref<IRestaurant[]>([]);  
 
 const loading = ref(true);
 

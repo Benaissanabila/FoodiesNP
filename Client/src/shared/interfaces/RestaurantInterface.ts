@@ -1,8 +1,8 @@
-export interface Restaurant {
+export interface IRestaurant {
     _id: string;          
     name: string;         
     address: string;      
-    cuisineType: string; 
+    cuisineType?: string; 
     schedule: string;     
     phoneNumber?: string; 
     RestoPhoto: string;   
