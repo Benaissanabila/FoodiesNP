@@ -41,10 +41,6 @@ onMounted(() => {
     />
     <button @click="performSearch">Search</button> <!-- Lance la recherche en cliquant sur le bouton -->
 
-    <!-- Affichage du loader pendant le chargement des restaurants -->
-    <div v-if="loading">
-      <p>Loading restaurants...</p>
-    </div>
 
     <!-- Affichage des résultats de recherche uniquement après une recherche -->
     <div v-if="filteredRestaurants.length && !loading && showResults">
