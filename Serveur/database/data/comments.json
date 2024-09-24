@@ -40,10 +40,10 @@
     "createdAt": "2024-09-21T10:00:00Z"
   },
   {
-    "quality": 2,
-    "service": 3,
-    "ambiance": 2,
-    "globalRating": 2,
+    "quality": 0,
+    "service": 0,
+    "ambiance": 1,
+    "globalRating": 1,
     "upvotes": 2,
     "downvotes": 5,
     "comment": "Not a great experience. The food was mediocre and the ambiance was too loud.",

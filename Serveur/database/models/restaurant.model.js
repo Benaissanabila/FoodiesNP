@@ -42,6 +42,10 @@ const restaurantSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
+  globalRatingResaurant: {
+    type: Number,
+    default: 0, 
+  },
 });
 
 restaurantSchema.pre("save", async function (next) {

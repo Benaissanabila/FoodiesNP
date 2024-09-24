@@ -1,26 +1,59 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { defineProps, onMounted, watch, watchEffect } from 'vue';
+import { useSearchBarStore } from '@/stores/RestaurantStore.js'; 
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
 
-// Déclaration des props
 const props = defineProps<{
   restaurant: IRestaurant;
 }>();
+
+const store = useSearchBarStore(); 
+
+onMounted(() => {
+  store.fetchAverageRatingForRestaurant(props.restaurant._id);
+});
+
+// Watcher pour surveiller la note globale du restaurant
+watch(
+  () => store.restaurants.find(r => r._id === props.restaurant._id)?.globalRatingResaurant,
+  (newRating) => {
+    console.log('Global Rating:', newRating);
+    // Vérifier si newRating est un nombre avant de l'assigner
+    if (newRating !== undefined) {
+      props.restaurant.globalRatingResaurant = newRating;
+    } else {
+      // Optionnel : définir une valeur par défaut si nécessaire
+      props.restaurant.globalRatingResaurant = 0; 
+    }
+  }
+);
 </script>
 
 <template>
   <div class="restaurant-card">
     <img :src="restaurant.RestoPhoto" alt="Photo du restaurant" class="restaurant-image" />
     <div class="restaurant-details">
-        <h3>{{ restaurant.name }}</h3>
+      <h3>{{ restaurant.name }}</h3>
       <p>{{ restaurant.address }}</p>
       <div class="rating">
-        <i class="fa fa-star"></i>
-      
+        <div class="stars">
+          <span
+            v-for="star in 5"
+            :key="star"
+            class="star"
+            :class="{ filled: star <= restaurant.globalRatingResaurant }"
+          >
+            ★
+          </span>
+        </div>
+        <p v-if="store.loading">Chargement de la note globale...</p>
+        <p v-if="store.error">{{ store.error }}</p>
       </div>
     </div>
   </div>
 </template>
+
+
 
 <style scoped>
 .restaurant-card {
@@ -29,12 +62,11 @@ const props = defineProps<{
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 10px;
-  width: 40vw; /* Largeur proportionnelle à 30% de la largeur de la fenêtre */
-  /* Fixer une largeur maximale pour éviter des cartes trop grandes sur de très grands écrans */
-  min-width: 280px; /* Fixer une largeur minimale pour éviter des cartes trop petites sur de petits écrans */
+  width: 40vw; /* Proportional width */
+  min-width: 280px; /* Minimum width */
   height: 160px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Légère ombre */
-  background-color: #fff; /* Couleur de fond blanche */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #fff; /* White background */
 }
 
 .restaurant-image {
@@ -67,9 +99,20 @@ p {
   align-items: center;
 }
 
-.rating i {
-  color: #ffcc00;
-  margin-right: 2px;
+.stars {
+  display: flex;
+}
+
+.star {
+  font-size: 24px; /* Size of the stars */
+  color: #ccc; /* Default color for empty stars */
+}
+
+.star.filled {
+  color: #ffcc00; /* Color for filled stars */
+}
+
+.rating p {
+  margin-left: 10px; /* Space between stars and loading/error messages */
 }
 </style>
-

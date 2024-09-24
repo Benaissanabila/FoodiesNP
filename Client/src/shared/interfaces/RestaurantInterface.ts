@@ -6,6 +6,7 @@ export interface IRestaurant {
     schedule: string;     
     phoneNumber?: string; 
     RestoPhoto: string;   
-    owner?: string;       
+    owner?: string;  
+    globalRatingResaurant:number;     
   }
   

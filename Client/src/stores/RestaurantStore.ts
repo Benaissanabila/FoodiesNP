@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import {  ref } from 'vue'
 import axios from 'axios'
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
 import type { IComment } from '@/shared/interfaces/CommentInterface'
 
 export const useSearchBarStore = defineStore('searchBar', {
   state: () => ({
-    searchQuery: '', 
-    restaurants: ref<IRestaurant[]>([]),
-    comments: ref<IComment[]>([]),
-    loading: true, 
-    error: null as string | null, // null initialement
+    searchQuery: '',
+    restaurants: ref<IRestaurant[]>([]), // Utilisation de ref ici
+    comments: ref<IComment[]>([]), // Utilisation de ref ici
+    loading: false,
+    error: null as string | null,
   }),
 
   getters: {
@@ -95,6 +95,29 @@ export const useSearchBarStore = defineStore('searchBar', {
       } finally {
         this.loading = false
       }
+    },
+
+    // Action pour récupérer la note globale d'un restaurant par ID
+    async fetchAverageRatingForRestaurant(restaurantId: string) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await axios.get(`http://localhost:3000/restaurants/${restaurantId}/average-rating`);
+        const averageRatingResto = response.data.averageRating; // Vérifiez que ceci retourne bien une note.
+        const restaurant = this.restaurants.find((r) => r._id === restaurantId);
+        
+        if (restaurant) {
+          restaurant.globalRatingResaurant = averageRatingResto; // Mettre à jour la note globale
+          console.log('Note globale mise à jour:', restaurant.globalRatingResaurant); // Pour le débogage
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération de la note globale:', error);
+        this.error = 'Erreur lors de la récupération de la note globale';
+      } finally {
+        this.loading = false;
+      }
     }
+    
+  
   }
 })
