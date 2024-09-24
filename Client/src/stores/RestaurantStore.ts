@@ -10,7 +10,7 @@ export const useSearchBarStore = defineStore('searchBar', {
     restaurants: ref<IRestaurant[]>([]),
     comments: ref<IComment[]>([]),
     loading: true, 
-    error: ref<string | null>(null)
+    error: null as string | null, // null initialement
   }),
 
   getters: {
