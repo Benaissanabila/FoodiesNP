@@ -69,11 +69,12 @@ const scrollRight = () => {
   width: 100%;
   margin: 0 auto; /* Centre la section avec une marge automatique */
   position: relative; /* Nécessaire pour positionner les flèches correctement */
+  padding: 0 10px; /* Réduit le remplissage à gauche et à droite */
 }
 
 .restaurant-cards {
   display: flex;
-  gap: 20px; /* Espace entre les cartes */
+  gap: 10px; /* Espace entre les cartes */
   overflow: hidden; /* Masque les cartes qui débordent */
   width: 100%; /* Prend toute la largeur disponible */
   justify-content: center;
@@ -84,8 +85,8 @@ const scrollRight = () => {
   background-color: #00bcd4;
   border: none;
   border-radius: 50%; /* Rend le bouton circulaire */
-  width: 50px;
-  height: 50px;
+  width: 40px; /* Réduit la taille des boutons */
+  height: 40px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   position: absolute; /* Permet de positionner les flèches à gauche et à droite */
@@ -94,16 +95,16 @@ const scrollRight = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 40px; /* Taille de la flèche */
-  
+  font-size: 20px; /* Ajuste la taille de la flèche */
+  z-index: 1; /* Assurez-vous que les flèches sont au-dessus des cartes */
 }
 
 .scroll-button.left {
-  left: -65px; /* Positionne la flèche à gauche avec 10px de distance par rapport aux cartes */
+  left: 10px; /* Positionne la flèche à gauche */
 }
 
 .scroll-button.right {
-  right: -65px; /* Positionne la flèche à droite avec 10px de distance par rapport aux cartes */
+  right: 10px; /* Positionne la flèche à droite */
 }
 
 .scroll-button:disabled {
@@ -118,4 +119,6 @@ const scrollRight = () => {
 svg {
   color: white;
 }
+
+
 </style>

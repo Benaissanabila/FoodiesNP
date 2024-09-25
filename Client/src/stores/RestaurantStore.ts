@@ -17,6 +17,12 @@ export const useRestaurantStore = defineStore('Restaurant', {
     getAllRestaurants(state) {
       return state.restaurants
     },
+    // Getter pour les restaurants triés par note globale
+    sortedRestaurants(state) {
+      return [...state.restaurants].sort((a, b) => {
+        return b.globalRatingResaurant - a.globalRatingResaurant; // Tri décroissant
+      });
+    },
 
      // Getter pour un restaurant par son ID
      getRestaurantById: (state) => (id: string) => {
