@@ -2,5 +2,19 @@ export default {
     "selectLanguage": "Select language",
     "english": "English",
     "french": "French",
-    "settings": "Settings"
+    "settings": "Settings",
+    "discoverTop100": "Discover the top 100 near you",
+  "viewCompleteList": "View complete list",
+  "topRestaurantsImage": "Image of top restaurants",
+  "restaurantsList": "Restaurants List",
+  "loadingRestaurants": "Loading restaurants...",
+  "restaurantPhoto": "Restaurant photo",
+  "cuisineType": "Cuisine type",
+  "globalRating": "Global Rating",
+  "searchPlaceholder": "Search by name or cuisine...",
+  "search": "Search",
+  "searchResults": "Search Results",
+  "cuisineTypeNotAvailable": "Cuisine Type Not Available",
+  "phoneNumberNotAvailable": "Phone Number Not Available",
+  "noResultsFound": "No results found"
   }

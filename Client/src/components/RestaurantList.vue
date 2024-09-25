@@ -3,7 +3,9 @@ import { onMounted, ref } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore';
 import imageSrc from '@/assets/RestoImg.jpg'; // Assurez-vous que ce chemin est correct
 import CardSection from './CardSection.vue';
+import { useI18n } from 'vue-i18n'
 
+const { t} = useI18n()
 const store = useRestaurantStore();
 const showRestaurants = ref(false); // État pour gérer l'affichage de la liste
 
@@ -23,25 +25,25 @@ const closeRestaurants = () => {
 <template>
   <div class="top-restaurants">
     <div class="left-section">
-      <h2>Découvrez le top 100 près de chez vous</h2>
-      <button @click="viewCompleteList">Voir la liste complète ></button>
+      <h2>{{ t('discoverTop100') }}</h2>
+      <button @click="viewCompleteList">{{ t('viewCompleteList') }} ></button>
     </div>
     <div class="right-section">
-      <img :src="imageSrc" alt="Image des meilleurs restaurants" class="top-image" />
+      <img :src="imageSrc" :alt="t('topRestaurantsImage')" class="top-image" />
     </div>
   </div>
   <!-- Nouvelle div pour afficher la liste des restaurants -->
   <div class="restaurants-list" v-if="showRestaurants">
     <div class="close-button" @click="closeRestaurants">✖</div> <!-- Bouton pour fermer la liste -->
-    <h3>Liste des Restaurants</h3>
-    <div v-if="store.loading">Chargement des restaurants...</div>
+    <h3>{{ t('restaurantsList') }}</h3>
+    <div v-if="store.loading">{{ t('loadingRestaurants') }}</div>
     <div v-if="store.error">{{ store.error }}</div>
     <div v-for="restaurant in store.sortedRestaurants" :key="restaurant._id" class="restaurant-card">
-      <img :src="restaurant.RestoPhoto" alt="Photo du restaurant" class="restaurant-image" />
+      <img :src="restaurant.RestoPhoto" :alt="t('restaurantPhoto')" class="restaurant-image" />
       <div class="restaurant-details">
         <h3>{{ restaurant.name }}</h3>
         <p>{{ restaurant.address }}</p>
-        <p>Type de cuisine: {{ restaurant.cuisineType }}</p>
+        <p>{{ t('cuisineType') }}: {{ restaurant.cuisineType }}</p>
         <div class="rating">
           <div class="stars">
             <span
@@ -54,7 +56,7 @@ const closeRestaurants = () => {
             </span>
           </div>
           <p v-if="!store.loading && !store.error">
-            Note Globale: {{ restaurant.globalRatingResaurant.toFixed(1) }}
+            {{ t('globalRating') }}: {{ restaurant.globalRatingResaurant.toFixed(1) }}
           </p>
         </div>
       </div>

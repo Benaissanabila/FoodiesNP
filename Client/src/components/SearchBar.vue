@@ -2,7 +2,9 @@
 import { onMounted, computed, ref } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore'; // Utilisation du store mis à jour
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'; // Importation de l'interface IRestaurant
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 // Initialisation du store
 const restaurantStore = useRestaurantStore();
 
@@ -41,27 +43,27 @@ onMounted(() => {
       type="text" 
       v-model="searchQuery" 
       @keyup.enter="performSearch"  
-      placeholder="Search by name or cuisine..." 
+      :placeholder="t('searchPlaceholder')" 
     />
-    <button @click="performSearch">Search</button> <!-- Lance la recherche en cliquant sur le bouton -->
+    <button @click="performSearch">{{ t('search') }}</button>
 
     <!-- Affichage des résultats de recherche uniquement après une recherche -->
     <div v-if="filteredRestaurants.length && !loading && showResults">
-      <h3>Search Results:</h3>
+      <h3>{{ t('searchResults') }}:</h3>
       <ul>
         <li v-for="(restaurant, index) in filteredRestaurants" :key="restaurant._id">
-          <img :src="restaurant.RestoPhoto" alt="Restaurant photo" width="100" height="60" />
-          <strong>{{ restaurant.name }}</strong> - {{ restaurant.cuisineType || 'Cuisine Type Not Available' }} <br/>
+          <img :src="restaurant.RestoPhoto" :alt="t('restaurantPhoto')" width="100" height="60" />
+          <strong>{{ restaurant.name }}</strong> - {{ restaurant.cuisineType || t('cuisineTypeNotAvailable') }} <br/>
           {{ restaurant.address }} <br/>
           {{ restaurant.schedule }} <br/>
-          {{ restaurant.phoneNumber || 'Phone Number Not Available' }} <br/><br/>
+          {{ restaurant.phoneNumber || t('phoneNumberNotAvailable') }} <br/><br/>
         </li>
       </ul>
     </div>
 
     <!-- Message si aucun résultat trouvé -->
     <div v-else-if="!loading && showResults">
-      <p>No results found</p>
+      <p>{{ t('noResultsFound') }}</p>
     </div>
   </div>
 </template>
