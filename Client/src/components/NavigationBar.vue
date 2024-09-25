@@ -7,17 +7,16 @@ import ProfileButton from './ProfileButton.vue';
 import HamburgerMenu from './HamburgerMenu.vue';  
 </script>
 
-
 <template>
   <nav class="navigation-bar">
     <Logo />
     
-    <!-- Menu normal pour les écrans de bureau -->
-    <div class="center desktop-only">
+    <!-- Barre de recherche visible sur tous les écrans -->
+    <div class="center">
       <SearchBar />
     </div>
 
-    <!-- Menu hamburger pour les écrans mobiles -->
+    <!-- Boutons pour les écrans de bureau -->
     <div class="right-buttons desktop-only">
       <ChatButton />
       <SettingButton />
@@ -31,7 +30,6 @@ import HamburgerMenu from './HamburgerMenu.vue';
   </nav>
 </template>
 
-
 <style scoped>
 .navigation-bar {
   display: flex;
@@ -44,17 +42,27 @@ import HamburgerMenu from './HamburgerMenu.vue';
   display: flex;
 }
 
+.right-buttons {
+  display: flex;
+  gap: 15px; /* Ajustez la valeur selon vos besoins */
+}
+
 .mobile-only {
   display: none;
 }
 
 @media (max-width: 768px) {
   .desktop-only {
-    display: none;
+    display: none; /* Masquer les boutons pour mobile */
   }
 
   .mobile-only {
-    display: block;
+    display: block; /* Afficher le menu hamburger */
+  }
+  
+  .center {
+    flex: 1; /* Permettre à la barre de recherche d'utiliser l'espace disponible */
+    display: flex; /* Aligner horizontalement */
   }
 }
 </style>

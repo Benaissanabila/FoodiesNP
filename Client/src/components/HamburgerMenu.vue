@@ -1,71 +1,99 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import ChatButton from './ChatButton.vue';
+import SettingButton from './SettingButton.vue';
+import ProfileButton from './ProfileButton.vue';
+
+const isMenuOpen = ref(false);
+
+// Fonction pour ouvrir/fermer le menu
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+</script>
+
+
+
 <template>
-    <div class="hamburger-menu">
-      <button class="hamburger-icon" @click="toggleMenu">
-        ☰ <!-- Icône hamburger -->
-      </button>
-      <div v-if="isMenuOpen" class="menu">
-        <ChatButton />
-        <SettingButton />
-        <ProfileButton />
-      </div>
+  <div>
+    <!-- Icône hamburger ou "X" selon l'état du menu -->
+    <button v-if="!isMenuOpen" @click="toggleMenu" class="hamburger-icon">
+      &#9776; <!-- Icône hamburger -->
+    </button>
+    <button v-else @click="toggleMenu" class="close-icon">
+      &#10005; <!-- Icône "X" pour fermer -->
+    </button>
+
+    <!-- Menu qui défile -->
+    <div :class="['menu', { open: isMenuOpen }]">
+      <ChatButton />
+      <SettingButton />
+      <ProfileButton />
     </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref } from 'vue';
-  import ChatButton from './ChatButton.vue';
-  import SettingButton from './SettingButton.vue';
-  import ProfileButton from './ProfileButton.vue';
-  
-  // Définition de l'état pour savoir si le menu est ouvert ou fermé
-  const isMenuOpen = ref(false);
-  
-  // Fonction pour basculer l'état du menu
-  const toggleMenu = () => {
-    isMenuOpen.value = !isMenuOpen.value;
-  };
-  </script>
+  </div>
+</template>
+
+
+
   
   <style scoped>
-  .hamburger-icon {
+ .hamburger-icon {
   font-size: 2em;
   cursor: pointer;
-  background: #00bcd4; /* Bleu vif pour un look moderne */
+  background: #00bcd4;
   border: none;
-  color: white; /* Couleur du texte blanche pour le contraste */
-  padding: 10px; /* Ajouter un peu de padding pour une meilleure accessibilité */
-  border-radius: 5px; /* Coins arrondis pour un aspect plus doux */
-  transition: background-color 0.3s ease; /* Animation douce pour les survols */
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  position: fixed;
+  top: 29px;
+  right: 30px;
+  z-index: 1000;
 }
 
 .hamburger-icon:hover {
-  background: #77d2de; /* Couleur plus foncée au survol */
+  background: #77d2de;
 }
-
+/* Ajout d'espacement entre les composants */
+.menu > * {
+  margin: 10px ; 
+}
 .menu {
-  display: flex;
-  flex-direction: column;
-  background-color: #f8f9fa; /* Gris très clair pour un look propre et moderne */
-  border: 1px solid #dee2e6; /* Bordure gris clair pour la structure */
-  padding: 15px; /* Padding plus généreux pour une meilleure ergonomie */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Légère ombre pour un effet de profondeur */
-  border-radius: 8px; /* Coins arrondis pour un aspect plus soigné */
+  position: fixed;
+  top: 20px;
+  right: 2px;
+border-radius: 10px;
+  width: 90px; /* Ajustement de la largeur */
+  backdrop-filter: blur(5px);
+  border-left: 1px solid #dee2e6;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%); 
+  transition: transform 1s ease-in-out, opacity 1s ease-in-out; 
+  z-index: 999;
 }
 
-.menu button {
-  background-color: #007bff; /* Bleu pour les boutons */
-  color: white; /* Texte en blanc */
-  border: none;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+.menu.open {
+  transform: translateX(0); /* Défile de droite à gauche quand ouvert */
+
+}
+.close-icon {
+  font-size: 1.5em;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  border: none;
+  color: rgb(76, 76, 76);
+  padding: 10px;
+  border-radius: 5px;
+  background-color: transparent;
+  position: fixed;
+  top: 20px;
+  right: 10px;
+  z-index: 1001; 
 }
 
-.menu button:hover {
-  background-color: #0056b3; /* Couleur plus foncée au survol */
-}
+
+
 
   </style>
   
