@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import RestaurantCard from './RestaurantCard.vue' // Importation du composant RestaurantCard
-import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts'
+import { ref, computed } from 'vue';
+import RestaurantCard from './RestaurantCard.vue'; // Importation du composant RestaurantCard
+import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
 
 const props = defineProps<{
-  restaurants: IRestaurant[]
-}>()
+  restaurants: IRestaurant[];
+}>();
 
-const currentIndex = ref(0) // Index actuel pour le carrousel
+const currentIndex = ref(0); // Index actuel pour le carrousel
 
 // Calculer les restaurants visibles en fonction de l'index actuel
 const visibleRestaurants = computed(() => {
-  return props.restaurants.slice(currentIndex.value, currentIndex.value + 3)
-})
+  return props.restaurants.slice(currentIndex.value, currentIndex.value + 3);
+});
 
 // Fonction pour faire défiler à gauche
 const scrollLeft = () => {
   if (currentIndex.value > 0) {
-    currentIndex.value--
+    currentIndex.value--;
   }
-}
+};
 
 // Fonction pour faire défiler à droite
 const scrollRight = () => {
   if (currentIndex.value < props.restaurants.length - 3) {
-    currentIndex.value++
+    currentIndex.value++;
   }
-}
+};
 </script>
 
 <template>
@@ -46,11 +46,7 @@ const scrollRight = () => {
         :restaurant="restaurant"
       />
     </div>
-    <button
-      class="scroll-button right"
-      @click="scrollRight"
-      :disabled="currentIndex >= restaurants.length - 3"
-    >
+    <button class="scroll-button right" @click="scrollRight" :disabled="currentIndex >= restaurants.length - 3">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
         <path
           fill="currentColor"
@@ -64,47 +60,49 @@ const scrollRight = () => {
 <style scoped>
 .card-section {
   display: flex;
-  justify-content: center; /* Centre la section horizontalement */
+  justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 0 auto; /* Centre la section avec une marge automatique */
-  position: relative; /* Nécessaire pour positionner les flèches correctement */
-  padding: 0 10px; /* Réduit le remplissage à gauche et à droite */
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
+  background-color: none;
+  
 }
 
 .restaurant-cards {
   display: flex;
   gap: 10px; /* Espace entre les cartes */
   overflow: hidden; /* Masque les cartes qui débordent */
-  width: 100%; /* Prend toute la largeur disponible */
+  width: 100%;
   justify-content: center;
-  max-width: 1200px; /* Limite la largeur pour ne pas que tout s'étire trop sur des grands écrans */
+  max-width: 1200px;
 }
 
 .scroll-button {
   background-color: #00bcd4;
   border: none;
-  border-radius: 50%; /* Rend le bouton circulaire */
-  width: 40px; /* Réduit la taille des boutons */
+  border-radius: 50%;
+  width: 40px;
   height: 40px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  position: absolute; /* Permet de positionner les flèches à gauche et à droite */
-  top: 50%; /* Centre verticalement par rapport aux cartes */
-  transform: translateY(-50%); /* Ajustement pour un parfait centrage vertical */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px; /* Ajuste la taille de la flèche */
-  z-index: 1; /* Assurez-vous que les flèches sont au-dessus des cartes */
+  font-size: 20px;
+  z-index: 1;
 }
 
 .scroll-button.left {
-  left: 10px; /* Positionne la flèche à gauche */
+  left: 10px;
 }
 
 .scroll-button.right {
-  right: 10px; /* Positionne la flèche à droite */
+  right: 10px;
 }
 
 .scroll-button:disabled {
@@ -119,6 +117,4 @@ const scrollRight = () => {
 svg {
   color: white;
 }
-
-
 </style>
