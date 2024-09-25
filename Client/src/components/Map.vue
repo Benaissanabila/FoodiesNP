@@ -3,8 +3,8 @@ import { ref, onMounted } from 'vue';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-// Récupérer la clé API Mapbox depuis les variables d'environnement
-const mapboxToken = "pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw"
+// Récupérer la clé API Mapbox
+const mapboxToken = "pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw";
 
 // Initialisation des états pour la carte
 const mapContainer = ref<HTMLElement | null>(null);
@@ -17,11 +17,6 @@ const viewport = {
   zoom: 10,
 };
 
-// Vérifie si la clé API est définie
-if (!mapboxToken) {
-  console.error('Mapbox token is missing!');
-}
-
 onMounted(() => {
   if (mapContainer.value) {
     // Initialisation de la carte avec la clé API
@@ -32,15 +27,32 @@ onMounted(() => {
       zoom: viewport.zoom,
       accessToken: mapboxToken, // Utilisation de la clé API
     });
-
-    
   }
 });
 </script>
 
 <template>
-  <div>
+  <div class="map-container">
     <!-- Conteneur de la carte -->
-    <div ref="mapContainer" style="width: 100vw; height: 85vh;"></div>
+    <div ref="mapContainer" class="map"></div>
+    <!-- Conteneur de la section des cartes -->
+    <CardSection />
   </div>
 </template>
+
+<style scoped>
+.map-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh; /* Prend toute la hauteur de l'écran */
+}
+
+.map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+</style>
