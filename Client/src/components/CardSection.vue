@@ -98,11 +98,11 @@ const scrollRight = () => {
 }
 
 .scroll-button.left {
-  left: 10px;
+  left: 50px;
 }
 
 .scroll-button.right {
-  right: 10px;
+  right: 50px;
 }
 
 .scroll-button:disabled {
