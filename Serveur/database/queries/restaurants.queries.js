@@ -24,9 +24,6 @@ export const updateRestaurantQuery = async (id, restaurant) => {
     return Restaurant.findByIdAndUpdate(id, restaurant)
 }
 
-export const updateGlobalRatingQuery = async (id, globalRating) => {
-    return Restaurant.findByIdAndUpdate(id, { globalRating });
-}
 
 // Lire tous les commentaires d'un restaurant par ID
 export const getCommentsByRestaurantIdQuery = async (restaurantId) => {

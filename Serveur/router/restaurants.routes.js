@@ -12,6 +12,6 @@ router.put('/:id', controller.updateRestaurant);
 router.delete('/:id', controller.deleteRestaurant);
 router.patch('/:id/update-rating', controller.updateGlobalRating);
 router.get('/:restaurantId/comments', controller.getCommentsByRestaurantId);
-router.get('/:restaurantId/average-rating', controller.getAverageRatingForRestaurant);
+
 
 export default router;

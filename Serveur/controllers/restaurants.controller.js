@@ -100,28 +100,4 @@ export const getCommentsByRestaurantId = async (req, res) => {
   }
 };
 
-//Fonction pour calculer la moyenne des notes
 
-export const getAverageRatingForRestaurant = async (req, res) => {
-  const { restaurantId } = req.params;
-
-  try {
-    // Récupérer tous les commentaires pour le restaurant
-    const comments = await Comment.find({ restaurant: restaurantId });
-
-    // Vérifier s'il y a des commentaires
-    if (comments.length === 0) {
-      return res.status(404).json({ message: "Pas de commentaires pour ce restaurant." });
-    }
-
-    // Calculer la moyenne des globalRating
-    const totalRating = comments.reduce((sum, comment) => sum + comment.globalRating, 0);
-    const averageRating = totalRating / comments.length;
-
-    // Envoyer la moyenne en réponse
-    res.json({ averageRating });
-  } catch (error) {
-    console.error("Erreur lors du calcul de la moyenne:", error);
-    res.status(500).json({ message: "Erreur interne du serveur." });
-  }
-};

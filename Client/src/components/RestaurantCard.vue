@@ -10,7 +10,7 @@ const props = defineProps<{
 const store = useRestaurantStore(); 
 
 onMounted(() => {
-  store.fetchAverageRatingForRestaurant(props.restaurant._id);
+  store.fetchRestaurantById(props.restaurant._id);
 });
 
 // Watcher pour surveiller la note globale du restaurant

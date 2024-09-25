@@ -34,7 +34,6 @@ const commentSchema = new mongoose.Schema({
   },
    globalRating: {
     type: Number,
-    required: true,
     min: 1,
     max: 5,  
   },
@@ -65,15 +64,12 @@ const commentSchema = new mongoose.Schema({
 });
 
 
-// Méthode pour calculer la moyenne des commentaires
-commentSchema.statics.calculateGlobalRating = async function(restaurantId) {
-  const comments = await this.find({ restaurant: restaurantId });
-
-  if (comments.length === 0) return 0; 
-
-  const totalRating = comments.reduce((sum, comment) => sum + comment.globalRating, 0);
-  return totalRating / comments.length; 
-};
+// Middleware to calculate globalRating before saving
+commentSchema.pre("save", function (next) {
+  
+  this.globalRating = (this.service + this.quality + this.ambiance) / 3;
+  next();
+});
 
 commentSchema.pre('save', async function(next) {
   try {
@@ -92,5 +88,24 @@ commentSchema.pre('save', async function(next) {
     next(error);
   }
 });
+
+// Hook post-save : recalculer la note du restaurant après avoir ajouté un commentaire
+commentSchema.post("save", async function () {
+  const Restaurant = mongoose.model("Restaurant");
+  const restaurant = await Restaurant.findById(this.restaurant);
+  if (restaurant) {
+    await restaurant.calculateGlobalRating();
+  }
+});
+
+// Hook post-remove : recalculer la note du restaurant après avoir supprimé un commentaire
+commentSchema.post("remove", async function () {
+  const Restaurant = mongoose.model("Restaurant");
+  const restaurant = await Restaurant.findById(this.restaurant);
+  if (restaurant) {
+    await restaurant.calculateGlobalRating();
+  }
+});
+
 
 export default mongoose.model("Comment", commentSchema);
