@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, onMounted, watch, watchEffect } from 'vue';
+import {  onMounted, watch, watchEffect } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore.js'; 
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
 
