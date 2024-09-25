@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const isLanguageSelectorVisible = ref(false);
-const isSettingsVisible = ref(false);
+const { t, locale } = useI18n()
+const isLanguageSelectorVisible = ref(false)
+const isSettingsVisible = ref(false)
 
 const toggleSettings = () => {
-  isSettingsVisible.value = !isSettingsVisible.value;
-  isLanguageSelectorVisible.value = false; // Masque le sélecteur de langue lors de l'ouverture des réglages
+  isSettingsVisible.value = !isSettingsVisible.value
+  isLanguageSelectorVisible.value = false
 }
 
 const toggleLanguageSelector = () => {
-  isLanguageSelectorVisible.value = !isLanguageSelectorVisible.value;
+  isLanguageSelectorVisible.value = !isLanguageSelectorVisible.value
 }
 
-const changeLanguage = (lang: string) => {
-  console.log(`Language changed to: ${lang}`);
-  // Ici, tu peux ajouter ta logique pour changer la langue
+const changeLanguage = (lang: 'en' | 'fr') => {
+  locale.value = lang
+  console.log(`Language changed to: ${lang}`)
 }
 </script>
 
@@ -35,18 +37,18 @@ const changeLanguage = (lang: string) => {
     <div v-if="isSettingsVisible" class="settings-section">
       <button class="language-button" @click="toggleLanguageSelector">
         <img src="../assets/image/langage.svg" alt="Language Icon" class="language-icon" />
-        Select Language
+        {{ t('selectLanguage') }}
       </button>
 
       <!-- Sélection de la langue -->
       <div v-if="isLanguageSelectorVisible" class="language-selector">
         <button @click="changeLanguage('en')" class="language-option">
           <img src="../assets/image/flagEn.svg" alt="English Flag" class="language-icon" />
-          English
+          {{ t('english') }}
         </button>
         <button @click="changeLanguage('fr')" class="language-option">
           <img src="../assets/image/flagFr.svg" alt="French Flag" class="language-icon" />
-          Français
+          {{ t('french') }}
         </button>
       </div>
     </div>
@@ -55,7 +57,7 @@ const changeLanguage = (lang: string) => {
 
 <style scoped>
 .settings-container {
-  position: relative; 
+  position: relative;
 }
 
 .setting-button {
@@ -81,8 +83,8 @@ const changeLanguage = (lang: string) => {
   left: 50%; /* Centre horizontalement par rapport au bouton */
   transform: translateX(-50%); /* Ajuste pour un parfait centrage horizontal */
   border-radius: 4px; /* Coins arrondis */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
-  padding: 10px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 10px;
   z-index: 10;
   width: 150px; /* Largeur uniforme pour la section */
 }
