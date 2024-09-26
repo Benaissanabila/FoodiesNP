@@ -1,6 +1,6 @@
-<!-- SearchBar.vue -->
+// SearchBar.vue
 <script setup lang='ts'>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore'; // Utilisation du store
 import { useI18n } from 'vue-i18n';
 
@@ -16,26 +16,27 @@ const props = defineProps({
 });
 
 // Actions du store
-const performSearch = () => {
+const performSearch = async () => {
   if (!searchQuery.value.trim()) {
+    // Si le champ est vide, on supprime les marqueurs
+    restaurantStore.updateSearchQuery(''); // Remettre la recherche à vide dans le store
+    if (props.onSearch) {
+      props.onSearch(); // Appeler la fonction pour supprimer les marqueurs
+    }
     return;
   }
 
-  // Mettre à jour la requête de recherche dans le store et filtrer les restaurants
+  // Mettre à jour la requête de recherche dans le store
   restaurantStore.updateSearchQuery(searchQuery.value);
-  
+
+  // Charger les restaurants après la mise à jour de la recherche
+  await restaurantStore.loadRestaurants();
+
   // Une fois la recherche terminée, déclencher la mise à jour des marqueurs
   if (props.onSearch) {
     props.onSearch(); // Appeler la fonction pour mettre à jour les marqueurs dans la carte
   }
 };
-
-// Surveiller le changement des restaurants filtrés
-watch(() => restaurantStore.getFilteredRestaurants, () => {
-  if (props.onSearch) {
-    props.onSearch(); // Appeler la fonction pour mettre à jour les marqueurs à chaque changement
-  }
-});
 </script>
 
 <template>

@@ -22,9 +22,19 @@ const updateMarkers = async () => {
   const currentMap = map.value as mapboxgl.Map | null; // Typage explicite ici
   if (currentMap) {
     try {
+      // Si la requête est vide, on supprime les marqueurs
+      if (!restaurantStore.searchQuery.trim()) {
+        restaurantStore.clearMarkers(currentMap);
+        return; // On arrête la fonction ici si la recherche est vide
+      }
+
       // Utilisation des restaurants filtrés
       const filteredRestaurants = restaurantStore.getFilteredRestaurants;
-      await restaurantStore.updateRestaurantMarkers(currentMap, filteredRestaurants); // Passer les restaurants filtrés
+      if (filteredRestaurants.length > 0) {
+        await restaurantStore.updateRestaurantMarkers(currentMap, filteredRestaurants); // Mettre à jour les marqueurs
+      } else {
+        restaurantStore.clearMarkers(currentMap); // Si aucun résultat, effacer les marqueurs
+      }
     } catch (error) {
       console.error("Error updating restaurant markers:", error);
     }
@@ -42,16 +52,16 @@ onMounted(() => {
       accessToken: mapboxToken,
     });
 
-    // Initialement, charger les marqueurs
-    updateMarkers();
+    // Ne pas charger de marqueurs au démarrage pour garder la carte vide
+    restaurantStore.clearMarkers(map.value as any); // Assurez-vous que la carte est vide au début
   }
 });
 
 // Surveiller les changements dans les restaurants filtrés pour mettre à jour les marqueurs
 watch(
   () => restaurantStore.getFilteredRestaurants,
-  () => {
-    updateMarkers();
+  async () => {
+    await updateMarkers(); // Mise à jour des marqueurs après la recherche
   }
 );
 </script>

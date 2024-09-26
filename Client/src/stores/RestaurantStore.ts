@@ -134,7 +134,11 @@ async updateRestaurantMarkers(map: mapboxgl.Map, filteredRestaurants: IRestauran
       this.restaurantMarkers.push(marker);
     }
   }
-}
+},
+clearMarkers(map: mapboxgl.Map) {
+  this.restaurantMarkers.forEach(marker => marker.remove());
+  this.restaurantMarkers = [];
+},
     
   }
 })
