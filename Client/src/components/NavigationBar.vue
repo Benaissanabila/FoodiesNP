@@ -36,6 +36,9 @@ import HamburgerMenu from './HamburgerMenu.vue';
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
+  position: relative;
+  backdrop-filter: blur(2px);
+  z-index: 10;
 }
 
 .desktop-only {
