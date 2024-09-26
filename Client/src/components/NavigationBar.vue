@@ -39,6 +39,7 @@ import HamburgerMenu from './HamburgerMenu.vue';
   position: relative;
   backdrop-filter: blur(2px);
   z-index: 10;
+
 }
 
 .desktop-only {

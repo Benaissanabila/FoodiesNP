@@ -46,7 +46,7 @@ const scrollRight = () => {
         :restaurant="restaurant"
       />
     </div>
-    <button class="scroll-button right" @click="scrollRight" :disabled="currentIndex >= restaurants.length - 3">
+    <button class="scroll-button right" @click="scrollRight" :disabled="currentIndex >= restaurants.length -3">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
         <path
           fill="currentColor"
@@ -65,9 +65,7 @@ const scrollRight = () => {
   width: 100%;
   position: absolute;
   bottom: 0;
-  padding: 10px;
-  background-color: none;
-  
+  overflow-x: hidden; /* Masque tout débordement horizontal */
 }
 
 .restaurant-cards {
@@ -76,7 +74,8 @@ const scrollRight = () => {
   overflow: hidden; /* Masque les cartes qui débordent */
   width: 100%;
   justify-content: center;
-  max-width: 1200px;
+  max-width: 1100px;
+  flex-wrap: nowrap; /* Pas d'empilement, même sur mobile */
 }
 
 .scroll-button {
@@ -98,11 +97,11 @@ const scrollRight = () => {
 }
 
 .scroll-button.left {
-  left: 10px;
+  left: 30px;
 }
 
 .scroll-button.right {
-  right: 10px;
+  right: 40px;
 }
 
 .scroll-button:disabled {
@@ -117,4 +116,46 @@ const scrollRight = () => {
 svg {
   color: white;
 }
+
+/* Styles pour les petits écrans (mobiles) */
+@media (max-width: 768px) {
+  .restaurant-cards {
+ border-radius: 10px;
+    width: 60%; /* Prend la largeur totale */
+    max-width: 100%; /* S'assure que la largeur ne dépasse pas */
+  }
+
+  .restaurant-cards > * {
+    flex: 0 0 100%; /* Chaque carte prend 100% de la largeur, donc une seule à la fois */
+    max-width: 100%; /* Carte à pleine largeur */
+  }
+
+  .scroll-button {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
+  .scroll-button.left {
+    left: 80px; /* Ajuster la position pour mobile */
+  }
+
+  .scroll-button.right {
+    right: 80px; /* Ajuster la position pour mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .restaurant-cards > * {
+    flex: 0 0 100%; /* Sur très petit écran, chaque carte prend toute la largeur */
+  }
+
+  .scroll-button {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+  }
+}
+
+
 </style>

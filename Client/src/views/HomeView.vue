@@ -15,7 +15,5 @@ import Map from '@/components/Map.vue';
 </template>
 
 <style scoped>
-.content {
-  padding-top: 80px;
-}
+
 </style>

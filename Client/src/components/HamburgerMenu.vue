@@ -62,14 +62,15 @@ const toggleMenu = () => {
 .menu {
   position: fixed;
   top: 20px;
-  right: 2px;
+  right: 10px;
 border-radius: 10px;
+background-color: #77d2de67;
   width: 90px; /* Ajustement de la largeur */
   backdrop-filter: blur(5px);
   border-left: 1px solid #dee2e6;
   padding: 40px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateX(100%); 
+  transform: translateX(130%); 
   transition: transform 1s ease-in-out, opacity 1s ease-in-out; 
   z-index: 999;
 }
@@ -91,9 +92,5 @@ border-radius: 10px;
   right: 10px;
   z-index: 1001; 
 }
-
-
-
-
   </style>
   

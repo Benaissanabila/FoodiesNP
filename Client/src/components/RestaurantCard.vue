@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {  onMounted, watch, watchEffect } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore.js'; 
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
 
@@ -46,6 +46,7 @@ watch(
             ★
           </span>
         </div>
+        <p class="rating-value">{{ restaurant.globalRatingResaurant.toFixed(1) }}</p> <!-- Afficher la note à côté des étoiles -->
         <p v-if="store.loading">Chargement de la note globale...</p>
         <p v-if="store.error">{{ store.error }}</p>
       </div>
@@ -53,25 +54,23 @@ watch(
   </div>
 </template>
 
-
-
 <style scoped>
 .restaurant-card {
   display: flex;
   align-items: center;
   border: 1px solid #ddd;
   border-radius: 12px;
-  padding: 10px;
-  width: 40vw; /* Proportional width */
-  min-width: 280px; /* Minimum width */
-  height: 160px;
+  padding: 8px; /* Réduire le remplissage */
+  width: 35vw; /* Largeur proportionnelle ajustée */
+  min-width: 250px; /* Largeur minimale ajustée */
+  height: 140px; /* Hauteur ajustée */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: #fff; /* White background */
+  background-color: #fff; /* Fond blanc */
 }
 
 .restaurant-image {
-  width: 70px;
-  height: 85%;
+  width: 110px; /* Taille de l'image augmentée */
+  height: 110px; /* Hauteur automatique pour garder le ratio */
   border-radius: 8px;
   margin-right: 10px;
 }
@@ -104,15 +103,21 @@ p {
 }
 
 .star {
-  font-size: 24px; /* Size of the stars */
-  color: #ccc; /* Default color for empty stars */
+  font-size: 24px; /* Taille des étoiles */
+  color: #ccc; /* Couleur par défaut pour les étoiles vides */
 }
 
 .star.filled {
-  color: #ffcc00; /* Color for filled stars */
+  color: #ffcc00; /* Couleur pour les étoiles remplies */
+}
+
+.rating-value {
+  margin-left: 5px; /* Espace entre les étoiles et la note */
+  font-weight: bold; /* Mettre la note en gras */
+  color: #333; /* Couleur de la note */
 }
 
 .rating p {
-  margin-left: 10px; /* Space between stars and loading/error messages */
+  margin-left: 10px; /* Espace entre les étoiles et les messages de chargement/erreur */
 }
 </style>

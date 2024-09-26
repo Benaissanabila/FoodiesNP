@@ -41,17 +41,18 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
 .map-container {
   position: relative;
   top: -118px;
-  width: 100vw;
+  padding: 0px;
+  width:100vw;
   height: 100vh; /* Prend toute la hauteur de l'écran */
 }
 
 .map {
   position: absolute;
   top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
 }
