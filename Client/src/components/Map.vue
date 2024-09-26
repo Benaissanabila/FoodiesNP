@@ -3,11 +3,11 @@ import { ref, onMounted, watch } from 'vue'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useRestaurantStore } from '@/stores/RestaurantStore' // Importation du store
-
+import SearchBar from './SearchBar.vue'
 const mapboxToken =
   'pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw'
 const mapContainer = ref<HTMLElement | null>(null)
-const map = ref<mapboxgl.Map | null>(null)
+const map = ref<mapboxgl.Map >()
 const restaurantStore = useRestaurantStore() // Utilisation du store
 const userLocationMarker = ref<mapboxgl.Marker | null>(null) // Stockage du marqueur de l'utilisateur
 
