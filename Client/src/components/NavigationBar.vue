@@ -1,52 +1,68 @@
-<script setup lang='ts'> 
+<script setup lang="ts">
+import Logo from './Logo.vue';
 import SearchBar from './SearchBar.vue';
-import ProfileButton from './ProfileButton.vue';
 import ChatButton from './ChatButton.vue';
 import SettingButton from './SettingButton.vue';
-import Logo from './Logo.vue'
+import ProfileButton from './ProfileButton.vue';
+import HamburgerMenu from './HamburgerMenu.vue';  
 </script>
 
 <template>
-
   <nav class="navigation-bar">
     <Logo />
+    
+    <!-- Barre de recherche visible sur tous les écrans -->
     <div class="center">
       <SearchBar />
     </div>
-    <div class="right-buttons">
-   
+
+    <!-- Boutons pour les écrans de bureau -->
+    <div class="right-buttons desktop-only">
       <ChatButton />
-      <SettingButton /> 
+      <SettingButton />
       <ProfileButton />
+    </div>
+
+    <!-- Menu hamburger pour mobile -->
+    <div class="mobile-only">
+      <HamburgerMenu />
     </div>
   </nav>
 </template>
 
 <style scoped>
 .navigation-bar {
-  padding: 10px;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 20px;
 }
 
-.center {
-  flex-grow: 1;
+.desktop-only {
   display: flex;
-  justify-content: center; /* Centrer la barre de recherche */
 }
 
 .right-buttons {
   display: flex;
-  align-items: center;
+  gap: 15px; /* Ajustez la valeur selon vos besoins */
 }
 
-.right-buttons > * {
-  margin-left: 20px; /* Ajoute de l'espace entre les boutons */
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none; /* Masquer les boutons pour mobile */
+  }
+
+  .mobile-only {
+    display: block; /* Afficher le menu hamburger */
+  }
+  
+  .center {
+    flex: 1; /* Permettre à la barre de recherche d'utiliser l'espace disponible */
+    display: flex; /* Aligner horizontalement */
+  }
 }
 </style>

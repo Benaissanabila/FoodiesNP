@@ -16,6 +16,6 @@ import Map from '@/components/Map.vue';
 
 <style scoped>
 .content {
-  padding-top: 80px; /* Ajuste ce padding selon la hauteur de ta barre de navigation */
+  padding-top: 80px;
 }
 </style>
