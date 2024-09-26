@@ -1,68 +1,51 @@
-<script setup lang="ts">
-import Logo from './Logo.vue';
+<script setup lang='ts'> 
 import SearchBar from './SearchBar.vue';
+import ProfileButton from './ProfileButton.vue';
 import ChatButton from './ChatButton.vue';
 import SettingButton from './SettingButton.vue';
-import ProfileButton from './ProfileButton.vue';
-import HamburgerMenu from './HamburgerMenu.vue';  
+import Logo from './Logo.vue'
 </script>
 
 <template>
+
   <nav class="navigation-bar">
     <Logo />
-    
-    <!-- Barre de recherche visible sur tous les écrans -->
     <div class="center">
       <SearchBar />
     </div>
-
-    <!-- Boutons pour les écrans de bureau -->
-    <div class="right-buttons desktop-only">
+    <div class="right-buttons">
+   
       <ChatButton />
-      <SettingButton />
+      <SettingButton /> 
       <ProfileButton />
-    </div>
-
-    <!-- Menu hamburger pour mobile -->
-    <div class="mobile-only">
-      <HamburgerMenu />
     </div>
   </nav>
 </template>
 
 <style scoped>
 .navigation-bar {
+  padding: 10px;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  position: absolute;
+  z-index: 10;
+  backdrop-filter: blur(2px);
 }
 
-.desktop-only {
+.center {
+  flex-grow: 1;
   display: flex;
+  justify-content: center; /* Centrer la barre de recherche */
 }
 
 .right-buttons {
   display: flex;
-  gap: 15px; /* Ajustez la valeur selon vos besoins */
+  align-items: center;
 }
 
-.mobile-only {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none; /* Masquer les boutons pour mobile */
-  }
-
-  .mobile-only {
-    display: block; /* Afficher le menu hamburger */
-  }
-  
-  .center {
-    flex: 1; /* Permettre à la barre de recherche d'utiliser l'espace disponible */
-    display: flex; /* Aligner horizontalement */
-  }
+.right-buttons > * {
+  margin-left: 20px; /* Ajoute de l'espace entre les boutons */
 }
 </style>
