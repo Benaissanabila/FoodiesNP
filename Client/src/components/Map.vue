@@ -19,7 +19,7 @@ const viewport = {
 
 // Fonction pour mettre à jour les marqueurs uniquement pour les restaurants filtrés
 const updateMarkers = async () => {
-  const currentMap = map.value as mapboxgl.Map | null; // Typage explicite ici
+  const currentMap = map.value; // Typage explicite ici
   if (currentMap) {
     try {
       // Si la requête est vide, on supprime les marqueurs
