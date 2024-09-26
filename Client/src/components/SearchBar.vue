@@ -9,31 +9,35 @@ const { t } = useI18n();
 const restaurantStore = useRestaurantStore();
 
 // Liaison des valeurs du store aux variables locales
-const searchQuery = ref(''); // Define searchQuery as a reactive reference
-const filteredRestaurants = computed(() => restaurantStore.getFilteredRestaurants as IRestaurant[]); // Typage des restaurants filtrés
-const loading = computed(() => restaurantStore.loading);
-const showResults = ref(false); // Flag pour contrôler l'affichage des résultats
+const searchQuery = ref(''); // Valeur réactive pour le champ de recherche
+
+// Prop reçue pour déclencher la mise à jour des marqueurs
+const props = defineProps({
+  onSearch: Function // Fonction de mise à jour des marqueurs
+});
 
 // Actions du store
-const performSearch = () => {
-  // Ne pas effectuer la recherche si le champ de recherche est vide
+const performSearch = async () => {
   if (!searchQuery.value.trim()) {
-    showResults.value = false;
+    // Si le champ est vide, on supprime les marqueurs
+    restaurantStore.updateSearchQuery(''); // Remettre la recherche à vide dans le store
+    if (props.onSearch) {
+      props.onSearch(); // Appeler la fonction pour supprimer les marqueurs
+    }
     return;
   }
 
-  console.log('Searching for:', searchQuery.value); // Debug: Affiche la requête de recherche
-  restaurantStore.updateSearchQuery(searchQuery.value); // Met à jour la requête dans le store
-  showResults.value = true; // Afficher les résultats après la recherche
+  // Mettre à jour la requête de recherche dans le store
+  restaurantStore.updateSearchQuery(searchQuery.value);
 
-  // Debug: Vérifiez les restaurants filtrés
-  console.log('Filtered Restaurants:', filteredRestaurants.value);
+  // Charger les restaurants après la mise à jour de la recherche
+  await restaurantStore.loadRestaurants();
+
+  // Une fois la recherche terminée, déclencher la mise à jour des marqueurs
+  if (props.onSearch) {
+    props.onSearch(); // Appeler la fonction pour mettre à jour les marqueurs dans la carte
+  }
 };
-
-// Récupérer les restaurants lors de la montée du composant
-onMounted(() => {
-  restaurantStore.loadRestaurants();
-});
 </script>
 
 <template>
