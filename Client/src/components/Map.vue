@@ -137,13 +137,4 @@ watch(
   width: 100%;
   height: 100%;
 }
-/* Style pour le point bleu de l'utilisateur */
-.user-location-marker {
-  width: 20px; /* Largeur du point */
-  height: 20px; /* Hauteur du point */
-  background-color: rgb(16, 87, 241))); /* Couleur du point */
-  border-radius: 50%; /* Forme circulaire */
-  border: 3px solid white; /* Bordure blanche */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Effet d'ombre */
-}
 </style>
