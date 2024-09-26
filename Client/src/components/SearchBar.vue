@@ -1,38 +1,40 @@
+<!-- SearchBar.vue -->
 <script setup lang='ts'>
-import { onMounted, computed, ref } from 'vue';
-import { useRestaurantStore } from '@/stores/RestaurantStore'; // Utilisation du store mis à jour
-import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'; // Importation de l'interface IRestaurant
-import { useI18n } from 'vue-i18n'
+import { ref, watch } from 'vue';
+import { useRestaurantStore } from '@/stores/RestaurantStore'; // Utilisation du store
+import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n()
-// Initialisation du store
-const restaurantStore = useRestaurantStore();
+const { t } = useI18n();
+const restaurantStore = useRestaurantStore(); // Utilisation du store
 
 // Liaison des valeurs du store aux variables locales
-const searchQuery = ref(''); // Define searchQuery as a reactive reference
-const filteredRestaurants = computed(() => restaurantStore.getFilteredRestaurants as IRestaurant[]); // Typage des restaurants filtrés
-const loading = computed(() => restaurantStore.loading);
-const showResults = ref(false); // Flag pour contrôler l'affichage des résultats
+const searchQuery = ref(''); // Valeur réactive pour le champ de recherche
+
+// Prop reçue pour déclencher la mise à jour des marqueurs
+const props = defineProps({
+  onSearch: Function // Fonction de mise à jour des marqueurs
+});
 
 // Actions du store
 const performSearch = () => {
-  // Ne pas effectuer la recherche si le champ de recherche est vide
   if (!searchQuery.value.trim()) {
-    showResults.value = false;
     return;
   }
 
-  console.log('Searching for:', searchQuery.value); // Debug: Affiche la requête de recherche
-  restaurantStore.updateSearchQuery(searchQuery.value); // Met à jour la requête dans le store
-  showResults.value = true; // Afficher les résultats après la recherche
-
-  // Debug: Vérifiez les restaurants filtrés
-  console.log('Filtered Restaurants:', filteredRestaurants.value);
+  // Mettre à jour la requête de recherche dans le store et filtrer les restaurants
+  restaurantStore.updateSearchQuery(searchQuery.value);
+  
+  // Une fois la recherche terminée, déclencher la mise à jour des marqueurs
+  if (props.onSearch) {
+    props.onSearch(); // Appeler la fonction pour mettre à jour les marqueurs dans la carte
+  }
 };
 
-// Récupérer les restaurants lors de la montée du composant
-onMounted(() => {
-  restaurantStore.loadRestaurants();
+// Surveiller le changement des restaurants filtrés
+watch(() => restaurantStore.getFilteredRestaurants, () => {
+  if (props.onSearch) {
+    props.onSearch(); // Appeler la fonction pour mettre à jour les marqueurs à chaque changement
+  }
 });
 </script>
 
@@ -46,25 +48,6 @@ onMounted(() => {
       :placeholder="t('searchPlaceholder')" 
     />
     <button @click="performSearch">{{ t('search') }}</button>
-
-    <!-- Affichage des résultats de recherche uniquement après une recherche -->
-    <div v-if="filteredRestaurants.length && !loading && showResults">
-      <h3>{{ t('searchResults') }}:</h3>
-      <ul>
-        <li v-for="(restaurant, index) in filteredRestaurants" :key="restaurant._id">
-          <img :src="restaurant.RestoPhoto" :alt="t('restaurantPhoto')" width="100" height="60" />
-          <strong>{{ restaurant.name }}</strong> - {{ restaurant.cuisineType || t('cuisineTypeNotAvailable') }} <br/>
-          {{ restaurant.address }} <br/>
-          {{ restaurant.schedule }} <br/>
-          {{ restaurant.phoneNumber || t('phoneNumberNotAvailable') }} <br/><br/>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Message si aucun résultat trouvé -->
-    <div v-else-if="!loading && showResults">
-      <p>{{ t('noResultsFound') }}</p>
-    </div>
   </div>
 </template>
 

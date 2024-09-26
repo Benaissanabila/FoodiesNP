@@ -2,11 +2,13 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
 import type { IComment } from '@/shared/interfaces/CommentInterface'
+import mapboxgl from 'mapbox-gl'
 
 export const useRestaurantStore = defineStore('Restaurant', {
   state: () => ({
     searchQuery: '', 
     restaurants: <IRestaurant[]>([]),
+    restaurantMarkers: [] as any[],
     comments: <IComment[]>([]),
     loading: true, 
     error: null as string | null, 
@@ -97,7 +99,42 @@ export const useRestaurantStore = defineStore('Restaurant', {
       } finally {
         this.loading = false
       }
+    },
+     // Method to geocode an address
+     async geocodeAddress(address: string) {
+      try {
+        const response = await axios.get(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw`
+        );
+        const data = response.data;
+        if (data.features && data.features.length > 0) {
+          const [longitude, latitude] = data.features[0].center;
+          return { longitude, latitude };
+        }
+      } catch (error) {
+        console.error('Geocoding error:', error);
+      }
+      return null;
+    },
+
+    // Action to update restaurant markers on the map for filtered restaurants
+async updateRestaurantMarkers(map: mapboxgl.Map, filteredRestaurants: IRestaurant[]): Promise<void>  {
+  // Remove old markers
+  this.restaurantMarkers.forEach((marker: mapboxgl.Marker) => marker.remove());
+  this.restaurantMarkers = [];
+
+  // Ajouter des marqueurs pour les restaurants filtrés
+  for (const restaurant of filteredRestaurants) {
+    const coordinates = await this.geocodeAddress(restaurant.address);
+    if (coordinates) {
+      const marker = new mapboxgl.Marker()
+        .setLngLat([coordinates.longitude, coordinates.latitude])
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${restaurant.name}</h3><p>${restaurant.address}</p>`))
+        .addTo(map);
+      this.restaurantMarkers.push(marker);
     }
+  }
+}
     
   }
 })
