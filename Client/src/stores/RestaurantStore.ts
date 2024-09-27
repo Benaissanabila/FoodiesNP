@@ -8,7 +8,7 @@ export const useRestaurantStore = defineStore('Restaurant', {
   state: () => ({
     searchQuery: '',
     restaurants: [] as IRestaurant[],
-    restaurantMarkers: [] as mapboxgl.Marker[],
+    restaurantMarkers: [] as any[],
     comments: [] as IComment[],
     loading: false,
     error: null as string | null,
