@@ -1,23 +1,23 @@
-import { defineStore } from 'pinia'
-import axios from 'axios'
-import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
-import type { IComment } from '@/shared/interfaces/CommentInterface'
-import mapboxgl from 'mapbox-gl'
+import { defineStore } from 'pinia';
+import axios from 'axios';
+import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
+import type { IComment } from '@/shared/interfaces/CommentInterface';
+import mapboxgl from 'mapbox-gl';
 
 export const useRestaurantStore = defineStore('Restaurant', {
   state: () => ({
-    searchQuery: '', 
-    restaurants: <IRestaurant[]>([]),
-    restaurantMarkers: [] as any[],
-    comments: <IComment[]>([]),
-    loading: true, 
-    error: null as string | null, 
+    searchQuery: '',
+    restaurants: [] as IRestaurant[],
+    restaurantMarkers: [] as mapboxgl.Marker[],
+    comments: [] as IComment[],
+    loading: false,
+    error: null as string | null,
   }),
 
   getters: {
     // Getter pour récupérer tous les restaurants
     getAllRestaurants(state) {
-      return state.restaurants
+      return state.restaurants;
     },
     // Getter pour les restaurants triés par note globale
     sortedRestaurants(state) {
@@ -25,120 +25,113 @@ export const useRestaurantStore = defineStore('Restaurant', {
         return b.globalRatingResaurant - a.globalRatingResaurant; // Tri décroissant
       });
     },
-
-     // Getter pour un restaurant par son ID
-     getRestaurantById: (state) => (id: string) => {
+    // Getter pour un restaurant par son ID
+    getRestaurantById: (state) => (id: string) => {
       return state.restaurants.find((restaurant) => restaurant._id === id);
     },
-
     // Getter qui renvoie les restaurants filtrés par nom ou type de cuisine
     getFilteredRestaurants: (state) => {
       if (state.searchQuery) {
-        const lowerCaseQuery = state.searchQuery.toLowerCase()
+        const lowerCaseQuery = state.searchQuery.toLowerCase();
         return state.restaurants.filter(
           (restaurant: { name: string; cuisineType?: string }) =>
             restaurant.name.toLowerCase().includes(lowerCaseQuery) ||
             restaurant.cuisineType?.toLowerCase().includes(lowerCaseQuery)
-        )
+        );
       }
-      return state.restaurants
+      return state.restaurants;
     },
-    
   },
 
   actions: {
     // Action pour mettre à jour la requête de recherche
     updateSearchQuery(query: string) {
-      this.searchQuery = query
+      this.searchQuery = query;
     },
 
     // Action pour récupérer les restaurants via l'API
     async loadRestaurants() {
-      this.loading = true
+      if (this.restaurants.length > 0) return; // Ne fait rien si les restaurants sont déjà chargés
+      this.loading = true;
       this.error = null;
       try {
-        // Récupération des restaurants via axios
-        const response = await axios.get('http://localhost:3000/restaurants')
-        this.restaurants = response.data // Stocke les données récupérées
+        const response = await axios.get('http://localhost:3000/restaurants');
+        this.restaurants = response.data;
       } catch (error) {
-        console.error("Erreur lors de la récupération des restaurants:", error);
-        this.error = "Erreur lors de la récupération des restaurants";
+        console.error('Erreur lors de la récupération des restaurants:', error);
+        this.error = 'Erreur lors de la récupération des restaurants';
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
-//Action pour recuperer un commentaire d'un restaurant 
+    
+
+    // Nouvelle action pour charger les emplacements des restaurants
+    async loadRestaurantLocations(map: mapboxgl.Map) {
+      await this.loadRestaurants(); // Récupérer les restaurants
+      this.updateRestaurantMarkers(map, this.getAllRestaurants); // Mettre à jour les marqueurs sur la carte
+    },
+
+    // Action pour récupérer un commentaire d'un restaurant
     async fetchCommentsByRestaurantId(restaurantId: string) {
       this.loading = true;
       this.error = null;
       try {
-          const response = await axios.get(`http://localhost:3000/restaurants/${restaurantId}/comments`); 
-          this.comments = response.data; // Stocke les commentaires récupérés
+        const response = await axios.get(`http://localhost:3000/restaurants/${restaurantId}/comments`);
+        this.comments = response.data; // Stocke les commentaires récupérés
       } catch (error) {
-          console.error('Erreur lors de la récupération des commentaires:', error);
-          this.error = 'Erreur lors de la récupération des commentaires';
+        console.error('Erreur lors de la récupération des commentaires:', error);
+        this.error = 'Erreur lors de la récupération des commentaires';
       } finally {
-          this.loading = false;
+        this.loading = false;
       }
-  },
+    },
 
     // Action pour récupérer un seul restaurant par ID
     async fetchRestaurantById(id: string) {
-      this.loading = true
-      this.error = null
+      this.loading = true;
+      this.error = null;
       try {
-        const response = await axios.get(`http://localhost:3000/restaurants/${id}`)
-        const restaurant = response.data
+        const response = await axios.get(`http://localhost:3000/restaurants/${id}`);
+        const restaurant = response.data;
         // Ajout du restaurant à la liste si ce n'est pas déjà le cas
         if (!this.restaurants.find((r) => r._id === id)) {
-          this.restaurants.push(restaurant)
+          this.restaurants.push(restaurant);
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération du restaurant:', error)
-        this.error = 'Erreur lors de la récupération du restaurant'
+        console.error('Erreur lors de la récupération du restaurant:', error);
+        this.error = 'Erreur lors de la récupération du restaurant';
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
-     // Method to geocode an address
-     async geocodeAddress(address: string) {
-      try {
-        const response = await axios.get(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw`
-        );
-        const data = response.data;
-        if (data.features && data.features.length > 0) {
-          const [longitude, latitude] = data.features[0].center;
-          return { longitude, latitude };
-        }
-      } catch (error) {
-        console.error('Geocoding error:', error);
+
+    // Action pour mettre à jour les marqueurs de restaurant sur la carte pour les restaurants filtrés
+   // Mettre à jour les marqueurs des restaurants sur la carte
+   updateRestaurantMarkers(map: mapboxgl.Map, restaurants: IRestaurant[]) {
+    // Supprimer les marqueurs existants
+    this.clearMarkers(map)
+
+    // Ajouter de nouveaux marqueurs
+    restaurants.forEach((restaurant) => {
+      if (restaurant.latitude && restaurant.longitude) {
+        const marker = new mapboxgl.Marker()
+          .setLngLat([restaurant.longitude, restaurant.latitude])
+          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(restaurant.name)) // Ajouter un popup avec le nom du restaurant
+          .addTo(map)
+
+        // Ajouter le marqueur au tableau pour une gestion future
+        this. restaurantMarkers.push(marker)
       }
-      return null;
-    },
+    })
+  },
 
-    // Action to update restaurant markers on the map for filtered restaurants
-async updateRestaurantMarkers(map: mapboxgl.Map, filteredRestaurants: IRestaurant[]): Promise<void>  {
-  // Remove old markers
-  this.restaurantMarkers.forEach((marker: mapboxgl.Marker) => marker.remove());
-  this.restaurantMarkers = [];
+  // Fonction pour supprimer tous les marqueurs de la carte
+  clearMarkers(map: mapboxgl.Map) {
+    this. restaurantMarkers.forEach((marker) => marker.remove()) // Supprimer chaque marqueur
+    this. restaurantMarkers = [] // Réinitialiser le tableau des marqueurs
+  }
+}
 
-  // Ajouter des marqueurs pour les restaurants filtrés
-  for (const restaurant of filteredRestaurants) {
-    const coordinates = await this.geocodeAddress(restaurant.address);
-    if (coordinates) {
-      const marker = new mapboxgl.Marker()
-        .setLngLat([coordinates.longitude, coordinates.latitude])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${restaurant.name}</h3><p>${restaurant.address}</p>`))
-        .addTo(map);
-      this.restaurantMarkers.push(marker);
-    }
-  }
-},
-clearMarkers(map: mapboxgl.Map) {
-  this.restaurantMarkers.forEach(marker => marker.remove());
-  this.restaurantMarkers = [];
-},
-    
-  }
-})
+   
+});

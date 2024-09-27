@@ -7,6 +7,8 @@ export interface IRestaurant {
     phoneNumber?: string; 
     RestoPhoto: string;   
     owner?: string;  
-    globalRatingResaurant:number;     
+    globalRatingResaurant:number; 
+    latitude?: number; 
+    longitude?: number;  
   }
   

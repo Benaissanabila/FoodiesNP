@@ -76,23 +76,38 @@ async function runSeed(req, res, next) {
 
     //---------------------------------------------------------------------
     // Insérer les restaurants
-    const restaurantsData = fs.readFileSync("./database/data/restaurants.json", "utf-8");
-    const restaurants = JSON.parse(restaurantsData);
+    // ... Votre code de seed existant ...
 
-    for (let i = 0; i < restaurants.length; i++) {
-      const restaurant = restaurants[i];
-      const randomOwner = owners[Math.floor(Math.random() * owners.length)];
-      const newRestaurant = new Restaurant({
-        ...restaurant,
-        owner: randomOwner._id
-      });
+// Insérer les restaurants
+const restaurantsData = fs.readFileSync("./database/data/restaurants.json", "utf-8");
+const restaurants = JSON.parse(restaurantsData);
 
-      await newRestaurant.save();
-      console.log(`Restaurant inserted: ${restaurant.name}`);
-    }
-    const dbRestaurants = await Restaurant.find();
+const dbRestaurants = []; // Initialiser un tableau pour stocker les restaurants
 
-    console.log("All restaurants inserted");
+for (let i = 0; i < restaurants.length; i++) {
+  const restaurant = restaurants[i];
+  const randomOwner = owners[Math.floor(Math.random() * owners.length)];
+  const newRestaurant = new Restaurant({
+    ...restaurant,
+    owner: randomOwner._id
+  });
+
+  await newRestaurant.save(); // Enregistrer d'abord le restaurant
+
+  // Récupérer les coordonnées après l'enregistrement
+  await newRestaurant.fetchCoordinatesFromMapbox(); // Cela met à jour l'altitude et la longitude
+
+  console.log(`Restaurant inserted: ${restaurant.name}`);
+
+  dbRestaurants.push(newRestaurant); // Ajouter le restaurant au tableau
+}
+
+// Assurez-vous de ne pas utiliser dbRestaurants avant cette boucle
+
+console.log("All restaurants inserted");
+
+// Continuez avec la génération et l'insertion des réservations et des commentaires...
+
 
     //---------------------------------------------------------------------
     // Générer et insérer les réservations
