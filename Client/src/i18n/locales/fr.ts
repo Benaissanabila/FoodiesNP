@@ -16,5 +16,8 @@ export default {
   "searchResults": "Résultats de recherche",
   "cuisineTypeNotAvailable": "Type de cuisine non disponible",
   "phoneNumberNotAvailable": "Numéro de téléphone non disponible",
-  "noResultsFound": "Aucun résultat trouvé"
+  "noResultsFound": "Aucun résultat trouvé",
+  "address": "Adresse",
+  "loadingRestaurantDetails": "Chargement des détails du restaurant...",
+  "reserve": "Réserver"
   }

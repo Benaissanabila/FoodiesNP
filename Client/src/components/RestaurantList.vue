@@ -4,6 +4,7 @@ import { useRestaurantStore } from '@/stores/RestaurantStore';
 import imageSrc from '@/assets/RestoImg.jpg'; // Assurez-vous que ce chemin est correct
 import CardSection from './CardSection.vue';
 import { useI18n } from 'vue-i18n'
+import { RouterLink } from 'vue-router';
 
 const { t} = useI18n()
 const store = useRestaurantStore();
@@ -39,8 +40,8 @@ const closeRestaurants = () => {
     <div v-if="store.loading">{{ t('loadingRestaurants') }}</div>
     <div v-if="store.error">{{ store.error }}</div>
     <div v-for="restaurant in store.sortedRestaurants" :key="restaurant._id" class="restaurant-card">
-      <img :src="restaurant.RestoPhoto" :alt="t('restaurantPhoto')" class="restaurant-image" />
-      <div class="restaurant-details">
+      <RouterLink :to="{ name: 'restaurantdetails', params: { id: restaurant._id } }"><img :src="restaurant.RestoPhoto" :alt="t('restaurantPhoto')" class="restaurant-image" />
+      </RouterLink><div class="restaurant-details">
         <h3>{{ restaurant.name }}</h3>
         <p>{{ restaurant.address }}</p>
         <p>{{ t('cuisineType') }}: {{ restaurant.cuisineType }}</p>

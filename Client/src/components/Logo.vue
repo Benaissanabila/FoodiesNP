@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router';
 
 <template>
   <div class="logo-container">
-    <RouterLink to="/"></RouterLink><img src="../assets/logoFoodies.png" alt="Logo" class="logo" /> <!-- Remplacez le chemin par celui de votre logo -->
+    <RouterLink to="/"><img src="../assets/logoFoodies.png" alt="Logo" class="logo" /></RouterLink> 
   </div>
 </template>
 

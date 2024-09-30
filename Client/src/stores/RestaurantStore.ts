@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
 import type { IComment } from '@/shared/interfaces/CommentInterface';
 import mapboxgl from 'mapbox-gl';
-
+import RestaurantCard from '@/components/RestaurantCard.vue';
 export const useRestaurantStore = defineStore('Restaurant', {
   state: () => ({
     searchQuery: '',
@@ -108,23 +108,33 @@ export const useRestaurantStore = defineStore('Restaurant', {
 
     // Action pour mettre à jour les marqueurs de restaurant sur la carte pour les restaurants filtrés
    // Mettre à jour les marqueurs des restaurants sur la carte
-   updateRestaurantMarkers(map: mapboxgl.Map, restaurants: IRestaurant[]) {
-    // Supprimer les marqueurs existants
-    this.clearMarkers(map)
-
-    // Ajouter de nouveaux marqueurs
+  // store/RestaurantStore.ts (ou .js selon votre configuration)
+  updateRestaurantMarkers(map: mapboxgl.Map, restaurants: IRestaurant[]) {
+    this.clearMarkers(map);
+  
     restaurants.forEach((restaurant) => {
       if (restaurant.latitude && restaurant.longitude) {
+        // Création du contenu HTML du popup
+        const popupContent = `
+          <div class="popup-content">
+            <h3>${restaurant.name}</h3>
+            <img src="${restaurant.RestoPhoto}" alt="Photo du restaurant" class="restaurant-image" onclick="location.href='/restaurantdetails/${restaurant._id}'" style="cursor:pointer;" />
+          </div>
+        `;
+  
+        // Création du marqueur et ajout du popup
         const marker = new mapboxgl.Marker()
           .setLngLat([restaurant.longitude, restaurant.latitude])
-          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(restaurant.name)) // Ajouter un popup avec le nom du restaurant
-          .addTo(map)
-
-        // Ajouter le marqueur au tableau pour une gestion future
-        this. restaurantMarkers.push(marker)
+          .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent))
+          .addTo(map);
+  
+        // Ajout du marqueur au tableau pour une gestion future
+        this.restaurantMarkers.push(marker);
       }
-    })
+    });
   },
+  
+
 
   // Fonction pour supprimer tous les marqueurs de la carte
   clearMarkers(map: mapboxgl.Map) {
