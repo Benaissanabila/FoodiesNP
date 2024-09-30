@@ -3,7 +3,6 @@ import { ref, onMounted, watch } from 'vue'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useRestaurantStore } from '@/stores/RestaurantStore' // Importation du store
-import SearchBar from './SearchBar.vue'
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
 
 const mapboxToken = 'pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw'
@@ -164,8 +163,6 @@ watch(
   <div class="map-container">
     <!-- Conteneur de la carte -->
     <div ref="mapContainer" class="map"></div>
-    <!-- Composant SearchBar avec la fonction de mise à jour des marqueurs -->
-    <SearchBar :onSearch="updateMarkers" />
   </div>
 </template>
 

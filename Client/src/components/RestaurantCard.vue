@@ -2,6 +2,7 @@
 import { onMounted, watch } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore.js'; 
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
+import { RouterLink } from 'vue-router';
 
 const props = defineProps<{
   restaurant: IRestaurant;
@@ -31,7 +32,7 @@ watch(
 
 <template>
   <div class="restaurant-card">
-    <img :src="restaurant.RestoPhoto" alt="Photo du restaurant" class="restaurant-image" />
+    <RouterLink to="/restaurantdetails"><img :src="restaurant.RestoPhoto" alt="Photo du restaurant" class="restaurant-image" /></RouterLink>
     <div class="restaurant-details">
       <h3>{{ restaurant.name }}</h3>
       <p>{{ restaurant.address }}</p>
