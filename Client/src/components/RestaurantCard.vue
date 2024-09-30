@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, computed } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore.js'; 
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
 
@@ -11,6 +11,12 @@ const store = useRestaurantStore();
 
 onMounted(() => {
   store.fetchRestaurantById(props.restaurant._id);
+});
+
+// Fonction pour calculer la distance
+const getDistance = computed(() => {
+  const distance = store.calculateDistanceToRestaurant(props.restaurant);
+  return distance === Infinity ? 'N/A' : distance.toFixed(2); // Si la distance est infinie, afficher 'N/A'
 });
 
 // Watcher pour surveiller la note globale du restaurant
@@ -35,6 +41,7 @@ watch(
     <div class="restaurant-details">
       <h3>{{ restaurant.name }}</h3>
       <p>{{ restaurant.address }}</p>
+      <p>Distance: {{ getDistance }} km</p> <!-- Affichage de la distance -->
       <div class="rating">
         <div class="stars">
           <span

@@ -4,6 +4,37 @@ import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
 import type { IComment } from '@/shared/interfaces/CommentInterface';
 import mapboxgl from 'mapbox-gl';
 
+// Fonctions utilitaires en dehors du store
+function calculateDistance(userLocation: { latitude: number; longitude: number }, restaurant: IRestaurant): number {
+  if (!restaurant.latitude || !restaurant.longitude) return Infinity;
+
+  const R = 6371; // Rayon de la Terre en km
+  const dLat = deg2rad(restaurant.latitude - userLocation.latitude);
+  const dLon = deg2rad(restaurant.longitude - userLocation.longitude);
+  const a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(userLocation.latitude)) * Math.cos(deg2rad(restaurant.latitude)) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distance = R * c; // Distance en km
+  return distance;
+}
+
+function deg2rad(deg: number): number {
+  return deg * (Math.PI/180);
+}
+
+interface RestaurantState {
+  searchQuery: string;
+  restaurants: IRestaurant[];
+  restaurantMarkers: any[];
+  comments: IComment[];
+  loading: boolean;
+  error: string | null;
+  userLocation: { latitude: number; longitude: number } | null;
+  sortBy: 'rating' | 'distance';
+}
+
 export const useRestaurantStore = defineStore('Restaurant', {
   state: () => ({
     searchQuery: '',
@@ -12,6 +43,8 @@ export const useRestaurantStore = defineStore('Restaurant', {
     comments: [] as IComment[],
     loading: false,
     error: null as string | null,
+    userLocation: null as { latitude: number; longitude: number } | null,
+    sortBy: 'rating' as 'rating' | 'distance',
   }),
 
   getters: {
@@ -19,12 +52,7 @@ export const useRestaurantStore = defineStore('Restaurant', {
     getAllRestaurants(state) {
       return state.restaurants;
     },
-    // Getter pour les restaurants triés par note globale
-    sortedRestaurants(state) {
-      return [...state.restaurants].sort((a, b) => {
-        return b.globalRatingResaurant - a.globalRatingResaurant; // Tri décroissant
-      });
-    },
+   
     // Getter pour un restaurant par son ID
     getRestaurantById: (state) => (id: string) => {
       return state.restaurants.find((restaurant) => restaurant._id === id);
@@ -41,7 +69,21 @@ export const useRestaurantStore = defineStore('Restaurant', {
       }
       return state.restaurants;
     },
+    sortedRestaurants: (state) => {
+      let sorted = [...state.restaurants];
+      if (state.sortBy === 'rating') {
+        sorted.sort((a, b) => b.globalRatingResaurant - a.globalRatingResaurant);
+      } else if (state.sortBy === 'distance' && state.userLocation) {
+        sorted.sort((a, b) => {
+          const distanceA = calculateDistance(state.userLocation!, a);
+          const distanceB = calculateDistance(state.userLocation!, b);
+          return distanceA - distanceB;
+        });
+      }
+      return sorted;
+    },
   },
+  
 
   actions: {
     // Action pour mettre à jour la requête de recherche
@@ -130,7 +172,21 @@ export const useRestaurantStore = defineStore('Restaurant', {
   clearMarkers(map: mapboxgl.Map) {
     this. restaurantMarkers.forEach((marker) => marker.remove()) // Supprimer chaque marqueur
     this. restaurantMarkers = [] // Réinitialiser le tableau des marqueurs
-  }
+  },
+  setUserLocation(latitude: number, longitude: number) {
+    this.userLocation = { latitude, longitude };
+  },
+
+  setSortBy(sortType: 'rating' | 'distance') {
+    this.sortBy = sortType;
+  },
+  calculateDistanceToRestaurant(restaurant: IRestaurant): number {
+    if (this.userLocation) {
+      return calculateDistance(this.userLocation, restaurant);
+    }
+    return Infinity;
+  },
+
 }
 
    
