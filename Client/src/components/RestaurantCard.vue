@@ -50,7 +50,7 @@ watch(
       <p>
       Distance: {{ getDistance }} km
     </p>
-      <StarRating :rating="restaurant.globalRatingResaurant" /> <!-- Utilisation du composant StarRating -->
+      <StarRating :rating="restaurant.globalRatingResaurant" /> 
       
       <p v-if="store.loading">Chargement de la note globale...</p>
       <p v-if="store.error">{{ store.error }}</p>
@@ -64,17 +64,17 @@ watch(
   align-items: center;
   border: 1px solid #ddd;
   border-radius: 12px;
-  padding: 8px; /* Réduire le remplissage */
-  width: 35vw; /* Largeur proportionnelle ajustée */
-  min-width: 250px; /* Largeur minimale ajustée */
-  height: 140px; /* Hauteur ajustée */
+  padding: 8px; 
+  width: 35vw; 
+  min-width: 250px; 
+  height: 140px; 
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: #fff; /* Fond blanc */
+  background-color: #fff; 
 }
 
 .restaurant-image {
-  width: 110px; /* Taille de l'image augmentée */
-  height: 110px; /* Hauteur automatique pour garder le ratio */
+  width: 110px; 
+  height: 110px; 
   border-radius: 8px;
   margin-right: 10px;
 }
