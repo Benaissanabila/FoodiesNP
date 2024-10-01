@@ -1,9 +1,10 @@
 import * as queries from '../database/queries/users.queries.js';
+import bcrypt from 'bcrypt';
 
 export const createUser = async (req, res) => {
   try {
     const user = await queries.createUserQuery(req.body);
-    res.status(200).json(user);
+    res.status(200).json(user); // Retourne l'utilisateur créé
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -70,4 +71,8 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+export const getUserByEmailQuery = async (email) => {
+  return User.findOne({ email }).select('+password'); // Sélection explicite du champ password
 };

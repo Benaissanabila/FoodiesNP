@@ -1,60 +1,41 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import type { ICreateUser } from '@/shared/interfaces/CreateUserInterface'; // Importer la nouvelle interface
 
 const router = useRouter();
 
-interface User {
-  name: string;
-  email: string;
-  password: string;
-  UserPhoto?: string;
-  DOB: string;
-}
-
-interface UserStoreState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-}
-
 export const useUserStore = defineStore('UserStore', {
-  state: (): UserStoreState => ({
+  state: () => ({
     user: null,
     loading: false,
     error: null,
   }),
 
   actions: {
+    async createUser(userData: ICreateUser) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await axios.post('http://localhost:3000/users', userData);
+        this.user = response.data;
+      } catch (error: any) {
+        this.error = error.response?.data?.error || 'An error occurred during account creation';
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async loginUser(email: string, password: string) {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.post('/api/users/login', { email, password });
-        this.user = response.data;
-        this.loading = false;
+        const response = await axios.post('http://localhost:3000/users/login', { email, password });
+        this.user = response.data.user;
       } catch (error: any) {
-        this.error = error.response ? error.response.data.error : 'Error during login';
+        this.error = error.response?.data?.error || 'An error occurred during login';
+      } finally {
         this.loading = false;
-      }
-      if (this.user) {
-        router.push('/profile');
-      }
-    },
-
-    async createUser(newUser: User) {
-      this.loading = true;
-      this.error = null;
-      try {
-        const response = await axios.post('/api/users', newUser);
-        this.user = response.data;
-        this.loading = false;
-      } catch (error: any) {
-        this.error = error.response ? error.response.data.error : 'Error creating account';
-        this.loading = false;
-      }
-      if (this.user) {
-        router.push('/profile');
       }
     },
 

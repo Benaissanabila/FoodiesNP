@@ -1,8 +1,8 @@
 import User from '../models/user.model.js'; 
 
 // Créer un utilisateur
-export const createUserQuery = async (user) => {
-  return User.create(user);
+export const createUserQuery = async (userData) => {
+  return User.create(userData);
 };
 
 // Récupérer tous les utilisateurs

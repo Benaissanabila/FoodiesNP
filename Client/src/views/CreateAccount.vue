@@ -8,12 +8,13 @@ const email = ref('');
 const password = ref('');
 const dob = ref('');
 
+// Utiliser ICreateUser au lieu de IUser pour la création de compte
 const createAccount = async () => {
   await store.createUser({
     name: name.value,
     email: email.value,
     password: password.value,
-    DOB: dob.value,
+    DOB: new Date(dob.value), // Conversion en Date
   });
 };
 </script>
