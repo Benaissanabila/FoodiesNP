@@ -16,5 +16,6 @@ router.use("/restaurants",restaurantsRoutes);
 router.use("/owners",ownersRoutes);
 router.use("/plans",plansRoutes);
 router.use("/reservations",reservationRoutes);
+router.use("/login", usersRoutes);
 
 export default router;

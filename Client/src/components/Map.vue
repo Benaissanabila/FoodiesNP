@@ -164,8 +164,6 @@ watch(
   <div class="map-container">
     <!-- Conteneur de la carte -->
     <div ref="mapContainer" class="map"></div>
-    <!-- Composant SearchBar avec la fonction de mise à jour des marqueurs -->
-    <SearchBar :onSearch="updateMarkers" />
   </div>
 </template>
 

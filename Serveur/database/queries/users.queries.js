@@ -22,3 +22,6 @@ export const deleteUserQuery = async id => {
 export const updateUserQuery = async (id, user) => {
   return User.findByIdAndUpdate(id, user)
 }
+export const getUserByEmailQuery = async (email) => {
+  return User.findOne({ email }).select('+password'); // On sélectionne explicitement le mot de passe
+};

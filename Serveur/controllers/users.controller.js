@@ -44,3 +44,30 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
+// Fonction pour gérer la connexion de l'utilisateur
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Rechercher l'utilisateur par email
+    const user = await queries.getUserByEmailQuery(email);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Comparer le mot de passe avec celui stocké en base de données
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Supprimer le mot de passe avant d'envoyer la réponse (sécurité)
+    const { password: _, ...userWithoutPassword } = user._doc;
+
+    res.status(200).json(userWithoutPassword);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
