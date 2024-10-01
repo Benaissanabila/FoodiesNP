@@ -13,10 +13,12 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "axios": "^1.7.7",
     "mapbox-gl": "^3.7.0",
     "pinia": "^2.2.2",
     "typed-locale": "^0.4.2",
+    "v-calendar": "^3.1.2",
     "vue": "^3.4.29",
     "vue-i18n": "^10.0.3",
     "vue-router": "^4.3.3"

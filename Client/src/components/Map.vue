@@ -3,7 +3,6 @@ import { ref, onMounted, watch } from 'vue'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useRestaurantStore } from '@/stores/RestaurantStore' // Importation du store
-import SearchBar from './SearchBar.vue'
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
 
 const mapboxToken = 'pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw'
@@ -173,7 +172,7 @@ watch(
   top: -118px;
   padding: 0px;
   width: 100vw;
-  height: 100vh; /* Prend toute la hauteur de l'écran */
+  height: 100vh; 
 }
 
 .map {
@@ -182,4 +181,38 @@ watch(
   width: 100%;
   height: 100%;
 }
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 250px; /* Ajuster la largeur du popup selon vos besoins */
+  text-align: center;
+}
+
+.restaurant-image {
+  width: 100%;              /* L'image prendra toute la largeur de la div parent */
+  height: 150px;           /* Hauteur fixe pour contrôler la taille de l'image */
+  object-fit: cover;        /* Maintient les proportions de l'image sans déformer */
+  border-radius: 4px;      /* Coins arrondis pour l'image */
+  margin-bottom: 8px;      /* Espacement en bas de l'image */
+  cursor: pointer;          /* Changer le curseur pour indiquer que c'est cliquable */
+}
+
+.popup-content h3 {
+  font-size: 18px;
+  margin: 0;
+  color: #333;
+}
+
+.popup-content p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+
 </style>

@@ -6,6 +6,7 @@ import CardSection from './CardSection.vue';
 import { useI18n } from 'vue-i18n'
 import SortComponent from './SortComponent.vue';
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
+import { RouterLink } from 'vue-router';
 
 const { t} = useI18n()
 const store = useRestaurantStore();
@@ -59,8 +60,8 @@ const getDistance = (restaurant: IRestaurant) => {
     <div v-if="store.loading">{{ t('loadingRestaurants') }}</div>
     <div v-if="store.error">{{ store.error }}</div>
     <div v-for="restaurant in store.sortedRestaurants" :key="restaurant._id" class="restaurant-card">
-      <img :src="restaurant.RestoPhoto" :alt="t('restaurantPhoto')" class="restaurant-image" />
-      <div class="restaurant-details">
+      <RouterLink :to="{ name: 'restaurantdetails', params: { id: restaurant._id } }"><img :src="restaurant.RestoPhoto" :alt="t('restaurantPhoto')" class="restaurant-image" />
+      </RouterLink><div class="restaurant-details">
         <h3>{{ restaurant.name }}</h3>
         <p>{{ restaurant.address }}</p>
         <p>{{ t('cuisineType') }}: {{ restaurant.cuisineType }}</p>
