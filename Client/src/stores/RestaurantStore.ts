@@ -158,10 +158,16 @@ export const useRestaurantStore = defineStore('Restaurant', {
       if (restaurant.latitude && restaurant.longitude) {
         // Création du contenu HTML du popup
         const popupContent = `
-          <div class="popup-content">
-            <h3>${restaurant.name}</h3>
-            <img src="${restaurant.RestoPhoto}" alt="Photo du restaurant" class="restaurant-image" onclick="location.href='/restaurantdetails/${restaurant._id}'" style="cursor:pointer;" />
-          </div>
+         <div class="popup-content">
+    <h3>${restaurant.name}</h3>
+    <img 
+        src="${restaurant.RestoPhoto}" 
+        alt="Photo du restaurant" 
+        class="restaurant-image" 
+        onclick="location.href='/restaurantdetails/${restaurant._id}'" 
+        style="cursor: pointer; max-width: 100px; height:100px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);" 
+    />
+</div>
         `;
   
         // Création du marqueur et ajout du popup

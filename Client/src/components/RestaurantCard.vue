@@ -66,7 +66,7 @@ watch(
   border-radius: 12px;
   padding: 8px; 
   width: 35vw; 
-  min-width: 250px; 
+  min-width: 200px; 
   height: 140px; 
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   background-color: #fff; 
@@ -80,6 +80,7 @@ watch(
 }
 
 .restaurant-details {
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
 }

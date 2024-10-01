@@ -35,11 +35,17 @@
   .star.filled {
     color: #ffcc00; /* Couleur pour les étoiles remplies */
   }
+  .rating {
+  display: flex; /* Met tout sur la même ligne */
+  align-items: center; /* Aligne verticalement les étoiles et la note */
+}
   
   .rating-value {
-    margin-left: 5px; /* Espace entre les étoiles et la note */
+    margin-left: 10px;
     font-weight: bold; /* Mettre la note en gras */
-    color: #333; /* Couleur de la note */
+    color: #3f3f3f; /* Couleur de la note */
+    padding-top: 4px;
   }
+ 
   </style>
   
