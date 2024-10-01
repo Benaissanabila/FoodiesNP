@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore';
 import imageSrc from '@/assets/RestoImg.jpg'; // Assurez-vous que ce chemin est correct
 import CardSection from './CardSection.vue';
 import { useI18n } from 'vue-i18n'
+import SortComponent from './SortComponent.vue';
+import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
 import { RouterLink } from 'vue-router';
 
 const { t} = useI18n()
@@ -12,6 +14,17 @@ const showRestaurants = ref(false); // État pour gérer l'affichage de la liste
 
 onMounted(() => {
   store.loadRestaurants(); // Chargez tous les restaurants au montage
+  // Obtenir la position de l'utilisateur
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        store.setUserLocation(position.coords.latitude, position.coords.longitude);
+      },
+      (error) => {
+        console.error("Erreur lors de l'obtention de la localisation : ", error);
+      }
+    );
+  }
 });
 
 const viewCompleteList = () => {
@@ -20,6 +33,12 @@ const viewCompleteList = () => {
 
 const closeRestaurants = () => {
   showRestaurants.value = false;
+};
+const sortedRestaurants = computed(() => store.sortedRestaurants);
+
+const getDistance = (restaurant: IRestaurant) => {
+  const distance = store.calculateDistanceToRestaurant(restaurant);
+  return distance === Infinity ? 'N/A' : distance.toFixed(2);
 };
 </script>
 
@@ -37,6 +56,7 @@ const closeRestaurants = () => {
   <div class="restaurants-list" v-if="showRestaurants">
     <div class="close-button" @click="closeRestaurants">✖</div> <!-- Bouton pour fermer la liste -->
     <h3>{{ t('restaurantsList') }}</h3>
+    <SortComponent />
     <div v-if="store.loading">{{ t('loadingRestaurants') }}</div>
     <div v-if="store.error">{{ store.error }}</div>
     <div v-for="restaurant in store.sortedRestaurants" :key="restaurant._id" class="restaurant-card">
@@ -45,6 +65,9 @@ const closeRestaurants = () => {
         <h3>{{ restaurant.name }}</h3>
         <p>{{ restaurant.address }}</p>
         <p>{{ t('cuisineType') }}: {{ restaurant.cuisineType }}</p>
+        <p>
+      Distance: {{ getDistance(restaurant) }} km
+    </p>
         <div class="rating">
           <div class="stars">
             <span

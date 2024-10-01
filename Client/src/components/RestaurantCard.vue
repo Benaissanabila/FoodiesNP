@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, computed } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore.js'; 
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
 import { RouterLink } from 'vue-router';
@@ -13,6 +13,12 @@ const store = useRestaurantStore();
 
 onMounted(() => {
   store.fetchRestaurantById(props.restaurant._id);
+});
+
+// Fonction pour calculer la distance
+const getDistance = computed(() => {
+  const distance = store.calculateDistanceToRestaurant(props.restaurant);
+  return distance === Infinity ? 'N/A' : distance.toFixed(2); // Si la distance est infinie, afficher 'N/A'
 });
 
 // Watcher pour surveiller la note globale du restaurant

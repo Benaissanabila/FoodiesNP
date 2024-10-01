@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import RestaurantCard from './RestaurantCard.vue'; // Importation du composant RestaurantCard
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
+import SortComponent from './SortComponent.vue';
 
 const props = defineProps<{
   restaurants: IRestaurant[];
@@ -27,14 +28,20 @@ const scrollRight = () => {
     currentIndex.value++;
   }
 };
+
 </script>
 
 <template>
+  <!-- SortComponent placé par dessus, avec une bonne position -->
+  <div class="sort-component-container">
+    <SortComponent />
+  </div>
+
+  <!-- Section des cartes avec scroll -->
   <div class="card-section">
     <button class="scroll-button left" @click="scrollLeft" :disabled="currentIndex === 0">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
-        <path
-          fill="currentColor"
+        <path fill="currentColor"
           d="M20.834 8.037L9.64 14.5c-1.43.824-1.43 2.175 0 3l11.194 6.463c1.43.826 2.598.15 2.598-1.5V9.537c0-1.65-1.17-2.326-2.598-1.5"
         />
       </svg>
@@ -46,10 +53,9 @@ const scrollRight = () => {
         :restaurant="restaurant"
       />
     </div>
-    <button class="scroll-button right" @click="scrollRight" :disabled="currentIndex >= restaurants.length -3">
+    <button class="scroll-button right" @click="scrollRight" :disabled="currentIndex >= restaurants.length - 3">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
-        <path
-          fill="currentColor"
+        <path fill="currentColor"
           d="M11.166 23.963L22.36 17.5c1.43-.824 1.43-2.175 0-3L11.165 8.037c-1.43-.826-2.598-.15-2.598 1.5v12.926c0 1.65 1.17 2.326 2.598 1.5z"
         />
       </svg>
@@ -58,14 +64,25 @@ const scrollRight = () => {
 </template>
 
 <style scoped>
+.sort-component-container {
+  position: absolute;
+  top: 72%; /* Ajustez cette valeur pour positionner par rapport à la card-section */
+  right: 20px; /* Positionné à droite */
+  z-index: 100; /* Assurez-vous qu'il est bien au-dessus du card-section */
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
 .card-section {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  overflow-x: hidden; /* Masque tout débordement horizontal */
+  overflow-x: hidden;
+  padding-top: 10px;
 }
 
 .restaurant-cards {
@@ -155,6 +172,12 @@ svg {
     height: 25px;
     font-size: 14px;
   }
+}
+.sort-component {
+  position: absolute;
+  top: -50px; /* Ajuste cette valeur selon ton besoin */
+  right: 20px;
+  z-index: 2; /* Plus élevé que le card-section pour qu'il soit au-dessus */
 }
 
 
