@@ -21,6 +21,8 @@ const getDistance = computed(() => {
   return distance === Infinity ? 'N/A' : distance.toFixed(2); // Si la distance est infinie, afficher 'N/A'
 });
 
+
+
 // Watcher pour surveiller la note globale du restaurant
 watch(
   () => store.restaurants.find(r => r._id === props.restaurant._id)?.globalRatingResaurant,
@@ -45,7 +47,11 @@ watch(
     <div class="restaurant-details">
       <h3>{{ restaurant.name }}</h3>
       <p>{{ restaurant.address }}</p>
+      <p>
+      Distance: {{ getDistance }} km
+    </p>
       <StarRating :rating="restaurant.globalRatingResaurant" /> <!-- Utilisation du composant StarRating -->
+      
       <p v-if="store.loading">Chargement de la note globale...</p>
       <p v-if="store.error">{{ store.error }}</p>
     </div>
