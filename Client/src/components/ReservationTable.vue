@@ -26,8 +26,8 @@ const dinnerTimes = ref([
   '21:00', '21:30', '22:00', '22:30'
 ])
 
-const stepMessages = ref(['Sélectionnez une date', 'Sélectionnez une heure', 'Nombre d\'invités'])
-const steps = ref(['Date', 'Heure', 'Invités']) // Liste des étapes
+const stepMessages = ref(['Date', 'Heure', 'Invités'])
+
 
 onMounted(async () => {
   const restaurantId = route.params.id as string
@@ -69,20 +69,18 @@ const goToStep = (stepIndex: number) => {
   // Vérifier que les étapes sont respectées
   if (stepIndex > currentStep.value) {
     if (currentStep.value === 0 && !selectedDate.value) {
-      console.error('Veuillez sélectionner une date avant de continuer.')
-      return
+      return; // Aucune action à faire si la date n'est pas sélectionnée
     }
     if (currentStep.value === 1 && !selectedTime.value) {
-      console.error('Veuillez sélectionner une heure avant de continuer.')
-      return
+      return; // Aucune action à faire si l'heure n'est pas sélectionnée
     }
     if (currentStep.value === 2 && numberOfGuests.value < 1) {
-      console.error("Veuillez spécifier le nombre d'invités.")
-      return
+      return; // Aucune action à faire si le nombre d'invités est inférieur à 1
     }
   }
-  currentStep.value = stepIndex
-}
+  currentStep.value = stepIndex;
+};
+
 
 // Confirmation de la réservation
 const confirmReservation = async () => {
@@ -94,7 +92,7 @@ const confirmReservation = async () => {
   ) {
     const reservationDate = new Date(`${selectedDate.value.toDateString()} ${selectedTime.value}`).toISOString()
     const reservationData = {
-      tableId: 1, // À ajuster en fonction de la logique des tables
+      tableId: Math.floor(Math.random() * 10) + 1, // Génère un numéro aléatoire entre 1 et 10
       numberOfPersons: numberOfGuests.value,
       reservationDate,
       restaurant: restaurant.value._id
@@ -127,6 +125,8 @@ const formatDate = (date: Date | null) => {
     day: 'numeric'
   })
 }
+
+
 </script>
 
 
@@ -213,12 +213,13 @@ const formatDate = (date: Date | null) => {
         </div>
 
         <!-- Confirmation Message -->
-        <div v-if="currentStep === 3">
-          <p>
-            Réservation confirmée pour {{ numberOfGuests }} invités à {{ selectedTime }} le
-            {{ formatDate(selectedDate) }}
-          </p>
-        </div>
+        <div v-if="currentStep === 3" class="confirmation" ref="confettiContainer">
+  <p class="confirmation-message">
+    Félicitations ! Réservation confirmée pour {{ numberOfGuests }} invités à {{ selectedTime }} le
+    {{ formatDate(selectedDate) }}
+  </p>
+</div>
+
       </div>
     </div>
     <div v-else>
@@ -327,8 +328,8 @@ const formatDate = (date: Date | null) => {
 }
 .reservation {
   background-color: #f9f9f9;
-  width: 300px;
-  height: 800px;
+  width: 320px;
+  height: 630px;
   padding: 20px;
   margin-right: 20px;
   border-radius: 8px;
@@ -340,7 +341,7 @@ input[type='number'] {
 }
 .reservation-steps ul {
   list-style: none; /* Enlève les puces */
-  padding: 0;
+ 
 }
 
 .reservation-steps li {
@@ -353,19 +354,14 @@ input[type='number'] {
   font-weight: bold; /* Mettez l'étape active en gras */
 }
 
-.step-icon {
-  margin-right: 5px; /* Espace entre l'icône et le texte */
-}
-
 /* Styles pour le déroulement de la réservation */
 .reservation-steps {
-  margin-bottom: 20px;
+  margin-bottom: 50px;
   border-radius: 10px;
 }
 .reservation-steps ul {
   list-style: none;
-  padding: 0;
-
+  padding: 0px;
   display: flex; /* Utiliser flex pour aligner horizontalement les étapes */
 }
 .reservation-steps li {
@@ -381,8 +377,14 @@ input[type='number'] {
   color: white; /* Texte en blanc pour l'étape active */
   transition: 0.4s;
 }
+.reservation-steps li:first-child{
+  border-radius: 15px 0 0 15px;
+}
+.reservation-steps li:last-child{
+  border-radius: 0 15px 15px 0;
+}
 .arrow {
-  margin: 0 10px; /* Espace autour de la flèche */
+  margin-left: 25px;
 }
 
 .time-buttons {
@@ -392,7 +394,7 @@ input[type='number'] {
 }
 
 .time-buttons button {
-  padding: 10px 15px;
+  padding: 10px 10px;
   background-color: #00bcd4; /* Couleur de fond */
   color: white; /* Couleur du texte */
   border: none;

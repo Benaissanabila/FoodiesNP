@@ -43,20 +43,20 @@ export const useReservationStore = defineStore('reservation', {
     // Create a new reservation
     // Create a new reservation
     async createReservation(payload: { tableId: number; numberOfPersons: number; reservationDate: string; restaurant: string }) {
-        try {
-          const response = await axios.post('http://localhost:3000/reservations', payload);
-          this.reservations.push(response.data); // Ajoutez la nouvelle réservation à la liste
-          return response.data;
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-            this.error = error.response?.data.message || 'Erreur lors de la création de la réservation';
-          } else {
-            this.error = 'Erreur lors de la création de la réservation';
-          }
-          console.error('Erreur lors de la création de la réservation :', error);
+      try {
+        const response = await axios.post('http://localhost:3000/reservations', payload);
+        this.reservations.push(response.data); // Ajoutez la nouvelle réservation à la liste
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          this.error = error.response?.data.message || 'Erreur lors de la création de la réservation';
+        } else {
+          this.error = 'Erreur lors de la création de la réservation';
         }
-      },
-      
+        console.error('Erreur lors de la création de la réservation :', error);
+      }
+    },
+
    
     // Update an existing reservation
     async updateReservation(id: string, reservation: IReservation) {
@@ -93,5 +93,7 @@ export const useReservationStore = defineStore('reservation', {
     clearError() {
       this.error = null;
     },
+
+    
   },
 });
