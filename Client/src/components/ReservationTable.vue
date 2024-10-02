@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useRestaurantStore } from '@/stores/RestaurantStore.js'
-import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts'
+import { useRestaurantStore } from '@/stores/RestaurantStore'
+import type { IRestaurant } from '../shared/interfaces/RestaurantInterface'
 import StarRating from '@/components/StarRating.vue'
 import { useReservationStore } from '@/stores/ReservationStore'
 
@@ -14,81 +14,77 @@ const selectedDate = ref<Date | null>(null)
 const selectedTime = ref<string | null>(null)
 const numberOfGuests = ref<number>(1)
 const currentStep = ref(0) // Étape actuelle (0: date, 1: heure, 2: invités)
-// Simuler des horaires disponibles
+
+// Horaires disponibles
 const breakfastTimes = ref(['08:00', '08:30', '09:00', '09:30', '10:00'])
 const lunchTimes = ref([
-  '11:30',
-  '12:00',
-  '12:30',
-  '13:00',
-  '13:30',
-  '14:00',
-  '14:30',
-  '15:00',
-  '15:30',
-  '16:00',
-  '16:30',
-  '17:00'
+  '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+  '15:00', '15:30', '16:00', '16:30', '17:00'
 ])
 const dinnerTimes = ref([
-  '18:00',
-  '18:30',
-  '19:00',
-  '19:30',
-  '20:00',
-  '20:30',
-  '21:00',
-  '21:30',
-  '22:00',
-  '22:30'
+  '18:00', '18:30', '19:00', '19:30', '20:00', '20:30',
+  '21:00', '21:30', '22:00', '22:30'
 ])
-const stepMessages = ref(['Date', 'Heur', 'Invités'])
 
-// Liste des étapes
-const steps = ref(['Date', 'Heure', 'Invités'])
+const stepMessages = ref(['Sélectionnez une date', 'Sélectionnez une heure', 'Nombre d\'invités'])
+const steps = ref(['Date', 'Heure', 'Invités']) // Liste des étapes
 
 onMounted(async () => {
   const restaurantId = route.params.id as string
   await store.fetchRestaurantById(restaurantId)
   restaurant.value = store.restaurants.find((r) => r._id === restaurantId) || null
 
-  console.log('Restaurant:', restaurant.value)
+  if (!restaurant.value) {
+    console.error("Aucun restaurant trouvé avec cet ID.")
+  }
 })
 
-// Méthodes pour gérer les étapes de la réservation
-const onDateSelected = (date: any) => {
-  console.log(date)
-  selectedDate.value = new Date(date.id)
-  stepMessages.value[0] = `${formatDate(selectedDate.value)}`
-  currentStep.value = 1 // Passer à l'étape de sélection de l'heure
+// Méthode pour sélectionner la date
+// Méthode pour sélectionner la date
+const onDateSelected = (dateObject: any) => {
+  // Vérifier que l'objet contient une date valide
+  const parsedDate = new Date(dateObject.date)
+
+  if (!isNaN(parsedDate.getTime())) { // Si la date est valide
+    selectedDate.value = parsedDate
+    stepMessages.value[0] = formatDate(selectedDate.value)
+    console.log('Date sélectionnée:', formatDate(selectedDate.value))
+    currentStep.value = 1 // Passer à l'étape de sélection de l'heure
+  } else {
+    console.error('Date sélectionnée invalide:', dateObject)
+  }
 }
 
+
+// Méthode pour sélectionner l'heure
 const onTimeSelected = (time: string) => {
-  console.log('Heure sélectionnée :', time)
   selectedTime.value = time
-  stepMessages.value[1] = ` ${selectedTime.value}`
+  stepMessages.value[1] = `${selectedTime.value}`
+  console.log('Heure sélectionnée:', time)
   currentStep.value = 2 // Passer à l'étape de sélection des invités
 }
+
+// Méthode pour passer à une autre étape
 const goToStep = (stepIndex: number) => {
-  // Vérifiez que l'utilisateur ne peut pas passer à l'étape suivante
+  // Vérifier que les étapes sont respectées
   if (stepIndex > currentStep.value) {
-    // Vérifiez la validité de l'étape actuelle avant de permettre de passer à la suivante
     if (currentStep.value === 0 && !selectedDate.value) {
       console.error('Veuillez sélectionner une date avant de continuer.')
-      return // Empêche de passer à l'étape suivante
+      return
     }
     if (currentStep.value === 1 && !selectedTime.value) {
       console.error('Veuillez sélectionner une heure avant de continuer.')
-      return // Empêche de passer à l'étape suivante
+      return
     }
     if (currentStep.value === 2 && numberOfGuests.value < 1) {
       console.error("Veuillez spécifier le nombre d'invités.")
-      return // Empêche de passer à l'étape suivante
+      return
     }
   }
-  currentStep.value = stepIndex // Met à jour l'étape actuelle uniquement si les vérifications passent
+  currentStep.value = stepIndex
 }
 
+// Confirmation de la réservation
 const confirmReservation = async () => {
   if (
     selectedDate.value instanceof Date &&
@@ -96,25 +92,26 @@ const confirmReservation = async () => {
     selectedTime.value &&
     restaurant.value?._id
   ) {
+    const reservationDate = new Date(`${selectedDate.value.toDateString()} ${selectedTime.value}`).toISOString()
     const reservationData = {
-      tableId: 1,
+      tableId: 1, // À ajuster en fonction de la logique des tables
       numberOfPersons: numberOfGuests.value,
-      reservationDate: selectedDate.value.toISOString(),
+      reservationDate,
       restaurant: restaurant.value._id
     }
 
-    console.log(`Tentative de réservation :`, reservationData)
+    console.log('Tentative de réservation:', reservationData)
 
     try {
       await reservationStore.createReservation(reservationData)
-      stepMessages.value[2] = ` ${numberOfGuests.value}`
+      stepMessages.value[2] = `${numberOfGuests.value} invités`
       currentStep.value = 3 // Passer à l'étape de confirmation
       console.log('Réservation confirmée avec succès !')
     } catch (error) {
       console.error('Erreur lors de la confirmation de la réservation :', error)
     }
   } else {
-    console.error("La date, l'heure ou l'ID du restaurant sélectionné est invalide.", {
+    console.error("Les informations de la réservation sont invalides.", {
       dateValid: selectedDate.value instanceof Date && !isNaN(selectedDate.value.getTime()),
       timeValid: selectedTime.value !== null,
       restaurantIdValid: restaurant.value?._id !== undefined
@@ -122,7 +119,7 @@ const confirmReservation = async () => {
   }
 }
 
-// Formater la date pour l'affichage
+// Fonction pour formater la date
 const formatDate = (date: Date | null) => {
   if (!date) return ''
   return date.toLocaleDateString('fr-FR', {
@@ -131,6 +128,7 @@ const formatDate = (date: Date | null) => {
   })
 }
 </script>
+
 
 <template>
   <div>
