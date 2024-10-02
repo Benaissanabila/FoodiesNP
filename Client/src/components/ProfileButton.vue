@@ -2,11 +2,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
-import { useI18n } from 'vue-i18n'; // Importer le hook i18n
+import { useI18n } from 'vue-i18n';
 
 const store = useUserStore();
 const router = useRouter();
-const { t } = useI18n(); // Utiliser i18n pour les traductions
+const { t } = useI18n();
 const showDropdown = ref(false);
 
 const toggleDropdown = () => {
@@ -34,8 +34,18 @@ const logout = () => {
   showDropdown.value = false;
 };
 
-const isAuthenticated = computed(() => {
-  return store.isAuthenticated;
+const isAuthenticated = computed(() => store.isAuthenticated);
+
+const userInitial = computed(() => {
+  return store.user?.name?.charAt(0).toUpperCase() ?? '';
+});
+
+const hasProfilePhoto = computed(() => {
+  return !!store.user?.UserPhoto;
+});
+
+const profilePhotoUrl = computed(() => {
+  return store.user?.UserPhoto ?? '';
 });
 
 onMounted(() => {
@@ -46,7 +56,9 @@ onMounted(() => {
 <template>
   <div class="profile-dropdown">
     <div class="profile-button" @click="toggleDropdown">
-      <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+      <img v-if="hasProfilePhoto" :src="profilePhotoUrl" alt="Profile Photo" class="profile-photo">
+      <div v-else-if="isAuthenticated" class="profile-initial">{{ userInitial }}</div>
+      <svg v-else xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
         <path
           fill="currentColor"
           fill-rule="evenodd"
@@ -80,10 +92,23 @@ onMounted(() => {
   align-items: center;
   cursor: pointer;
   position: relative;
+  overflow: hidden;
 }
 
 .profile-button:hover {
   background-color: #77d2de;
+}
+
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-initial {
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
 }
 
 svg {
