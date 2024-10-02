@@ -2,9 +2,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
+import { useI18n } from 'vue-i18n'; // Importer le hook i18n
 
 const store = useUserStore();
 const router = useRouter();
+const { t } = useI18n(); // Utiliser i18n pour les traductions
 const showDropdown = ref(false);
 
 const toggleDropdown = () => {
@@ -33,7 +35,6 @@ const logout = () => {
 };
 
 const isAuthenticated = computed(() => {
-  console.log('Authentication status:', store.isAuthenticated);
   return store.isAuthenticated;
 });
 
@@ -57,12 +58,12 @@ onMounted(() => {
 
     <div v-if="showDropdown" class="dropdown-menu">
       <template v-if="isAuthenticated">
-        <div @click="goToProfile">Voir mon profil</div>
-        <div @click="goToEditProfile">Modifier mon profil</div>
-        <div @click="logout">Déconnexion</div>
+        <div @click="goToProfile">{{ t('profile') }}</div>
+        <div @click="goToEditProfile">{{ t('editProfile') }}</div>
+        <div @click="logout">{{ t('logout') }}</div>
       </template>
       <template v-else>
-        <div @click="goToLogin">Connexion</div>
+        <div @click="goToLogin">{{ t('login') }}</div>
       </template>
     </div>
   </div>

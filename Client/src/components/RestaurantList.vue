@@ -56,7 +56,7 @@ const getDistance = (restaurant: IRestaurant) => {
   <div class="restaurants-list" v-if="showRestaurants">
     <div class="close-button" @click="closeRestaurants">✖</div> <!-- Bouton pour fermer la liste -->
     <h3>{{ t('restaurantsList') }}</h3>
-    <SortComponent />
+   
     <div v-if="store.loading">{{ t('loadingRestaurants') }}</div>
     <div v-if="store.error">{{ store.error }}</div>
     <div v-for="restaurant in store.sortedRestaurants" :key="restaurant._id" class="restaurant-card">
