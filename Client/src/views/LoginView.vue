@@ -11,6 +11,13 @@ const router = useRouter();
 // Fonction de login
 const login = async () => {
   await store.loginUser(email.value, password.value);
+
+  if (store.isAuthenticated) {
+    console.log('Login successful, redirecting to home');
+    router.push('/');
+  } else {
+    console.log('Login failed');
+  }
 };
 
 // Fonction pour rediriger vers la page de création de compte

@@ -1,28 +1,50 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'; // Importer le router pour la redirection
 import { useUserStore } from '@/stores/UserStore';
 
 const store = useUserStore();
+const router = useRouter(); // Créer une instance du router
+
 const name = ref('');
 const email = ref('');
 const password = ref('');
 const dob = ref('');
+const profilePicture = ref<File | null>(null); // Pour stocker le fichier sélectionné
 
-// Utiliser ICreateUser au lieu de IUser pour la création de compte
+// Gérer la sélection de l'image
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    profilePicture.value = target.files[0];
+  }
+};
+
+// Fonction pour créer un compte
 const createAccount = async () => {
-  await store.createUser({
-    name: name.value,
-    email: email.value,
-    password: password.value,
-    DOB: new Date(dob.value), // Conversion en Date
-  });
+  // Créer un FormData pour envoyer les données avec l'image
+  const formData = new FormData();
+  formData.append('name', name.value);
+  formData.append('email', email.value);
+  formData.append('password', password.value);
+  formData.append('DOB', dob.value);
+  if (profilePicture.value) {
+    formData.append('UserPhoto', profilePicture.value); // Ajouter l'image
+  }
+
+  await store.createUser(formData); // Envoyer le FormData au lieu d'un objet
+
+  // Si la création du compte a réussi, rediriger vers la page de login
+  if (!store.error) {
+    router.push('/login'); // Rediriger vers la page de login
+  }
 };
 </script>
 
 <template>
   <div class="create-account-container">
     <h2>Create Account</h2>
-    <form @submit.prevent="createAccount" class="create-account-form">
+    <form @submit.prevent="createAccount" class="create-account-form" enctype="multipart/form-data">
       <div class="form-group">
         <label for="name">Name:</label>
         <input id="name" v-model="name" type="text" required placeholder="Enter your name" />
@@ -43,11 +65,16 @@ const createAccount = async () => {
         <input id="dob" v-model="dob" type="date" required />
       </div>
 
+      <div class="form-group">
+        <label for="profilePicture">Profile Picture:</label>
+        <input id="profilePicture" type="file" @change="handleFileUpload" accept="image/*" />
+      </div>
+
       <button type="submit" class="submit-button">Create Account</button>
     </form>
 
     <div v-if="store.loading" class="loading-message">Creating account...</div>
-    <div v-if="store.error" class="error-message">{{ store.error }}</div>
+    <div v-if="store.error" class="error-message">{{ store.error }}</div> <!-- Message d'erreur -->
   </div>
 </template>
 
