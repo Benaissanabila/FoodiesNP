@@ -1,8 +1,8 @@
 import User from '../models/user.model.js'; 
 
 // Créer un utilisateur
-export const createUserQuery = async (user) => {
-  return User.create(user);
+export const createUserQuery = async (userData) => {
+  return User.create(userData);
 };
 
 // Récupérer tous les utilisateurs
@@ -22,3 +22,6 @@ export const deleteUserQuery = async id => {
 export const updateUserQuery = async (id, user) => {
   return User.findByIdAndUpdate(id, user)
 }
+export const getUserByEmailQuery = async (email) => {
+  return User.findOne({ email }).select('+password'); // On sélectionne explicitement le mot de passe
+};
