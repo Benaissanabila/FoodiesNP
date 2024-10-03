@@ -121,13 +121,16 @@ console.log("All restaurants inserted");
 
       for (let i = 0; i < numberOfReservations; i++) {
         const randomReservation = reservationsData[Math.floor(Math.random() * reservationsData.length)];
+// Sélectionnez un utilisateur aléatoire pour la réservation
+const randomUser = dbUsers[Math.floor(Math.random() * dbUsers.length)];
 
         const newReservation = new Reservation({
           tableId: randomReservation.tableId,
           numberOfPersons: randomReservation.numberOfPersons,
           reservationDate: new Date(randomReservation.reservationDate),
           status: randomReservation.status,
-          restaurant: restaurant._id
+          restaurant: restaurant._id,
+          user: randomUser._id,
         });
 
         await newReservation.save();

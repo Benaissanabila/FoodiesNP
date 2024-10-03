@@ -5,6 +5,7 @@ import { useRestaurantStore } from '@/stores/RestaurantStore'
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface'
 import StarRating from '@/components/StarRating.vue'
 import { useReservationStore } from '@/stores/ReservationStore'
+import confetti from 'canvas-confetti';
 
 const reservationStore = useReservationStore()
 const route = useRoute()
@@ -14,7 +15,13 @@ const selectedDate = ref<Date | null>(null)
 const selectedTime = ref<string | null>(null)
 const numberOfGuests = ref<number>(1)
 const currentStep = ref(0) // Étape actuelle (0: date, 1: heure, 2: invités)
-
+const launchConfetti = () => {
+  confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+}
 // Horaires disponibles
 const breakfastTimes = ref(['08:00', '08:30', '09:00', '09:30', '10:00'])
 const lunchTimes = ref([
@@ -26,7 +33,7 @@ const dinnerTimes = ref([
   '21:00', '21:30', '22:00', '22:30'
 ])
 
-const stepMessages = ref(['Date', 'Heure', 'Invités'])
+const stepMessages = ref(['Date', 'Heure', 'Invité(s)'])
 
 
 onMounted(async () => {
@@ -83,6 +90,7 @@ const goToStep = (stepIndex: number) => {
 
 
 // Confirmation de la réservation
+// Confirmation de la réservation
 const confirmReservation = async () => {
   if (
     selectedDate.value instanceof Date &&
@@ -105,6 +113,9 @@ const confirmReservation = async () => {
       stepMessages.value[2] = `${numberOfGuests.value} invités`
       currentStep.value = 3 // Passer à l'étape de confirmation
       console.log('Réservation confirmée avec succès !')
+
+      // Lancer les confettis après la confirmation
+      launchConfetti();
     } catch (error) {
       console.error('Erreur lors de la confirmation de la réservation :', error)
     }
@@ -125,6 +136,8 @@ const formatDate = (date: Date | null) => {
     day: 'numeric'
   })
 }
+
+
 
 
 </script>
@@ -214,11 +227,11 @@ const formatDate = (date: Date | null) => {
 
         <!-- Confirmation Message -->
         <div v-if="currentStep === 3" class="confirmation" ref="confettiContainer">
-  <p class="confirmation-message">
-    Félicitations ! Réservation confirmée pour {{ numberOfGuests }} invités à {{ selectedTime }} le
-    {{ formatDate(selectedDate) }}
-  </p>
-</div>
+          <p class="confirmation-message">
+  Félicitations ! Réservation confirmée pour {{ numberOfGuests }} invités à {{ selectedTime }} le
+  {{ formatDate(selectedDate) }} à <span class="restaurant-name">{{ restaurant.name }}</span>
+</p>
+  </div>
 
       </div>
     </div>
@@ -405,5 +418,40 @@ input[type='number'] {
 
 .time-buttons button:hover {
   background-color: #0097a7; /* Couleur au survol */
+}
+
+.confirmation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-message {
+  font-size: 20px;
+  color: #00bcd4;
+  font-weight: bold;
+  animation: flash 1s ease-in-out;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.restaurant-name {
+  color: #000000; /* Remplace par la couleur souhaitée */
+  font-weight: bold;
+
 }
 </style>

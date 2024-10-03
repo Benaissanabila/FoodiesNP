@@ -4,6 +4,7 @@ export interface IReservation {
     numberOfPersons: number;     
     reservationDate: Date;        
     status: 'pending' | 'confirmed' | 'cancelled';  
-    restaurant: string;          
+    restaurant: string; 
+    user:string;         
   }
   
