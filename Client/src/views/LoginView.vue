@@ -17,7 +17,6 @@ const login = async () => {
   await store.loginUser(email.value, password.value);
 
   if (store.isAuthenticated) {
-    console.log('Login successful, redirecting to home');
     router.push('/');
   } else {
     console.log('Login failed');
