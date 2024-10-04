@@ -32,7 +32,7 @@ export const createUser = [
       console.log("File:", req.file);
 
       const { name, email, password, DOB } = req.body;
-      const userPhoto = req.file ? `/uploads/${req.file.filename}` : null;
+      const userPhoto = req.file ? req.file.filename : null; // Stocke uniquement le nom du fichier
 
       const user = await queries.createUserQuery({
         name,
@@ -42,9 +42,11 @@ export const createUser = [
         UserPhoto: userPhoto,
       });
 
+      console.log("Created user:", user); // Log pour vérifier les données stockées
+
       res.status(200).json(user);
     } catch (error) {
-      console.error("Error during user creation:", error); // Ajoutez ceci pour voir l'erreur complète
+      console.error("Error during user creation:", error);
       res.status(500).json({ error: error.message });
     }
   }

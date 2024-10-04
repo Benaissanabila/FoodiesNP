@@ -8,6 +8,7 @@ const store = useUserStore();
 const router = useRouter();
 const { t } = useI18n();
 const showDropdown = ref(false);
+const imageError = ref(false);
 
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
@@ -44,8 +45,20 @@ const hasProfilePhoto = computed(() => {
   return !!store.user?.UserPhoto;
 });
 
+// URL fixe du serveur backend
+const BACKEND_URL = 'http://localhost:3000';
+
 const profilePhotoUrl = computed(() => {
-  return store.user?.UserPhoto ?? '';
+  if (!store.user?.UserPhoto) return '';
+  
+  // Assurez-vous que le chemin ne contient pas de slash au début
+  const photoPath = store.user.UserPhoto.startsWith('/') 
+    ? store.user.UserPhoto.slice(1) 
+    : store.user.UserPhoto;
+  
+  const fullUrl = `${BACKEND_URL}/${photoPath}`;
+  console.log('URL complète de la photo de profil:', fullUrl);
+  return fullUrl;
 });
 
 onMounted(() => {

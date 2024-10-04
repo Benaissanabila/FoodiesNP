@@ -10,6 +10,7 @@ import express from "express";
 // inclut la fonction connect et la constante connectionString
 import * as db from "./database/index.js";
 import cors from 'cors'; 
+
 // création de l'application serveur elle même
 const app = express();
 app.use(cors());
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 import router from "./router/index.js";
 // ajoute le router à l'application
 app.use("/", router);
+app.use('/uploads', express.static('uploads'));
 
 // on se connecte à la database et ensuite (si réussi) on démarre le serveur
 db.connect(() => {
