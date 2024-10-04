@@ -1,5 +1,7 @@
 import Reservation from "../models/reservation.model.js"; // Assurez-vous d'importer correctement le modèle Reservation from "../models/reservation.model.js";
-
+import nodemailer from 'nodemailer';
+import User from '../models/user.model.js'
+import {Restaurant}  from '../models/restaurant.model.js'
 // Créer une nouvelle reservation
 export const createReservationQuery = async (reservation) => {
     return Reservation.create(reservation);
@@ -24,10 +26,6 @@ export const deleteReservationQuery = async id => {
 export const updateReservationQuery = async (id, reservation) => {
     return Reservation.findByIdAndUpdate(id, reservation)
 }
-
-import nodemailer from 'nodemailer';
-import User from '../models/user.model.js'
-import {Restaurant}  from '../models/restaurant.model.js'
 
 
 // Fonction pour envoyer un email de réservation
