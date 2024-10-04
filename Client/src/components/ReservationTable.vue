@@ -6,11 +6,15 @@ import type { IRestaurant } from '../shared/interfaces/RestaurantInterface'
 import StarRating from '@/components/StarRating.vue'
 import { useReservationStore } from '@/stores/ReservationStore'
 import confetti from 'canvas-confetti';
+import type { IUser } from '@/shared/interfaces/UserInterface'
+import { useUserStore } from '@/stores/UserStore'
 
 const reservationStore = useReservationStore()
 const route = useRoute()
 const store = useRestaurantStore()
 const restaurant = ref<IRestaurant | null>(null)
+const user = ref<IUser | null>(null)
+const userStore = useUserStore()
 const selectedDate = ref<Date | null>(null)
 const selectedTime = ref<string | null>(null)
 const numberOfGuests = ref<number>(1)
@@ -35,16 +39,29 @@ const dinnerTimes = ref([
 
 const stepMessages = ref(['Date', 'Heure', 'Invité(s)'])
 
-
 onMounted(async () => {
-  const restaurantId = route.params.id as string
-  await store.fetchRestaurantById(restaurantId)
-  restaurant.value = store.restaurants.find((r) => r._id === restaurantId) || null
+  const restaurantId = route.params.id as string;
 
+  // Récupérer les données du restaurant
+  await store.fetchRestaurantById(restaurantId);
+  restaurant.value = store.restaurants.find((r) => r._id === restaurantId) || null;
+
+  // Récupérer les données de l'utilisateur
+  userStore.checkAuth(); // Appel de la méthode checkAuth
+  user.value = userStore.user; // Assurez-vous de récupérer l'utilisateur depuis le store
+
+  // Vérifiez si le restaurant et l'utilisateur existent avant d'accéder aux propriétés
   if (!restaurant.value) {
-    console.error("Aucun restaurant trouvé avec cet ID.")
+    console.error("Aucun restaurant trouvé avec cet ID.");
   }
-})
+
+  if (!user.value) {
+    console.warn("Aucun utilisateur trouvé.");
+  } else {
+    console.log("Utilisateur trouvé :", user.value);
+  }
+});
+
 
 // Méthode pour sélectionner la date
 // Méthode pour sélectionner la date
@@ -96,37 +113,46 @@ const confirmReservation = async () => {
     selectedDate.value instanceof Date &&
     !isNaN(selectedDate.value.getTime()) &&
     selectedTime.value &&
-    restaurant.value?._id
+    restaurant.value?._id &&
+    user.value?._id
   ) {
-    const reservationDate = new Date(`${selectedDate.value.toDateString()} ${selectedTime.value}`).toISOString()
+    const reservationDate = new Date(`${selectedDate.value.toDateString()} ${selectedTime.value}`).toISOString();
     const reservationData = {
-      tableId: Math.floor(Math.random() * 10) + 1, // Génère un numéro aléatoire entre 1 et 10
+      tableId: Math.floor(Math.random() * 10) + 1, // ID de table généré aléatoirement
       numberOfPersons: numberOfGuests.value,
       reservationDate,
-      restaurant: restaurant.value._id
-    }
+      restaurant: restaurant.value._id,
+      user: user.value._id, // ID de l'utilisateur
+    };
 
-    console.log('Tentative de réservation:', reservationData)
+    console.log('Tentative de réservation:', reservationData);
 
     try {
-      await reservationStore.createReservation(reservationData)
-      stepMessages.value[2] = `${numberOfGuests.value} invités`
-      currentStep.value = 3 // Passer à l'étape de confirmation
-      console.log('Réservation confirmée avec succès !')
-
-      // Lancer les confettis après la confirmation
-      launchConfetti();
+      // Appel à l'API pour créer la réservation
+      const response = await reservationStore.createReservation(reservationData);
+      
+      // Vérifier si la réservation a été créée avec succès
+      if (response) {
+        stepMessages.value[2] = `${numberOfGuests.value} invités`;
+        currentStep.value = 3;
+        console.log('Réservation confirmée avec succès !');
+        
+        // Lancer les confettis après confirmation
+        launchConfetti();
+      }
     } catch (error) {
-      console.error('Erreur lors de la confirmation de la réservation :', error)
+      console.error('Erreur lors de la confirmation de la réservation :', error);
     }
   } else {
     console.error("Les informations de la réservation sont invalides.", {
       dateValid: selectedDate.value instanceof Date && !isNaN(selectedDate.value.getTime()),
       timeValid: selectedTime.value !== null,
-      restaurantIdValid: restaurant.value?._id !== undefined
-    })
+      restaurantIdValid: restaurant.value?._id !== undefined,
+      userIdValid: user.value?._id !== undefined,
+    });
   }
-}
+};
+
 
 // Fonction pour formater la date
 const formatDate = (date: Date | null) => {

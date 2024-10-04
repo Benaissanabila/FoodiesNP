@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import type { ICreateUser } from '@/shared/interfaces/CreateUserInterface';
+import type { IUser } from '@/shared/interfaces/UserInterface';
 
 export const useUserStore = defineStore('UserStore', {
   state: () => ({
-    user: null as ICreateUser | null,
+    user: null as IUser | null,
     loading: false,
     error: null as string | null,
   }),
