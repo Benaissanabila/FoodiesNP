@@ -2,6 +2,10 @@ import Reservation from "../models/reservation.model.js"; // Assurez-vous d'impo
 import nodemailer from 'nodemailer';
 import User from '../models/user.model.js'
 import {Restaurant}  from '../models/restaurant.model.js'
+import dotenv from 'dotenv';
+dotenv.config();
+
+
 // Créer une nouvelle reservation
 export const createReservationQuery = async (reservation) => {
     return Reservation.create(reservation);
@@ -38,8 +42,8 @@ export const sendReservationEmail = async (userId, reservationId,restaurantId) =
         port: 587, // Port
         secure: false, // true pour le port 465, false pour les autres ports
         auth: {
-            user: '7d48c5002@smtp-brevo.com', // Ton identifiant
-            pass: 'BQzF3wZcVfNkdIm1', // Remplace par ton mot de passe SMTP
+            user: process.env.SMTP_USER, // Ton identifiant
+            pass:  process.env.SMTP_PASS, // Remplace par ton mot de passe SMTP
         },
     });
 
@@ -87,7 +91,8 @@ console.log('reservation récupéré:', reservation. reservationDate);
             to: user.email, // Utiliser l'email de l'utilisateur récupéré
             subject: 'Confirmation de réservation',
             html: `<p>Bonjour ,<strong>${user.name}</strong> </p>
-                   <p>Félicitations ! Réservation confirmée pour <strong>${reservation.numberOfPersons} à <strong>${formattedTime}</strong></strong>le <strong>${formattedDate}</strong> à  <strong>${restaurant.name}</strong>   est confirmée.</p>`,
+                   <p>Félicitations ! Votre réservation pour <strong>${reservation.numberOfPersons} personnes</strong> à <strong>${formattedTime}</strong> le <strong>${formattedDate}</strong> au restaurant <strong>${restaurant.name}</strong> est confirmée.</p>
+`,
         };
 
         // Envoyer l'email
