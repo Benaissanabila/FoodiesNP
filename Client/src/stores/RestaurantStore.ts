@@ -24,16 +24,6 @@ function deg2rad(deg: number): number {
   return deg * (Math.PI/180);
 }
 
-interface RestaurantState {
-  searchQuery: string;
-  restaurants: IRestaurant[];
-  restaurantMarkers: any[];
-  comments: IComment[];
-  loading: boolean;
-  error: string | null;
-  userLocation: { latitude: number; longitude: number } | null;
-  sortBy: 'rating' | 'distance';
-}
 
 export const useRestaurantStore = defineStore('Restaurant', {
   state: () => ({
@@ -133,10 +123,11 @@ export const useRestaurantStore = defineStore('Restaurant', {
     async fetchRestaurantById(id: string) {
       this.loading = true;
       this.error = null;
+      console.log('Fetching restaurant with ID:', id); // Ajoutez un log
       try {
         const response = await axios.get(`http://localhost:3000/restaurants/${id}`);
+        console.log('Restaurant data:', response.data); // Ajoutez un log
         const restaurant = response.data;
-        // Ajout du restaurant à la liste si ce n'est pas déjà le cas
         if (!this.restaurants.find((r) => r._id === id)) {
           this.restaurants.push(restaurant);
         }
@@ -147,6 +138,7 @@ export const useRestaurantStore = defineStore('Restaurant', {
         this.loading = false;
       }
     },
+    
 
     // Action pour mettre à jour les marqueurs de restaurant sur la carte pour les restaurants filtrés
    // Mettre à jour les marqueurs des restaurants sur la carte

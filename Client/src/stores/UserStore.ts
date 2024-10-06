@@ -61,6 +61,16 @@ export const useUserStore = defineStore('UserStore', {
         console.log('No stored user found');
       }
     },
+    // Ajoutez cette méthode dans le store des utilisateurs
+async fetchUserById(userId: string) {
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${userId}`);
+    return response.data; // Retourne les données de l'utilisateur
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'utilisateur:', error);
+    throw new Error('Erreur lors de la récupération de l\'utilisateur');
+  }
+}
   },
 
   getters: {

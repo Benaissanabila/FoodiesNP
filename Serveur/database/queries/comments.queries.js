@@ -21,6 +21,7 @@ export const deleteCommentQuery = async id => {
     return Comment.findByIdAndDelete(id)
 }
 
-export const updateCommentQuery = async (id, comment) => {
-    return Comment.findByIdAndUpdate(id, comment)
-}
+export const updateCommentQuery = async (id, updateFields) => {
+    return Comment.findByIdAndUpdate(id);
+};
+

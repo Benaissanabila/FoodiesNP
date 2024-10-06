@@ -54,19 +54,46 @@ getCommentsByRestaurantId: (state) => (restaurantId: string) => {
                 this.loading = false;
             }
         },
-       // Nouvelle action pour mettre à jour la note globale du restaurant
-       async updateRestaurantRating(restaurantId: string) {
-        this.loading = true;
-        this.error = null;
-        try {
-            // Appel à l'API pour recalculer la note globale
-            await axios.patch(`http://localhost:3000/restaurants/${restaurantId}/update-rating`); 
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour de la note globale du restaurant:', error);
-            this.error = 'Erreur lors de la mise à jour de la note globale du restaurant';
-        } finally {
-            this.loading = false;
+       
+   // Action pour liker un commentaire
+   async likeComment(commentId: string) {
+    this.loading = true;
+    this.error = null;
+    try {
+        await axios.put(`http://localhost:3000/comments/${commentId}`, { action: 'like' });
+        const comment = this.comments.find(c => c._id === commentId);
+        if (comment) {
+            // Initialiser upvotes s'il est indéfini
+            comment.upvotes = comment.upvotes || 0;
+            comment.upvotes += 1; // Incrémente
         }
-    }  
+    } catch (error) {
+        console.error('Erreur lors du like du commentaire:', error);
+        this.error = 'Erreur lors du like du commentaire';
+    } finally {
+        this.loading = false;
     }
+},
+
+// Action pour disliker un commentaire
+async dislikeComment(commentId: string) {
+    this.loading = true;
+    this.error = null;
+    try {
+        await axios.put(`http://localhost:3000/comments/${commentId}`, { action: 'dislike' });
+        const comment = this.comments.find(c => c._id === commentId);
+        if (comment) {
+            // Initialiser downvotes s'il est indéfini
+            comment.downvotes = comment.downvotes || 0;
+            comment.downvotes += 1; // Incrémente
+        }
+    } catch (error) {
+        console.error('Erreur lors du dislike du commentaire:', error);
+        this.error = 'Erreur lors du dislike du commentaire';
+    } finally {
+        this.loading = false;
+    }
+}
+}
 });
+
