@@ -44,6 +44,7 @@ export const deleteComment = async (req, res) => {
 };
 
 // Fonction pour mettre à jour un commentaire
+// Fonction pour mettre à jour un commentaire
 export const updateComment = async (req, res) => {
   try {
     const commentId = req.params.id;
@@ -55,11 +56,23 @@ export const updateComment = async (req, res) => {
       return res.status(404).json({ message: 'Commentaire non trouvé.' });
     }
 
-    // Vérifie si la requête contient un like ou un dislike
+    // Vérifie si la requête contient un like, unlike, dislike, ou undislike
     if (req.body.action === 'like') {
-      updateFields.upvotes = comment.upvotes + 1; // Incrémente le like
+      updateFields.upvotes = (comment.upvotes || 0) + 1; // Incrémente le like
+    } else if (req.body.action === 'unlike') {
+      if (comment.upvotes > 0) {
+        updateFields.upvotes = (comment.upvotes || 1) - 1; // Décrémente le like
+      } else {
+        return res.status(400).json({ message: 'Aucun like à retirer.' });
+      }
     } else if (req.body.action === 'dislike') {
-      updateFields.downvotes = comment.downvotes + 1; // Incrémente le dislike
+      updateFields.downvotes = (comment.downvotes || 0) + 1; // Incrémente le dislike
+    } else if (req.body.action === 'undislike') {
+      if (comment.downvotes > 0) {
+        updateFields.downvotes = (comment.downvotes || 1) - 1; // Décrémente le dislike
+      } else {
+        return res.status(400).json({ message: 'Aucun dislike à retirer.' });
+      }
     } else {
       // Pour toute autre mise à jour standard
       if (req.body.comment) updateFields.comment = req.body.comment;
@@ -77,7 +90,7 @@ export const updateComment = async (req, res) => {
     return res.status(500).json({
       message: 'Erreur lors de la mise à jour du commentaire.',
       error: error.message || 'Erreur inconnue',
-      stack: error.stack
+      stack: error.stack,
     });
   }
 };
