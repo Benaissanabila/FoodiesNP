@@ -2,9 +2,11 @@ import * as queries from '../database/queries/users.queries.js';
 import bcrypt from 'bcrypt';
 import multer from 'multer';
 import path from 'path';
-
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const TOKEN_EXPIRATION = '1h'; // Le token expirera après 1 heure
 
 // Configurer le stockage de multer
 const storage = multer.diskStorage({
@@ -93,26 +95,48 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Rechercher l'utilisateur par email
     const user = await queries.getUserByEmailQuery(email);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Comparer le mot de passe avec celui stocké en base de données
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Supprimer le mot de passe avant d'envoyer la réponse (sécurité)
+    const token = jwt.sign(
+      { userId: user._id },
+      JWT_SECRET,
+      { expiresIn: TOKEN_EXPIRATION }
+    );
+
     const { password: _, ...userWithoutPassword } = user._doc;
 
-    res.status(200).json(userWithoutPassword);
+    res.status(200).json({ user: userWithoutPassword, token });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const verifyToken = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired' });
+    }
+    return res.status(401).json({ error: 'Invalid token' });
   }
 };
 

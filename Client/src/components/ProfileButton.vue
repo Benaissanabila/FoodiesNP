@@ -1,14 +1,40 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 
 const store = useUserStore();
 const router = useRouter();
 const { t } = useI18n();
 const showDropdown = ref(false);
 const imageError = ref(false);
+
+// Intercepteur pour gérer l'expiration du token
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response && error.response.status === 401) {
+      if (error.response.data.error === 'Token expired') {
+        console.log('Token expired, attempting to refresh');
+        try {
+          await store.refreshToken();
+          // Retry the original request
+          return axios(error.config);
+        } catch (refreshError) {
+          console.log('Token refresh failed, logging out');
+          store.logoutUser();
+          router.push('/login');
+        }
+      } else {
+        store.logoutUser();
+        router.push('/login');
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
@@ -61,6 +87,15 @@ const profilePhotoUrl = computed(() => {
   return fullUrl;
 });
 
+const handleImageError = () => {
+  imageError.value = true;
+  console.error('Failed to load profile image');
+};
+
+watch(() => store.user, () => {
+  imageError.value = false;
+}, { deep: true });
+
 onMounted(() => {
   store.checkAuth();
 });
@@ -69,7 +104,13 @@ onMounted(() => {
 <template>
   <div class="profile-dropdown">
     <div class="profile-button" @click="toggleDropdown">
-      <img v-if="hasProfilePhoto" :src="profilePhotoUrl" alt="Profile Photo" class="profile-photo">
+      <img
+        v-if="hasProfilePhoto && !imageError"
+        :src="profilePhotoUrl"
+        alt="Profile Photo"
+        class="profile-photo"
+        @error="handleImageError"
+      >
       <div v-else-if="isAuthenticated" class="profile-initial">{{ userInitial }}</div>
       <svg v-else xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
         <path
