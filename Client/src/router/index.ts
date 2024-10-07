@@ -4,6 +4,7 @@ import DetailsRestaurant from '@/views/DetailsRestaurant.vue'
 import LoginView from '../views/LoginView.vue'
 import CreateAccount from '@/views/CreateAccount.vue';
 import ProfileView from '@/views/ProfileView.vue';
+import CreateRestaurant from '@/views/CreateRestaurant.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,7 +33,12 @@ const router = createRouter({
       path: '/profile',
       name: 'Profile',
       component: ProfileView,
-    }
+    },
+    {
+      path: '/create-restaurant',
+      name: 'CreateRestaurant',
+      component: CreateRestaurant
+    },
   ]
 })
 

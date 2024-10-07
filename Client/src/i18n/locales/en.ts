@@ -35,6 +35,8 @@ export default {
   profilePicture: 'Profile Picture',
   dob: 'Date of Birth',
   enterName: 'Enter your name',
+  createRestaurant: 'Create a Restaurant',
+  myRestaurants: 'View My Restaurants',
   sort: {
     label: 'Sort by',
     rating: 'Rating',
@@ -62,5 +64,16 @@ export default {
     edit: 'Edit',
     delete: 'Delete',
     deleteConfirmation: 'Are you sure you want to delete your account? This action is irreversible.'
+  },
+  createMyRestaurant: {
+    title: 'Create Restaurant Profile',
+    changePhoto: 'Change photo',
+    namePlaceholder: 'Restaurant name',
+    addressPlaceholder: 'Restaurant address',
+    phonePlaceholder: 'Phone number',
+    cuisineTypePlaceholder: 'Cuisine type',
+    schedulePlaceholder: 'Opening hours',
+    uploadMenu: 'Upload my menu',
+    submit: 'Create my restaurant'
   }
 }

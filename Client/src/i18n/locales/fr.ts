@@ -35,7 +35,9 @@ export default {
   errorMessage: 'Une erreur est survenue. Veuillez réessayer.',
   profilePicture: 'Photo de profil',
   dob: 'Date de naissance',
- 
+  restaurateur: 'Restaurateur',
+  createRestaurant: 'Créer un restaurant',
+  myRestaurants: 'Voir mes restaurants',
 
   sort: {
     label: 'Trier par',
@@ -53,16 +55,28 @@ export default {
     createAccount: 'Créer un compte'
   },
   myProfile: {
-    title: "Mon profil",
-    photoAlt: "Photo de profil",
-    changePhoto: "Changer la photo",
-    name: "Nom",
-    email: "Adresse courriel",
-    dob: "Date de naissance",
-    save: "Sauvegarder",
-    cancel: "Annuler",
-    edit: "Modifier",
-    delete: "Supprimer",
-    deleteConfirmation: "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
+    title: 'Mon profil',
+    photoAlt: 'Photo de profil',
+    changePhoto: 'Changer la photo',
+    name: 'Nom',
+    email: 'Adresse courriel',
+    dob: 'Date de naissance',
+    save: 'Sauvegarder',
+    cancel: 'Annuler',
+    edit: 'Modifier',
+    delete: 'Supprimer',
+    deleteConfirmation:
+      'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.'
+  },
+  createMyRestaurant: {
+    title: 'Création du Profil restaurant',
+    changePhoto: 'Changer photo',
+    namePlaceholder: 'Nom du restaurant',
+    addressPlaceholder: 'Adresse du restaurant',
+    phonePlaceholder: 'Numéro de téléphone',
+    cuisineTypePlaceholder: 'Type de cuisine',
+    schedulePlaceholder: "Heures d'ouverture",
+    uploadMenu: 'Téléverser mon menu',
+    submit: 'Créer mon restaurant'
   }
 }
