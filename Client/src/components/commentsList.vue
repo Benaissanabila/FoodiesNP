@@ -9,21 +9,24 @@ import { useCommentStore } from '@/stores/CommentStore';
 const props = defineProps<{
   restaurantId: string;
 }>();
+
 const commentStore = useCommentStore();
 const restaurantStore = useRestaurantStore();
 const userStore = useUserStore();
+
 const comments = ref<IComment[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
-const userPhotos = ref<Record<string, string>>({}); // Pour stocker les photos des utilisateurs
-const userNames = ref<Record<string, string>>({}); // Pour stocker les noms des utilisateurs
-const userVotes = ref<Record<string, 'like' | 'dislike' | null>>({}); // Pour stocker l'état des votes des utilisateurs
+const userPhotos = ref<Record<string, string>>({});
+const userNames = ref<Record<string, string>>({});
+const userVotes = ref<Record<string, 'like' | 'dislike' | null>>({}); // Votes de l'utilisateur
 
 // Récupérer les commentaires par ID du restaurant
 onMounted(async () => {
   loading.value = true;
   error.value = null;
   try {
+    // Fetch des commentaires depuis la base de données
     await restaurantStore.fetchCommentsByRestaurantId(props.restaurantId);
     comments.value = restaurantStore.comments;
 
@@ -50,6 +53,11 @@ onMounted(async () => {
   }
 });
 
+// Sauvegarder les votes dans localStorage
+const saveVotesToLocalStorage = () => {
+  localStorage.setItem('userVotes', JSON.stringify(userVotes.value));
+};
+
 // Méthode pour formater la date
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -65,80 +73,82 @@ const formatDate = (dateString: string) => {
   }
 };
 
-
-
+// Méthode pour toggler un like
 const toggleLike = async (commentId: string) => {
-  const currentVote = userVotes.value[commentId]; // État actuel du vote de l'utilisateur
+  const currentVote = userVotes.value[commentId]; // Vote actuel de l'utilisateur
   const comment = comments.value.find((c) => c._id === commentId);
 
   try {
     if (currentVote === 'like') {
-      // Si l'utilisateur a déjà liké, annule le like
+      // Si l'utilisateur a déjà liké, on annule le like
       await commentStore.unlikeComment(commentId);
-      userVotes.value[commentId] = null; // Supprime le vote
+      userVotes.value[commentId] = null; // Supprime le vote dans localStorage
       if (comment) {
         comment.upvotes = Math.max((comment.upvotes ?? 0) - 1, 0); // Décrémente le nombre de likes
       }
     } else {
-      // Si l'utilisateur n'a pas encore liké
       if (currentVote === 'dislike') {
-        // Si l'utilisateur avait disliké, annule le dislike avant de liker
+        // Si l'utilisateur avait disliké, on annule le dislike avant de liker
         await commentStore.undislikeComment(commentId);
-        userVotes.value[commentId] = 'like'; // Change le vote à like
         if (comment) {
           comment.downvotes = Math.max((comment.downvotes ?? 0) - 1, 0); // Décrémente le nombre de dislikes
         }
-      } else {
-        userVotes.value[commentId] = 'like'; // Enregistre le like
       }
-      await commentStore.likeComment(commentId); // Ajoute le like
+
+      // Enregistre le like
+      await commentStore.likeComment(commentId);
+      userVotes.value[commentId] = 'like'; // Enregistre le like dans localStorage
       if (comment) {
         comment.upvotes = (comment.upvotes ?? 0) + 1; // Incrémente le nombre de likes
       }
     }
+
+    // Sauvegarde le vote dans localStorage et base de données
+    saveVotesToLocalStorage();
   } catch (error) {
     console.error('Erreur lors du toggle du like:', error);
   }
 };
 
+// Méthode pour toggler un dislike
 const toggleDislike = async (commentId: string) => {
-  const currentVote = userVotes.value[commentId]; // État actuel du vote de l'utilisateur
+  const currentVote = userVotes.value[commentId]; // Vote actuel de l'utilisateur
   const comment = comments.value.find((c) => c._id === commentId);
 
   try {
     if (currentVote === 'dislike') {
-      // Si l'utilisateur a déjà disliké, annule le dislike
+      // Si l'utilisateur a déjà disliké, on annule le dislike
       await commentStore.undislikeComment(commentId);
-      userVotes.value[commentId] = null; // Supprime le vote
+      userVotes.value[commentId] = null; // Supprime le vote dans localStorage
       if (comment) {
         comment.downvotes = Math.max((comment.downvotes ?? 0) - 1, 0); // Décrémente le nombre de dislikes
       }
     } else {
-      // Si l'utilisateur n'a pas encore disliké
       if (currentVote === 'like') {
-        // Si l'utilisateur avait liké, annule le like avant de disliker
+        // Si l'utilisateur avait liké, on annule le like avant de disliker
         await commentStore.unlikeComment(commentId);
-        userVotes.value[commentId] = 'dislike'; // Change le vote à dislike
         if (comment) {
           comment.upvotes = Math.max((comment.upvotes ?? 0) - 1, 0); // Décrémente le nombre de likes
         }
-      } else {
-        userVotes.value[commentId] = 'dislike'; // Enregistre le dislike
       }
-      await commentStore.dislikeComment(commentId); // Ajoute le dislike
+
+      // Enregistre le dislike
+      await commentStore.dislikeComment(commentId);
+      userVotes.value[commentId] = 'dislike'; // Enregistre le dislike dans localStorage
       if (comment) {
         comment.downvotes = (comment.downvotes ?? 0) + 1; // Incrémente le nombre de dislikes
       }
     }
+
+    // Sauvegarde le vote dans localStorage et base de données
+    saveVotesToLocalStorage();
   } catch (error) {
     console.error('Erreur lors du toggle du dislike:', error);
   }
 };
-
-
-
-
 </script>
+
+
 
 
 

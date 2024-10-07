@@ -178,12 +178,13 @@ const formatDate = (date: Date | null) => {
         <div class="restaurant-info">
           <h1>{{ restaurant.name }}</h1>
           <p>Adresse : {{ restaurant.address }}</p>
-
+<p>Numero de telephone: {{ restaurant.phoneNumber }}</p>
           <div class="cuisine-rating">
             <p>Type de cuisine : {{ restaurant.cuisineType }}</p>
             <StarRating :rating="restaurant.globalRatingResaurant" />
           </div>
-          <div class="description-restaurant"><p>Description du restaurant</p></div>
+          <p>Description du restaurant :</p>
+          <div class="description-restaurant"><p>{{ restaurant.description }}</p></div>
         </div>
       </div>
 
@@ -343,6 +344,7 @@ const formatDate = (date: Date | null) => {
 .description-restaurant {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   padding: 20px;
+width: 80%;
   border-radius: 10px;
   background-color: #f9f9f9;
 }
@@ -356,7 +358,7 @@ const formatDate = (date: Date | null) => {
   font-size: 3rem;
 }
 .restaurant-info {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 .cuisine-rating {
   display: flex;

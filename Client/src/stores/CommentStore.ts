@@ -56,9 +56,11 @@ getCommentsByRestaurantId: (state) => (restaurantId: string) => {
         },
        
    // Action pour liker un commentaire
-   async likeComment(commentId: string) {
+  // Action pour liker un commentaire
+async likeComment(commentId: string) {
     try {
-      await axios.post(`/api/comments/${commentId}/like`);
+      // Suppression de l'apostrophe supplémentaire avant l'URL
+      await axios.put(`http://localhost:3000/comments/${commentId}`, { action: 'like' });
       const comment = this.comments.find(comment => comment._id === commentId);
       if (comment) {
         comment.upvotes = (comment.upvotes ?? 0) + 1;
@@ -67,9 +69,10 @@ getCommentsByRestaurantId: (state) => (restaurantId: string) => {
       console.error('Erreur lors du like du commentaire:', error);
     }
   },
+  
   async dislikeComment(commentId: string) {
     try {
-      await axios.post(`/api/comments/${commentId}/dislike`);
+      await axios.put(`http://localhost:3000/comments/${commentId}`, { action: 'dislike' });
       const comment = this.comments.find(comment => comment._id === commentId);
       if (comment) {
         comment.downvotes = (comment.downvotes ?? 0) + 1;
@@ -78,9 +81,10 @@ getCommentsByRestaurantId: (state) => (restaurantId: string) => {
       console.error('Erreur lors du dislike du commentaire:', error);
     }
   },
+  
   async unlikeComment(commentId: string) {
     try {
-      await axios.post(`/api/comments/${commentId}/unlike`);
+      await axios.put(`http://localhost:3000/comments/${commentId}`, { action: 'unlike' });
       const comment = this.comments.find(comment => comment._id === commentId);
       if (comment) {
         comment.upvotes = Math.max((comment.upvotes ?? 0) - 1, 0);
@@ -89,9 +93,10 @@ getCommentsByRestaurantId: (state) => (restaurantId: string) => {
       console.error('Erreur lors de l\'unlike du commentaire:', error);
     }
   },
+  
   async undislikeComment(commentId: string) {
     try {
-      await axios.post(`/api/comments/${commentId}/undislike`);
+      await axios.put(`http://localhost:3000/comments/${commentId}`, { action: 'undislike' });
       const comment = this.comments.find(comment => comment._id === commentId);
       if (comment) {
         comment.downvotes = Math.max((comment.downvotes ?? 0) - 1, 0);
@@ -99,7 +104,8 @@ getCommentsByRestaurantId: (state) => (restaurantId: string) => {
     } catch (error) {
       console.error('Erreur lors de l\'undislike du commentaire:', error);
     }
-  },
+  }
+  
 },
 });
 

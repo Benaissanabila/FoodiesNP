@@ -44,7 +44,6 @@ export const deleteComment = async (req, res) => {
 };
 
 // Fonction pour mettre à jour un commentaire
-// Fonction pour mettre à jour un commentaire
 export const updateComment = async (req, res) => {
   try {
     const commentId = req.params.id;
@@ -56,29 +55,29 @@ export const updateComment = async (req, res) => {
       return res.status(404).json({ message: 'Commentaire non trouvé.' });
     }
 
-    // Vérifie si la requête contient un like, unlike, dislike, ou undislike
+    // Gestion des actions de vote
     if (req.body.action === 'like') {
       updateFields.upvotes = (comment.upvotes || 0) + 1; // Incrémente le like
     } else if (req.body.action === 'unlike') {
-      if (comment.upvotes > 0) {
-        updateFields.upvotes = (comment.upvotes || 1) - 1; // Décrémente le like
-      } else {
-        return res.status(400).json({ message: 'Aucun like à retirer.' });
-      }
+      updateFields.upvotes = Math.max((comment.upvotes || 1) - 1, 0); // Assure que upvotes reste >= 0
     } else if (req.body.action === 'dislike') {
       updateFields.downvotes = (comment.downvotes || 0) + 1; // Incrémente le dislike
     } else if (req.body.action === 'undislike') {
-      if (comment.downvotes > 0) {
-        updateFields.downvotes = (comment.downvotes || 1) - 1; // Décrémente le dislike
-      } else {
-        return res.status(400).json({ message: 'Aucun dislike à retirer.' });
-      }
-    } else {
-      // Pour toute autre mise à jour standard
-      if (req.body.comment) updateFields.comment = req.body.comment;
-      if (req.body.quality) updateFields.quality = req.body.quality;
-      if (req.body.service) updateFields.service = req.body.service;
-      if (req.body.ambiance) updateFields.ambiance = req.body.ambiance;
+      updateFields.downvotes = Math.max((comment.downvotes || 1) - 1, 0); // Assure que downvotes reste >= 0
+    } else if (req.body.action) {
+      return res.status(400).json({ message: 'Action non supportée.' });
+    }
+
+    // Gestion des autres champs
+    if (req.body.comment) updateFields.comment = req.body.comment;
+    if (req.body.quality || req.body.service || req.body.ambiance) {
+      const quality = req.body.quality || comment.quality;
+      const service = req.body.service || comment.service;
+      const ambiance = req.body.ambiance || comment.ambiance;
+      updateFields.quality = quality;
+      updateFields.service = service;
+      updateFields.ambiance = ambiance;
+      updateFields.globalRating = (quality + service + ambiance) / 3; // Recalcule le globalRating
     }
 
     // Mettre à jour le commentaire avec les nouveaux champs
@@ -94,3 +93,4 @@ export const updateComment = async (req, res) => {
     });
   }
 };
+

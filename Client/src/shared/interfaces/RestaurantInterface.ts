@@ -9,6 +9,7 @@ export interface IRestaurant {
     owner?: string;  
     globalRatingResaurant:number; 
     latitude?: number; 
-    longitude?: number;  
+    longitude?: number; 
+    description:string 
   }
   
