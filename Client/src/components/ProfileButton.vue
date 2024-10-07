@@ -50,10 +50,6 @@ const goToProfile = () => {
   showDropdown.value = false;
 };
 
-const goToEditProfile = () => {
-  router.push('/edit-profile');
-  showDropdown.value = false;
-};
 
 const logout = () => {
   store.logoutUser();
@@ -125,7 +121,6 @@ onMounted(() => {
     <div v-if="showDropdown" class="dropdown-menu">
       <template v-if="isAuthenticated">
         <div @click="goToProfile">{{ t('profile') }}</div>
-        <div @click="goToEditProfile">{{ t('editProfile') }}</div>
         <div @click="logout">{{ t('logout') }}</div>
       </template>
       <template v-else>

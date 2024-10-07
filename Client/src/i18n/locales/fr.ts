@@ -51,5 +51,18 @@ export default {
     submit: 'Se connecter',
     loading: 'Connexion en cours...',
     createAccount: 'Créer un compte'
+  },
+  myProfile: {
+    title: "Mon profil",
+    photoAlt: "Photo de profil",
+    changePhoto: "Changer la photo",
+    name: "Nom",
+    email: "Adresse courriel",
+    dob: "Date de naissance",
+    save: "Sauvegarder",
+    cancel: "Annuler",
+    edit: "Modifier",
+    delete: "Supprimer",
+    deleteConfirmation: "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
   }
 }

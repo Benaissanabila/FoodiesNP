@@ -75,21 +75,56 @@ export const getUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const user = await queries.updateUserQuery(req.params.id, req.body);
-    res.status(200).json(user);
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    // Empêcher la mise à jour du mot de passe via cette route
+    delete updateData.password;
+    
+    const updatedUser = await queries.updateUserQuery(id, updateData);
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+export const updateProfilePhoto = [
+  upload.single('UserPhoto'),
+  async (req, res) => {
+    try {
+      const userId = req.params.id;
+      const photoPath = req.file.filename;
+
+      const updatedUser = await queries.updateUserQuery(userId, { UserPhoto: photoPath });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      console.log('Photo updated for user:', updatedUser);
+      res.status(200).json({ UserPhoto: photoPath });
+    } catch (error) {
+      console.error('Error updating profile photo:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+];
+
 export const deleteUser = async (req, res) => {
   try {
-    const user = await queries.deleteUserQuery(req.params.id);
-    res.status(200).json(user);
+    const { id } = req.params;
+    const deletedUser = await queries.deleteUserQuery(id);
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).json({ message: 'User successfully deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 // Fonction pour gérer la connexion de l'utilisateur
 export const loginUser = async (req, res) => {
   try {

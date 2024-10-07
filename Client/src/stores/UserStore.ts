@@ -117,7 +117,31 @@ export const useUserStore = defineStore('UserStore', {
       }
       console.error('Error:', this.error);
     },
-    // Ajoutez cette méthode dans le store des utilisateurs
+    async updateUser(updatedUser: Partial<IUser>) {
+      try {
+        // Assurez-vous que la date est au bon format avant l'envoi
+        if (updatedUser.DOB) {
+          updatedUser.DOB = new Date(updatedUser.DOB).toISOString();
+        }
+        
+        const response = await axios.put(`http://localhost:3000/users/${this.user?._id}`, updatedUser);
+        this.user = response.data;
+        localStorage.setItem('user', JSON.stringify(this.user));
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour du profil:', error);
+        throw error;
+      }
+    },
+
+    async deleteUser() {
+      try {
+        await axios.delete(`http://localhost:3000/users/${this.user?._id}`);
+        this.logoutUser();
+      } catch (error) {
+        console.error('Erreur lors de la suppression du compte:', error);
+        throw error;
+      }
+    },
 async fetchUserById(userId: string) {
   try {
     const response = await axios.get(`http://localhost:3000/users/${userId}`);
@@ -125,6 +149,32 @@ async fetchUserById(userId: string) {
   } catch (error) {
     console.error('Erreur lors de la récupération de l\'utilisateur:', error);
     throw new Error('Erreur lors de la récupération de l\'utilisateur');
+  }
+},
+async updateProfilePhoto(file: File) {
+  try {
+    const formData = new FormData();
+    formData.append('UserPhoto', file);
+
+    const response = await axios.post(`http://localhost:3000/users/${this.user?._id}/photo`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    console.log('Réponse du serveur:', response.data);
+
+    if (this.user && response.data.UserPhoto) {
+      this.user = {
+        ...this.user,
+        UserPhoto: response.data.UserPhoto
+      };
+      localStorage.setItem('user', JSON.stringify(this.user));
+      console.log('Photo de profil mise à jour:', this.user.UserPhoto);
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la photo de profil:', error);
+    throw error;
   }
 }
   },
