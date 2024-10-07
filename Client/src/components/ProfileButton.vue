@@ -9,6 +9,7 @@ const store = useUserStore();
 const router = useRouter();
 const { t } = useI18n();
 const showDropdown = ref(false);
+const showRestaurateurSubmenu = ref(false);
 const imageError = ref(false);
 
 // Intercepteur pour gérer l'expiration du token
@@ -50,10 +51,6 @@ const goToProfile = () => {
   showDropdown.value = false;
 };
 
-const goToEditProfile = () => {
-  router.push('/edit-profile');
-  showDropdown.value = false;
-};
 
 const logout = () => {
   store.logoutUser();
@@ -99,6 +96,21 @@ watch(() => store.user, () => {
 onMounted(() => {
   store.checkAuth();
 });
+
+const goToCreateRestaurant = () => {
+  router.push('/create-restaurant');
+  showDropdown.value = false;
+};
+
+const goToMyRestaurants = () => {
+  router.push('/my-restaurants');
+  showDropdown.value = false;
+};
+
+const toggleRestaurateurSubmenu = (event: Event) => {
+  event.stopPropagation();
+  showRestaurateurSubmenu.value = !showRestaurateurSubmenu.value;
+};
 </script>
 
 <template>
@@ -107,7 +119,7 @@ onMounted(() => {
       <img
         v-if="hasProfilePhoto && !imageError"
         :src="profilePhotoUrl"
-        alt="Profile Photo"
+        :alt="t('profilePhoto')"
         class="profile-photo"
         @error="handleImageError"
       >
@@ -125,7 +137,14 @@ onMounted(() => {
     <div v-if="showDropdown" class="dropdown-menu">
       <template v-if="isAuthenticated">
         <div @click="goToProfile">{{ t('profile') }}</div>
-        <div @click="goToEditProfile">{{ t('editProfile') }}</div>
+        <div class="restaurateur-menu" @click="toggleRestaurateurSubmenu">
+          {{ t('restaurateur') }}
+          <span class="arrow" :class="{ 'arrow-down': !showRestaurateurSubmenu, 'arrow-up': showRestaurateurSubmenu }"></span>
+        </div>
+        <div v-if="showRestaurateurSubmenu" class="submenu">
+          <div @click="goToCreateRestaurant">{{ t('createRestaurant') }}</div>
+          <div @click="goToMyRestaurants">{{ t('myRestaurants') }}</div>
+        </div>
         <div @click="logout">{{ t('logout') }}</div>
       </template>
       <template v-else>

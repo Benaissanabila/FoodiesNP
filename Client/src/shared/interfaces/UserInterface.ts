@@ -4,6 +4,6 @@ export interface IUser {
     email: string;         
     password: string;     
     UserPhoto?: string;    
-    DOB: Date;             
+    DOB: string | Date;             
   }
   

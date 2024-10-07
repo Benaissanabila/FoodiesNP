@@ -194,6 +194,30 @@ export const useRestaurantStore = defineStore('Restaurant', {
     }
     return Infinity;
   },
+  async createRestaurant(restaurantData: any) {
+    try {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(restaurantData)) {
+        if (key === 'RestoPhoto' && value instanceof File) {
+          formData.append(key, value, value.name);
+        } else {
+          formData.append(key, value as string);
+        }
+      }
+  
+      const response = await axios.post('http://localhost:3000/restaurants', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+  
+      this.restaurants.push(response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la création du restaurant:', error);
+      throw error;
+    }
+  },
 
 }
 

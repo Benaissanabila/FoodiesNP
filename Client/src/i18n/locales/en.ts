@@ -24,7 +24,7 @@ export default {
   editProfile: 'Edit Profile',
   logout: 'Logout',
   login: 'Login',
-name: 'Name',
+  name: 'Name',
   email: 'Email',
   password: 'Password',
   createAccount: 'Create Account',
@@ -35,6 +35,8 @@ name: 'Name',
   profilePicture: 'Profile Picture',
   dob: 'Date of Birth',
   enterName: 'Enter your name',
+  createRestaurant: 'Create a Restaurant',
+  myRestaurants: 'View My Restaurants',
   sort: {
     label: 'Sort by',
     rating: 'Rating',
@@ -49,5 +51,29 @@ name: 'Name',
     submit: 'Login',
     loading: 'Logging in...',
     createAccount: 'Create an account'
+  },
+  myProfile: {
+    title: 'My Profile',
+    photoAlt: 'Profile photo',
+    changePhoto: 'Change photo',
+    name: 'Name',
+    email: 'Email address',
+    dob: 'Date of birth',
+    save: 'Save',
+    cancel: 'Cancel',
+    edit: 'Edit',
+    delete: 'Delete',
+    deleteConfirmation: 'Are you sure you want to delete your account? This action is irreversible.'
+  },
+  createMyRestaurant: {
+    title: 'Create Restaurant Profile',
+    changePhoto: 'Change photo',
+    namePlaceholder: 'Restaurant name',
+    addressPlaceholder: 'Restaurant address',
+    phonePlaceholder: 'Phone number',
+    cuisineTypePlaceholder: 'Cuisine type',
+    schedulePlaceholder: 'Opening hours',
+    uploadMenu: 'Upload my menu',
+    submit: 'Create my restaurant'
   }
 }

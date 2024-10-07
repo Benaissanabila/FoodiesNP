@@ -49,6 +49,12 @@ const restaurantSchema = new mongoose.Schema({
   },
   latitude: { type: Number, required: false },
     longitude: { type: Number, required: false },
+    description: {
+      type: String,
+      trim: true,
+      required: false, 
+      minLength: [10, "Description must have at least 10 characters"], 
+    },
 });
 // Méthode pour récupérer les coordonnées à partir de l'adresse
 restaurantSchema.methods.fetchCoordinatesFromMapbox = async function () {
