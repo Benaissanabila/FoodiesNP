@@ -6,12 +6,28 @@ import Footer from '../components/Footer.vue'
 </script>
 
 <template>
-  <NavigationBar />
-  <Map></Map>
-
-  <RestaurantList />
-
-  <Footer />
+  <div class="page-container">
+    <div class="content-wrap">
+      <NavigationBar />
+      <Map />
+      <RestaurantList />
+    </div>
+    <Footer />
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrap {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+}
+
+
+</style>

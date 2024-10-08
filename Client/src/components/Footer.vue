@@ -18,31 +18,12 @@ onMounted(() => {
   </footer>
 </template>
 
-<style>
-/* Ces styles doivent être globaux pour affecter toute la structure de la page */
-html {
-  height: 100%;
-}
-
-body {
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: 1fr auto;
-}
-
-#app {
-  min-height: 100vh;
-  display: grid;
-  grid-template-rows: 1fr auto;
-}
-
+<style scoped>
 .footer {
-  grid-row-start: 2;
-  grid-row-end: 3;
   width: 100%;
   padding: 10px 0;
   border-top: 1px solid black;
-  background-color: white;
+  margin-top: auto; /* Pousse le footer vers le bas */
 }
 
 .copyright {

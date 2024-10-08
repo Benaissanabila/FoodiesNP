@@ -4,12 +4,16 @@ import { useRestaurantStore } from '@/stores/RestaurantStore.js';
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
 import { RouterLink } from 'vue-router';
 import StarRating from '@/components/StarRating.vue'; // Importez le nouveau composant
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/UserStore';
 
 const props = defineProps<{
   restaurant: IRestaurant;
 }>();
 
 const store = useRestaurantStore(); 
+const userStore = useUserStore();
+const router = useRouter();
 
 onMounted(() => {
   store.fetchRestaurantById(props.restaurant._id);
@@ -37,21 +41,24 @@ watch(
     }
   }
 );
+
+const handleRestaurantClick = () => {
+  if (userStore.isAuthenticated) {
+    router.push({ name: 'restaurantdetails', params: { id: props.restaurant._id } });
+  } else {
+    router.push({ name: 'Login', query: { redirect: `/restaurantdetails/${props.restaurant._id}` } });
+  }
+};
 </script>
 
 <template>
-  <div class="restaurant-card">
-    <RouterLink :to="{ name: 'restaurantdetails', params: { id: restaurant._id } }">
-      <img :src="restaurant.RestoPhoto" alt="Photo du restaurant" class="restaurant-image" />
-    </RouterLink>
+  <div class="restaurant-card" @click="handleRestaurantClick">
+    <img :src="restaurant.RestoPhoto" alt="Photo du restaurant" class="restaurant-image" />
     <div class="restaurant-details">
       <h3>{{ restaurant.name }}</h3>
       <p>{{ restaurant.address }}</p>
-      <p>
-      Distance: {{ getDistance }} km
-    </p>
-      <StarRating :rating="restaurant.globalRatingResaurant" /> 
-      
+      <p>Distance: {{ getDistance }} km</p>
+      <StarRating :rating="restaurant.globalRatingResaurant" />
       <p v-if="store.loading">Chargement de la note globale...</p>
       <p v-if="store.error">{{ store.error }}</p>
     </div>

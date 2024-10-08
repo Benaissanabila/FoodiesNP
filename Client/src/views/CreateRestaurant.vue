@@ -57,61 +57,75 @@
   </script>
   
   <template>
-    <div class="create-restaurant-container">
-      <h1>{{ $t('createMyRestaurant.title') }}</h1>
-      
-      <div class="photo-container">
-        <img :src="previewImage || '/placeholder-restaurant.png'" alt="Restaurant Photo" class="restaurant-photo">
-        <button @click="triggerPhotoUpload" class="btn btn-secondary">{{ $t('createMyRestaurant.changePhoto') }}</button>
-        <input 
-          type="file" 
-          ref="photoInput" 
-          @change="handlePhotoChange" 
-          accept="image/*" 
-          style="display: none;"
-        >
+    <div class="page-container">
+      <div class="content-wrap">
+        <div class="create-restaurant-container">
+          <h1>{{ $t('createMyRestaurant.title') }}</h1>
+          
+          <div class="photo-container">
+            <img :src="previewImage || '/placeholder-restaurant.png'" alt="Restaurant Photo" class="restaurant-photo">
+            <button @click="triggerPhotoUpload" class="btn btn-secondary">{{ $t('createMyRestaurant.changePhoto') }}</button>
+            <input 
+              type="file" 
+              ref="photoInput" 
+              @change="handlePhotoChange" 
+              accept="image/*" 
+              style="display: none;"
+            >
+          </div>
+  
+          <form @submit.prevent="createRestaurant">
+            <div class="form-group">
+              <input v-model="restaurant.name" :placeholder="$t('createMyRestaurant.namePlaceholder')" required>
+            </div>
+            
+            <div class="form-group">
+              <input v-model="restaurant.address" :placeholder="$t('createMyRestaurant.addressPlaceholder')" required>
+            </div>
+            
+            <div class="form-group">
+              <input v-model="restaurant.phoneNumber" :placeholder="$t('createMyRestaurant.phonePlaceholder')" required>
+            </div>
+            
+            <div class="form-group">
+              <select v-model="restaurant.cuisineType" required>
+                <option value="" disabled selected>{{ $t('createMyRestaurant.cuisineTypePlaceholder') }}</option>
+                <option v-for="type in cuisineTypes" :key="type" :value="type">{{ type }}</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <input v-model="restaurant.schedule" :placeholder="$t('createMyRestaurant.schedulePlaceholder')" required>
+            </div>
+  
+            <button type="button" @click="uploadMenu" class="btn btn-secondary">{{ $t('createMyRestaurant.uploadMenu') }}</button>
+            
+            <button type="submit" class="btn btn-primary">{{ $t('createMyRestaurant.submit') }}</button>
+          </form>
+        </div>
       </div>
-  
-      <form @submit.prevent="createRestaurant">
-        <div class="form-group">
-          <input v-model="restaurant.name" :placeholder="$t('createMyRestaurant.namePlaceholder')" required>
-        </div>
-        
-        <div class="form-group">
-          <input v-model="restaurant.address" :placeholder="$t('createMyRestaurant.addressPlaceholder')" required>
-        </div>
-        
-        <div class="form-group">
-          <input v-model="restaurant.phoneNumber" :placeholder="$t('createMyRestaurant.phonePlaceholder')" required>
-        </div>
-        
-        <div class="form-group">
-          <select v-model="restaurant.cuisineType" required>
-            <option value="" disabled selected>{{ $t('createMyRestaurant.cuisineTypePlaceholder') }}</option>
-            <option v-for="type in cuisineTypes" :key="type" :value="type">{{ type }}</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <input v-model="restaurant.schedule" :placeholder="$t('createMyRestaurant.schedulePlaceholder')" required>
-        </div>
-  
-        <button type="button" @click="uploadMenu" class="btn btn-secondary">{{ $t('createMyRestaurant.uploadMenu') }}</button>
-        
-        <button type="submit" class="btn btn-primary">{{ $t('createMyRestaurant.submit') }}</button>
-      </form>
+      <Footer />
     </div>
-  
-    <Footer />
   </template>
   
- 
-  
   <style scoped>
+  .page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .content-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
   .create-restaurant-container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
+    width: 100%;
   }
   
   .photo-container {
