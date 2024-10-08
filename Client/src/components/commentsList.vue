@@ -5,7 +5,9 @@ import { useUserStore } from '@/stores/UserStore';
 import StarRating from '@/components/StarRating.vue';
 import type { IComment } from '@/shared/interfaces/CommentInterface';
 import { useCommentStore } from '@/stores/CommentStore';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps<{
   restaurantId: string;
 }>();
@@ -154,7 +156,7 @@ const toggleDislike = async (commentId: string) => {
 
 <template> 
 <div>
-<h3>Avis</h3>
+<h3>{{ t('avis') }}</h3>
     <div class="comment-card">
       
       <div v-if="loading">Chargement des commentaires...</div>
@@ -283,6 +285,33 @@ h3{
     font-size: 2rem;
     margin-left: 18px;
 }
+
+@media (max-width: 768px) {
+  .comment-card {
+    padding: 5px;
+  }
+
+  .comment {
+    padding: 10px;
+  }
+
+  .user-photo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .comment-text {
+    font-size: 12px;
+  }
+
+  .comment-date {
+    font-size: 10px;
+  }
+
+  .vote-button svg {
+    width: 1.5em;
+    height: 1.5em;
+  }}
 
 
   </style>

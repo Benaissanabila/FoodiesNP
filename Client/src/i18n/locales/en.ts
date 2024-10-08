@@ -37,6 +37,7 @@ export default {
   enterName: 'Enter your name',
   createRestaurant: 'Create a Restaurant',
   myRestaurants: 'View My Restaurants',
+  avis:'Reviews',
   sort: {
     label: 'Sort by',
     rating: 'Rating',

@@ -22,25 +22,25 @@ export const useUserStore = defineStore('UserStore', {
 
   actions: {
     async createUser(formData: FormData) {
-      this.loading = true;
-      this.error = null;
+      this.loading = true; 
+      this.error = null; 
+
       try {
-        const response = await axios.post('http://localhost:3000/users', formData, {
+        const response = await axios.post<LoginResponse>('http://localhost:3000/users', formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'multipart/form-data', // Spécifiez que vous envoyez des données multipart/form-data
           },
         });
-        this.user = response.data;
-        localStorage.setItem('user', JSON.stringify(this.user));
-        console.log('User created and stored:', this.user);
-      } catch (error: any) {
-        this.error = error.response?.data?.error || 'An error occurred during account creation';
-        console.error('Error creating user:', this.error);
+
+        // Si l'utilisateur est créé avec succès, vous pouvez éventuellement l'authentifier ou le stocker
+        this.setUserAndToken(response.data.user, response.data.token);
+        console.log('User created and token stored');
+      } catch (error) {
+        this.handleError(error, 'Une erreur est survenue lors de la création de l\'utilisateur');
       } finally {
-        this.loading = false;
+        this.loading = false; // Finir le chargement
       }
     },
-
     async loginUser(email: string, password: string) {
       this.loading = true;
       this.error = null;
@@ -117,21 +117,23 @@ export const useUserStore = defineStore('UserStore', {
       }
       console.error('Error:', this.error);
     },
+
     async updateUser(updatedUser: Partial<IUser>) {
-      try {
-        // Assurez-vous que la date est au bon format avant l'envoi
-        if (updatedUser.DOB) {
-          updatedUser.DOB = new Date(updatedUser.DOB).toISOString();
-        }
-        
-        const response = await axios.put(`http://localhost:3000/users/${this.user?._id}`, updatedUser);
-        this.user = response.data;
-        localStorage.setItem('user', JSON.stringify(this.user));
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour du profil:', error);
-        throw error;
-      }
-    },
+  try {
+    // Ensure the date is in the correct format before sending
+    if (updatedUser.DOB) {
+      updatedUser.DOB = new Date(updatedUser.DOB); 
+    }
+    
+    const response = await axios.put(`http://localhost:3000/users/${this.user?._id}`, updatedUser);
+    this.user = response.data;
+    localStorage.setItem('user', JSON.stringify(this.user));
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du profil:', error);
+    throw error;
+  }
+}
+,
 
     async deleteUser() {
       try {

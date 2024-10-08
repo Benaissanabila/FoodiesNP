@@ -34,7 +34,7 @@ export const useRestaurantStore = defineStore('Restaurant', {
     loading: false,
     error: null as string | null,
     userLocation: null as { latitude: number; longitude: number } | null,
-    sortBy: 'rating' as 'rating' | 'distance',
+    sortBy: 'rating' as string,
   }),
 
   getters: {
@@ -63,7 +63,10 @@ export const useRestaurantStore = defineStore('Restaurant', {
       let sorted = [...state.restaurants];
       if (state.sortBy === 'rating') {
         sorted.sort((a, b) => b.globalRatingResaurant - a.globalRatingResaurant);
-      } else if (state.sortBy === 'distance' && state.userLocation) {
+      }if(state.sortBy === 'name'){
+        sorted.sort((a, b) => a.name.localeCompare(b.name))
+      }
+        else if (state.sortBy === 'distance' && state.userLocation) {
         sorted.sort((a, b) => {
           const distanceA = calculateDistance(state.userLocation!, a);
           const distanceB = calculateDistance(state.userLocation!, b);
