@@ -1,4 +1,4 @@
-import Reservation from "../models/reservation.model.js"; // Assurez-vous d'importer correctement le modèle Reservation from "../models/reservation.model.js";
+import Reservation from "../models/reservation.model.js"; 
 import nodemailer from 'nodemailer';
 import User from '../models/user.model.js'
 import {Restaurant}  from '../models/restaurant.model.js'
@@ -102,6 +102,54 @@ console.log('reservation récupéré:', reservation. reservationDate);
         console.error('Erreur lors de l\'envoi de l\'email :', error);
     }
 };
+
+// Fonction pour envoyer un email de demande d'avis
+export const sendReviewRequestEmail = async (userId, reservationId, restaurantId) => {
+    // Créer un transporteur SMTP
+    const transporter = nodemailer.createTransport({
+        host: 'smtp-relay.brevo.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        },
+    });
+
+    try {
+        // Récupérer l'utilisateur, le restaurant et la réservation
+        const user = await User.findById(userId);
+        const restaurant = await Restaurant.findById(restaurantId);
+        const reservation = await Reservation.findById(reservationId);
+
+        if (!user || !user.email || !restaurant || !reservation) {
+            throw new Error("Informations manquantes pour l'utilisateur, le restaurant ou la réservation.");
+        }
+
+        // Créer un lien vers une page où l'utilisateur peut donner son avis
+        const reviewLink = `http://localhost:3000/restaurants/${restaurant._id}/reviews?userId=${user._id}&reservationId=${reservation._id}`;
+
+        // Options de l'email
+        const mailOptions = {
+            from: 'foodies.n.p.2024@gmail.com',
+            to: user.email,
+            subject: 'Votre avis sur votre expérience au restaurant',
+            html: `
+                <p>Bonjour ${user.name},</p>
+                <p>Nous espérons que vous avez apprécié votre visite au restaurant <strong>${restaurant.name}</strong>.</p>
+                <p>Nous serions ravis d'avoir votre avis ! Cliquez sur le lien ci-dessous pour partager votre expérience :</p>
+                <a href="${reviewLink}">Donner mon avis</a>
+            `,
+        };
+
+        // Envoyer l'email
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email de demande d\'avis envoyé avec succès :', info.response);
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'email de demande d\'avis :', error);
+    }
+};
+
 
 
 

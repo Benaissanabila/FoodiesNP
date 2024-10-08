@@ -178,7 +178,7 @@ const formatDate = (date: Date | null) => {
         <div class="restaurant-info">
           <h1>{{ restaurant.name }}</h1>
           <p>Adresse : {{ restaurant.address }}</p>
-<p>Numero de telephone: {{ restaurant.phoneNumber }}</p>
+          <p>Numero de telephone: {{ restaurant.phoneNumber }}</p>
           <div class="cuisine-rating">
             <p>Type de cuisine : {{ restaurant.cuisineType }}</p>
             <StarRating :rating="restaurant.globalRatingResaurant" />

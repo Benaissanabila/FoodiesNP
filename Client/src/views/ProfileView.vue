@@ -3,9 +3,10 @@
   import { useUserStore } from '@/stores/UserStore';
   import { useRouter } from 'vue-router';
   import type { IUser } from '@/shared/interfaces/UserInterface';
-  import SettingButton from '@/components/SettingButton.vue';
-  import Logo from '@/components/Logo.vue';
+ 
   import { useI18n } from 'vue-i18n';
+import NavigationBar from '@/components/NavigationBar.vue';
+
 
   const userStore = useUserStore();
   const router = useRouter();
@@ -69,15 +70,19 @@ function confirmDelete() {
   
   function formatDate(date: string | Date | undefined): string {
   if (!date) return 'Date non spécifiée';
-  
+
   const dateObject = typeof date === 'string' ? new Date(date) : date;
-  
-  return dateObject.toLocaleDateString(undefined, {
+
+  // Ajuster la date pour le fuseau horaire local
+  const utcDate = new Date(dateObject.getTime() + dateObject.getTimezoneOffset() * 60000);
+
+  return utcDate.toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
 }
+
 
 async function handlePhotoChange(event: Event) {
   const target = event.target as HTMLInputElement;
@@ -109,11 +114,11 @@ function triggerPhotoUpload() {
   </script>
   
   <template>
+      <NavigationBar></NavigationBar> 
     <div class="page-container">
       <header class="header">
-        <Logo class="logo" />
-        <SettingButton class="settings" />
-      </header>
+      
+          </header>
   
       <div class="profile-container">
         <h1>{{ t('myProfile.title') }}</h1>

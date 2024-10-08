@@ -38,7 +38,7 @@ export default {
   restaurateur: 'Restaurateur',
   createRestaurant: 'Créer un restaurant',
   myRestaurants: 'Voir mes restaurants',
-
+  avis:'Avis',
   sort: {
     label: 'Trier par',
     rating: 'Note',
@@ -78,5 +78,6 @@ export default {
     schedulePlaceholder: "Heures d'ouverture",
     uploadMenu: 'Téléverser mon menu',
     submit: 'Créer mon restaurant'
-  }
+  },
+  
 }
