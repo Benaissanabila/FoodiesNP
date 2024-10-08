@@ -149,7 +149,7 @@ const handleMapWheel = (e: WheelEvent) => {
     e.preventDefault(); // Empêche le défilement de la page si l'interaction est activée
     if (map.value) {
       const currentZoom = map.value.getZoom();
-      map.value.setZoom(currentZoom + e.deltaY * -0.01);
+      map.value.setZoom(currentZoom + e.deltaY * -0.008);
     }
   }
 }

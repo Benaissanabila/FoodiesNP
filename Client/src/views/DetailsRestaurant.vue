@@ -1,16 +1,3 @@
-<template>
-  <div>
-    <NavigationBar />
-    <ReservationTable />
-    <CommentsList 
-      v-if="restaurant" 
-      :restaurantId="restaurant._id" 
-      :restaurantName="restaurant.name" 
-    />
-    <p v-else>Chargement du restaurant...</p> <!-- Message de chargement -->
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore';
@@ -19,6 +6,7 @@ import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'; // A
 import CommentsList from '@/components/commentsList.vue';
 import NavigationBar from '@/components/NavigationBar.vue';
 import ReservationTable from '@/components/ReservationTable.vue';
+import Footer from '@/components/Footer.vue';
 
 const restaurantStore = useRestaurantStore();
 const restaurant = ref<IRestaurant | null>(null); // Type explicite ici
@@ -34,7 +22,19 @@ onMounted(async () => {
   restaurant.value = restaurantStore.restaurants.find(r => r._id === restaurantId) || null;
 });
 </script>
-
+<template>
+  <div>
+    <NavigationBar />
+    <ReservationTable />
+    <CommentsList 
+      v-if="restaurant" 
+      :restaurantId="restaurant._id" 
+      :restaurantName="restaurant.name" 
+    />
+    <p v-else>Chargement du restaurant...</p> <!-- Message de chargement -->
+  </div>
+  <Footer />
+</template>
 <style>
 /* Ajoutez vos styles ici si nécessaire */
 </style>

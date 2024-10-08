@@ -6,6 +6,7 @@
   import SettingButton from '@/components/SettingButton.vue';
   import Logo from '@/components/Logo.vue';
   import { useI18n } from 'vue-i18n';
+  import Footer from '@/components/Footer.vue';
 
   const userStore = useUserStore();
   const router = useRouter();
@@ -160,6 +161,7 @@ function triggerPhotoUpload() {
         </div>
       </div>
     </div>
+    <Footer />
   </template>
 
   <style scoped>

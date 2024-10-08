@@ -3,6 +3,7 @@
   import { useI18n } from 'vue-i18n';
   import { useRestaurantStore } from '@/stores/RestaurantStore';
   import { useRouter } from 'vue-router';
+  import Footer from '@/components/Footer.vue';
   
   const { t } = useI18n();
   const restaurantStore = useRestaurantStore();
@@ -100,6 +101,8 @@
         <button type="submit" class="btn btn-primary">{{ $t('createMyRestaurant.submit') }}</button>
       </form>
     </div>
+  
+    <Footer />
   </template>
   
  

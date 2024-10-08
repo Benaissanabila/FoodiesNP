@@ -5,6 +5,7 @@ import { useUserStore } from '@/stores/UserStore';
 import { useI18n } from 'vue-i18n'; // Importation de vue-i18n pour la traduction
 import SettingButton from '@/components/SettingButton.vue';
 import Logo from '@/components/Logo.vue';
+import Footer from '@/components/Footer.vue';
 
 const store = useUserStore();
 const email = ref('');
@@ -60,6 +61,8 @@ const goToCreateAccount = () => {
       {{ t('loginPage.createAccount') }}
     </button>
   </div>
+
+  <Footer />
 </template>
 
 <style scoped>
