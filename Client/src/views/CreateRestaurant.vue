@@ -4,6 +4,8 @@
   import { useRestaurantStore } from '@/stores/RestaurantStore';
   import { useRouter } from 'vue-router';
   import Footer from '@/components/Footer.vue';
+  import SettingButton from '@/components/SettingButton.vue';
+  import Logo from '@/components/Logo.vue';
   
   const { t } = useI18n();
   const restaurantStore = useRestaurantStore();
@@ -57,10 +59,14 @@
   </script>
   
   <template>
-    <div class="page-container">
-      <div class="content-wrap">
-        <div class="create-restaurant-container">
-          <h1>{{ $t('createMyRestaurant.title') }}</h1>
+     <div class="page-container">
+    <header class="header">
+      <Logo class="logo" />
+      <SettingButton class="settings" />
+    </header>
+    <div class="content-wrap">
+      <div class="create-restaurant-container">
+        <h1>{{ $t('createMyRestaurant.title') }}</h1>
           
           <div class="photo-container">
             <img :src="previewImage || '/placeholder-restaurant.png'" alt="Restaurant Photo" class="restaurant-photo">
@@ -169,4 +175,18 @@
     background-color: #6c757d;
     color: white;
   }
+
+  .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+
+}
+
+.logo {
+ 
+  height: 40px;
+}
+
   </style>
