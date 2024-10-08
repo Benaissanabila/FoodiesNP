@@ -5,6 +5,7 @@
   import type { IUser } from '@/shared/interfaces/UserInterface';
  
   import { useI18n } from 'vue-i18n';
+  import Footer from '@/components/Footer.vue';
 import NavigationBar from '@/components/NavigationBar.vue';
 
 
@@ -165,6 +166,7 @@ function triggerPhotoUpload() {
         </div>
       </div>
     </div>
+    <Footer />
   </template>
 
   <style scoped>

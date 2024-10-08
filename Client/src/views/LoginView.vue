@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
-import { useI18n } from 'vue-i18n'; // Importation de vue-i18n pour la traduction
+import { useI18n } from 'vue-i18n';
 import SettingButton from '@/components/SettingButton.vue';
 import Logo from '@/components/Logo.vue';
+import Footer from '@/components/Footer.vue';
 
 const store = useUserStore();
 const email = ref('');
 const password = ref('');
 const router = useRouter();
+const route = useRoute();
 const { t } = useI18n(); // Utiliser la fonction `t` pour les traductions
 
 // Fonction de login
@@ -27,47 +29,71 @@ const login = async () => {
 const goToCreateAccount = () => {
   router.push('/create-account');
 };
+
+onMounted(() => {
+  if (store.isAuthenticated) {
+    const redirectPath = route.query.redirect as string || '/';
+    router.push(redirectPath);
+  }
+});
 </script>
 
 <template>
-  <div class="header">
-    <Logo class="logo" /> <!-- Logo en haut à gauche -->
-    <SettingButton class="settings" /> <!-- Bouton Paramètres en haut à droite -->
-  </div>
-
-  <div class="login-container">
-    <h2>{{ t('loginPage.title') }}</h2> <!-- Titre traduit -->
-
-    <form @submit.prevent="login" class="login-form">
-      <div class="form-group">
-        <label for="email">{{ t('loginPage.email') }}:</label>
-        <input id="email" v-model="email" type="email" required :placeholder="t('loginPage.emailPlaceholder')" />
+  <div class="page-container">
+    <div class="content-wrap">
+      <div class="header">
+        <Logo class="logo" />
+        <SettingButton class="settings" />
       </div>
 
-      <div class="form-group">
-        <label for="password">{{ t('loginPage.password') }}:</label>
-        <input id="password" v-model="password" type="password" required :placeholder="t('loginPage.passwordPlaceholder')" />
+      <div class="login-container">
+        <h2>{{ t('loginPage.title') }}</h2>
+
+        <form @submit.prevent="login" class="login-form">
+          <div class="form-group">
+            <label for="email">{{ t('loginPage.email') }}:</label>
+            <input id="email" v-model="email" type="email" required :placeholder="t('loginPage.emailPlaceholder')" />
+          </div>
+
+          <div class="form-group">
+            <label for="password">{{ t('loginPage.password') }}:</label>
+            <input id="password" v-model="password" type="password" required :placeholder="t('loginPage.passwordPlaceholder')" />
+          </div>
+
+          <button type="submit" class="submit-button">{{ t('loginPage.submit') }}</button>
+        </form>
+
+        <div v-if="store.loading" class="loading-message">{{ t('loginPage.loading') }}</div>
+        <div v-if="store.error" class="error-message">{{ store.error }}</div>
+
+        <button class="create-account-button" @click="goToCreateAccount">
+          {{ t('loginPage.createAccount') }}
+        </button>
       </div>
+    </div>
 
-      <button type="submit" class="submit-button">{{ t('loginPage.submit') }}</button>
-    </form>
-
-    <div v-if="store.loading" class="loading-message">{{ t('loginPage.loading') }}</div>
-    <div v-if="store.error" class="error-message">{{ store.error }}</div>
-
-    <!-- Bouton pour créer un compte -->
-    <button class="create-account-button" @click="goToCreateAccount">
-      {{ t('loginPage.createAccount') }}
-    </button>
+    <Footer />
   </div>
 </template>
 
 <style scoped>
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  padding: 10px;
 }
 
 .logo {

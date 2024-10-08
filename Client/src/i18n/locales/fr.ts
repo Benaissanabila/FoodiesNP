@@ -79,5 +79,7 @@ export default {
     uploadMenu: 'Téléverser mon menu',
     submit: 'Créer mon restaurant'
   },
-  
+  footer: {
+    copyright: '© {year} FOODIES - tous droits réservés'
+  }
 }

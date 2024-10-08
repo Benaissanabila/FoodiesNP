@@ -76,5 +76,8 @@ export default {
     schedulePlaceholder: 'Opening hours',
     uploadMenu: 'Upload my menu',
     submit: 'Create my restaurant'
+  },
+  footer: {
+    copyright: '© {year} FOODIES - all rights reserved'
   }
 }

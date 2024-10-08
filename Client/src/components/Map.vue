@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onUnmounted } from 'vue'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useRestaurantStore } from '@/stores/RestaurantStore' // Importation du store
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
 
-const mapboxToken = 'pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw'
+const mapboxToken =
+  'pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw'
 const mapContainer = ref<HTMLElement | null>(null)
 const map = ref<mapboxgl.Map>()
+const isMapInteractive = ref(false)
 const restaurantStore = useRestaurantStore() // Utilisation du store
 const userLocationMarker = ref<mapboxgl.Marker | null>(null) // Stockage du marqueur de l'utilisateur
 
@@ -64,69 +66,100 @@ const getUserLocation = () => {
 
 // Fonction pour ajuster la carte pour englober tous les restaurants filtrés
 const fitMapToMarkers = (restaurants: IRestaurant[]) => {
-  if (restaurants.length === 0 || !map.value) return;
+  if (restaurants.length === 0 || !map.value) return
 
-  const bounds = new mapboxgl.LngLatBounds();
+  const bounds = new mapboxgl.LngLatBounds()
   restaurants.forEach((restaurant) => {
-    if (restaurant.longitude != null && restaurant.latitude != null) { // Vérifie si les valeurs ne sont pas null ou undefined
-      bounds.extend([restaurant.longitude, restaurant.latitude]);
+    if (restaurant.longitude != null && restaurant.latitude != null) {
+      // Vérifie si les valeurs ne sont pas null ou undefined
+      bounds.extend([restaurant.longitude, restaurant.latitude])
     }
-  });
+  })
 
   if (!bounds.isEmpty()) {
     map.value.fitBounds(bounds, {
       padding: 50,
-      maxZoom: 14,
-    });
+      maxZoom: 14
+    })
   }
-};
+}
 
 // Fonction pour récupérer et afficher les restaurants avec leurs emplacements
 const getRestaurantLocation = async () => {
-  await restaurantStore.loadRestaurants(); // Charger les restaurants via le store
-  
-  const restaurants = restaurantStore.getAllRestaurants; // Récupérer tous les restaurants
-  const mapInstance = map.value as mapboxgl.Map;
-  
+  await restaurantStore.loadRestaurants() // Charger les restaurants via le store
+
+  const restaurants = restaurantStore.getAllRestaurants // Récupérer tous les restaurants
+  const mapInstance = map.value as mapboxgl.Map
+
   if (mapInstance && restaurants) {
-    await restaurantStore.updateRestaurantMarkers(mapInstance, restaurants); // Mettre à jour les marqueurs des restaurants
-    fitMapToMarkers(restaurants); // Adapter la carte aux marqueurs
+    await restaurantStore.updateRestaurantMarkers(mapInstance, restaurants) // Mettre à jour les marqueurs des restaurants
+    fitMapToMarkers(restaurants) // Adapter la carte aux marqueurs
   }
-};
+}
 
 // Update markers function
 const updateMarkers = async () => {
-  const currentMap = map.value as mapboxgl.Map;
+  const currentMap = map.value as mapboxgl.Map
   if (currentMap) {
     try {
       // Clear existing markers if the search query is empty
       if (!restaurantStore.searchQuery.trim()) {
-        restaurantStore.clearMarkers(currentMap);
-        return; // Stop if the search is empty
+        restaurantStore.clearMarkers(currentMap)
+        return // Stop if the search is empty
       }
 
       // Use the filtered restaurants
-      const filteredRestaurants = restaurantStore.getFilteredRestaurants;
+      const filteredRestaurants = restaurantStore.getFilteredRestaurants
 
       // Filter out restaurants without coordinates
       const validRestaurants = filteredRestaurants.filter(
         (restaurant) => restaurant.longitude !== undefined && restaurant.latitude !== undefined
-      );
+      )
 
       // Update markers if there are valid restaurants
       if (validRestaurants.length > 0) {
-        await restaurantStore.updateRestaurantMarkers(currentMap, validRestaurants);
+        await restaurantStore.updateRestaurantMarkers(currentMap, validRestaurants)
 
         // Fit map to valid restaurants
-        fitMapToMarkers(validRestaurants as IRestaurant[]);
+        fitMapToMarkers(validRestaurants as IRestaurant[])
       } else {
-        restaurantStore.clearMarkers(currentMap); // Clear markers if no valid results
+        restaurantStore.clearMarkers(currentMap) // Clear markers if no valid results
       }
     } catch (error) {
-      console.error('Error updating restaurant markers:', error);
+      console.error('Error updating restaurant markers:', error)
     }
   }
-};
+}
+
+const toggleMapInteraction = (e: MouseEvent) => {
+  e.stopPropagation(); // Empêche l'événement de se propager
+  isMapInteractive.value = !isMapInteractive.value;
+  if (map.value) {
+    if (isMapInteractive.value) {
+      map.value.scrollZoom.enable();
+    } else {
+      map.value.scrollZoom.disable();
+    }
+  }
+  console.log('Map interaction:', isMapInteractive.value ? 'enabled' : 'disabled');
+}
+
+const handleMapWheel = (e: WheelEvent) => {
+  if (isMapInteractive.value) {
+    e.preventDefault(); // Empêche le défilement de la page si l'interaction est activée
+    if (map.value) {
+      const currentZoom = map.value.getZoom();
+      map.value.setZoom(currentZoom + e.deltaY * -0.008);
+    }
+  }
+}
+
+const handleMapTouchStart = (e: TouchEvent) => {
+  if (isMapInteractive.value && e.touches.length === 2) {
+    e.preventDefault(); // Empêche le pinch-zoom du navigateur si l'interaction est activée
+  }
+}
+
 
 // Initialisation de la carte au montage
 onMounted(() => {
@@ -136,8 +169,14 @@ onMounted(() => {
       style: 'mapbox://styles/mapbox/streets-v9',
       center: [viewport.longitude, viewport.latitude],
       zoom: viewport.zoom,
-      accessToken: mapboxToken
+      accessToken: mapboxToken,
+      scrollZoom: false // Désactiver le zoom par défaut
     })
+
+    mapContainer.value.addEventListener('click', toggleMapInteraction);
+    mapContainer.value.addEventListener('wheel', handleMapWheel, { passive: false });
+    mapContainer.value.addEventListener('touchstart', handleMapTouchStart, { passive: false });
+
 
     // Ne pas charger de marqueurs au démarrage pour garder la carte vide
     restaurantStore.clearMarkers(map.value as any) // Assurez-vous que la carte est vide au début
@@ -146,7 +185,15 @@ onMounted(() => {
     getUserLocation()
 
     // Charger et afficher les emplacements des restaurants
-    getRestaurantLocation(); 
+    getRestaurantLocation()
+  }
+})
+
+onUnmounted(() => {
+  if (mapContainer.value) {
+    mapContainer.value.removeEventListener('click', toggleMapInteraction);
+    mapContainer.value.removeEventListener('wheel', handleMapWheel);
+    mapContainer.value.removeEventListener('touchstart', handleMapTouchStart);
   }
 })
 
@@ -172,7 +219,7 @@ watch(
   top: -118px;
   padding: 0px;
   width: 100vw;
-  height: 100vh; 
+  height: 100vh;
 }
 
 .map {
@@ -180,8 +227,15 @@ watch(
   top: 0;
   width: 100%;
   height: 100%;
+  touch-action: pan-y; /* Permet le défilement vertical sur mobile */
 }
 
+.map-interactive {
+  cursor: move; /* Change le curseur pour indiquer que la carte est interactive */
+}
 
-
+/* Ajout de cette règle pour permettre le défilement vertical par défaut */
+.map:not(.map-interactive) {
+  touch-action: pan-y;
+}
 </style>

@@ -4,7 +4,8 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import { useI18n } from 'vue-i18n'; // Importer vue-i18n
 import SettingButton from '@/components/SettingButton.vue';
-import Logo from '@/components/Logo.vue';
+import Logo from '@/components/Logo.vue'; 
+import Footer from '@/components/Footer.vue';
 
 const store = useUserStore();
 const router = useRouter();
@@ -83,6 +84,8 @@ const createAccount = async () => {
     <div v-if="store.loading" class="loading-message">{{ t('creatingAccount') }}</div>
     <div v-if="store.error" class="error-message">{{ store.error }}</div>
   </div>
+
+  <Footer />
 </template>
 
 <style scoped>
