@@ -9,6 +9,7 @@
 import NavigationBar from '@/components/NavigationBar.vue';
 
 
+
   const userStore = useUserStore();
   const router = useRouter();
   const { t } = useI18n();
@@ -33,9 +34,17 @@ import NavigationBar from '@/components/NavigationBar.vue';
   });
   
   function startEditing() {
-    editedUser.value = { ...user.value };
-    isEditing.value = true;
+  editedUser.value = { ...user.value };
+
+  // Si la date de naissance existe, la formater pour le champ 'date'
+  if (editedUser.value.DOB) {
+    editedUser.value.DOB = formatDateForInput(editedUser.value.DOB);
   }
+
+  isEditing.value = true;
+}
+
+
   
   function cancelEdit() {
     isEditing.value = false;
@@ -112,6 +121,16 @@ function triggerPhotoUpload() {
     input.click();
   }
 }
+
+function formatDateForInput(date: string | Date | undefined): string {
+  if (!date) return '';
+
+  const dateObject = typeof date === 'string' ? new Date(date) : date;
+  // Retourne la date au format 'YYYY-MM-DD' attendu par le champ 'date'
+  return dateObject.toISOString().split('T')[0];
+}
+
+
   </script>
   
   <template>
@@ -149,9 +168,10 @@ function triggerPhotoUpload() {
               <input id="email" v-model="editedUser.email" type="email" required>
             </div>
             <div class="form-group">
-              <label for="dob">{{ t('myProfile.dob') }}:</label>
-              <input id="dob" v-model="editedUser.DOB" type="date" required>
-            </div>
+  <label for="dob">{{ t('myProfile.dob') }}:</label>
+  <input id="dob" v-model="editedUser.DOB" type="date" required>
+</div>
+
             <button type="submit" class="btn btn-primary">{{ t('myProfile.save') }}</button>
             <button @click="cancelEdit" class="btn btn-secondary">{{ t('myProfile.cancel') }}</button>
           </form>
@@ -166,7 +186,7 @@ function triggerPhotoUpload() {
         </div>
       </div>
     </div>
-    <Footer />
+   <Footer></Footer>
   </template>
 
   <style scoped>
