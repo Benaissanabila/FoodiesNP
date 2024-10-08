@@ -18,7 +18,9 @@ const onSortChange = () => {
     <label for="sort-select">{{ t('sort.label') }} :</label> <!-- Utilisation de la traduction -->
     <select id="sort-select" v-model="selectedSort" @change="onSortChange">
       <option value="rating">{{ t('sort.rating') }}</option> <!-- Traduction pour 'Note' -->
+      <option value="nom">{{ t('sort.nom') }}</option> <!-- Traduction pour 'Note' -->
       <option value="distance">{{ t('sort.distance') }}</option> <!-- Traduction pour 'Distance' -->
+     
     </select>
   </div>
 </template>
