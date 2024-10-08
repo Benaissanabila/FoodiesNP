@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue'
 import CreateAccount from '@/views/CreateAccount.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import CreateRestaurant from '@/views/CreateRestaurant.vue';
+import { useUserStore } from '@/stores/UserStore';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +18,8 @@ const router = createRouter({
     {
       path: '/restaurantdetails/:id',
       name: 'restaurantdetails',
-      component: DetailsRestaurant
+      component: DetailsRestaurant,
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',
@@ -40,6 +42,16 @@ const router = createRouter({
       component: CreateRestaurant
     },
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+  
+  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
+    next({ name: 'Login', query: { redirect: to.fullPath } })
+  } else {
+    next()
+  }
 })
 
 export default router
