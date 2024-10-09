@@ -208,7 +208,7 @@ watch(
 
 <template>
   <div class="map-container">
-    <!-- Conteneur de la carte -->
+  
     <div ref="mapContainer" class="map"></div>
   </div>
 </template>

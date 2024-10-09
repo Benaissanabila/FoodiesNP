@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
+    twoFactorCode: { 
+      type: String, 
+      select: false 
+    }
   },
   { timestamps: true }
 );
