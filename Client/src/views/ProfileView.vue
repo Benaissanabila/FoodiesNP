@@ -3,22 +3,18 @@
   import { useUserStore } from '@/stores/UserStore';
   import { useRouter } from 'vue-router';
   import type { IUser } from '@/shared/interfaces/UserInterface';
- 
+  import editIcon from '@/assets/image/edit.svg';
   import { useI18n } from 'vue-i18n';
   import Footer from '@/components/Footer.vue';
-import NavigationBar from '@/components/NavigationBar.vue';
-
-
+  import NavigationBar from '@/components/NavigationBar.vue';
 
   const userStore = useUserStore();
   const router = useRouter();
   const { t } = useI18n();
-  
   const user = computed(() => userStore.user as IUser);
   const isEditing = ref(false);
   const editedUser = ref({} as IUser);
   const newProfilePhoto = ref<File | null>(null);
-
 
   
   const profilePhotoUrl = computed(() => {
@@ -76,7 +72,7 @@ function confirmDelete() {
     } catch (error) {
       console.error('Erreur lors de la suppression du compte:', error);
     }
-  }
+  } 
   
   function formatDate(date: string | Date | undefined): string {
   if (!date) return 'Date non spécifiée';
@@ -126,7 +122,7 @@ function formatDateForInput(date: string | Date | undefined): string {
   if (!date) return '';
 
   const dateObject = typeof date === 'string' ? new Date(date) : date;
-  // Retourne la date au format 'YYYY-MM-DD' attendu par le champ 'date'
+ 
   return dateObject.toISOString().split('T')[0];
 }
 
@@ -180,7 +176,9 @@ function formatDateForInput(date: string | Date | undefined): string {
             <p><strong>{{ t('myProfile.name') }}:</strong> {{ user.name }}</p>
             <p><strong>{{ t('myProfile.email') }}:</strong> {{ user.email }}</p>
             <p><strong>{{ t('myProfile.dob') }}:</strong> {{ formatDate(user.DOB) }}</p>
-            <button @click="startEditing" class="btn btn-primary">{{ t('myProfile.edit') }}</button>
+            <button @click="startEditing" class="btn btn-primary">
+    <img :src="editIcon" alt="Edit icon" width="16" height="16">
+  </button>
             <button @click="confirmDelete" class="btn btn-danger">{{ t('myProfile.delete') }}</button>
           </div>
         </div>
@@ -189,67 +187,157 @@ function formatDateForInput(date: string | Date | undefined): string {
    <Footer></Footer>
   </template>
 
-  <style scoped>
- .page-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+<style scoped>
+.btn img {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
 }
-
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px;
+  
 }
+
 .profile-container {
   max-width: 600px;
-  margin: 2rem auto;
+  margin: 3rem auto;
   padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
-  .profile-photo {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 20px;
+
+h1 {
+  font-size: 1.8rem;
+  color: #343a40;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.photo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.profile-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 2px solid #00bcd4;
+}
+
+.photo-change-btn {
+  background-color: #00bcd4;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.photo-change-btn:hover {
+  background-color: #008c9e;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+  color: #495057;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #495057;
+ 
+}
+
+input:focus {
+  border-color: #00bcd4;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #00bcd4;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #008c9e;
+}
+
+.btn-secondary {
+  background-color: #00bcd4;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #008c9e;
+}
+
+.btn-danger {
+  margin-left: 40px;
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.profile-info p {
+  font-size: 1rem;
+  color: #343a40;
+  margin-bottom: 15px;
+}
+
+.profile-info p strong {
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 20px;
   }
-  
-  .form-group {
-    margin-bottom: 15px;
+
+  h1 {
+    font-size: 1.5rem;
   }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
+
   .btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
+    width: 100%;
+    margin-bottom: 10px;
   }
-  
-  .btn-primary {
-    background-color: #00bcd4;
-    color: white;
-  }
-  
-  .btn-secondary {
-    background-color: #00bcd4;;
-    color: white;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-    color: white;
-  }
-  </style>
+}
+</style>
+
+ 
+

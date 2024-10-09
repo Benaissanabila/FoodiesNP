@@ -85,7 +85,7 @@ const createAccount = async () => {
     <div v-if="store.error" class="error-message">{{ store.error }}</div>
   </div>
 
-  <Footer />
+<Footer></Footer>
 </template>
 
 <style scoped>
