@@ -42,7 +42,7 @@ export const useReservationStore = defineStore('reservation', {
 
     // Create a new reservation
     // Create a new reservation
-    async createReservation(payload: { tableId: number; numberOfPersons: number; reservationDate: string; restaurant: string;user:string }) {
+    async createReservation(payload: { tableId: number; numberOfPersons: number; reservationDate: Date; restaurant: string;user:string }) {
       try {
         const response = await axios.post('http://localhost:3000/reservations', payload);
         this.reservations.push(response.data); // Ajoutez la nouvelle réservation à la liste
