@@ -145,7 +145,8 @@ function formatDateForInput(date: string | Date | undefined): string {
         
         <div v-if="user" class="profile-info">
           <div class="photo-container">
-            <img :key="user.UserPhoto" :src="profilePhotoUrl" :alt="t('profile.photoAlt')" class="profile-photo">
+            <img :key="user.UserPhoto" :src="profilePhotoUrl" alt="Photo de profil" class="profile-photo">
+
             <input 
               type="file" 
               id="photoInput" 

@@ -54,6 +54,7 @@ export default {
     loading: 'Connexion en cours...',
     createAccount: 'Créer un compte'
   },
+ 
   myProfile: {
     title: 'Mon profil',
     photoAlt: 'Photo de profil',
@@ -81,5 +82,6 @@ export default {
   },
   footer: {
     copyright: '© {year} FOODIES - tous droits réservés'
-  }
+  },
+
 }

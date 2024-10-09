@@ -70,24 +70,28 @@ const hasProfilePhoto = computed(() => {
 
 // URL fixe du serveur backend
 const BACKEND_URL = 'http://localhost:3000';
-
 const profilePhotoUrl = computed(() => {
-  if (!store.user?.UserPhoto) return '';
-  
-  // Assurez-vous que le chemin ne contient pas de slash au début
+  if (!store.user || !store.user.UserPhoto) {
+    console.log('User or UserPhoto is undefined');
+    return ''; // Retourne une chaîne vide si l'utilisateur ou la photo n'est pas défini
+  }
+
   const photoPath = store.user.UserPhoto.startsWith('/') 
     ? store.user.UserPhoto.slice(1) 
     : store.user.UserPhoto;
   
-  const fullUrl = `${BACKEND_URL}/${photoPath}`;
+  const fullUrl = `${BACKEND_URL}/uploads/${photoPath}`;
   console.log('URL complète de la photo de profil:', fullUrl);
   return fullUrl;
 });
 
+
+
 const handleImageError = () => {
-  imageError.value = true;
-  console.error('Failed to load profile image');
+  imageError.value = true; 
+  console.error('Échec du chargement de l\'image de profil');
 };
+
 
 watch(() => store.user, () => {
   imageError.value = false;
@@ -95,6 +99,7 @@ watch(() => store.user, () => {
 
 onMounted(() => {
   store.checkAuth();
+  console.log('User data:', store.user);
 });
 
 const goToCreateRestaurant = () => {
@@ -119,7 +124,7 @@ const toggleRestaurateurSubmenu = (event: Event) => {
       <img
         v-if="hasProfilePhoto && !imageError"
         :src="profilePhotoUrl"
-        :alt="t('profilePhoto')"
+       alt="Photo de profil"
         class="profile-photo"
         @error="handleImageError"
       >
