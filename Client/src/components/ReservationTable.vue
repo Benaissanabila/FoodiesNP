@@ -116,11 +116,18 @@ const confirmReservation = async () => {
     restaurant.value?._id &&
     user.value?._id
   ) {
-    const reservationDate = new Date(`${selectedDate.value.toDateString()} ${selectedTime.value}`).toISOString();
+    // Créer la date de réservation en utilisant l'heure locale
+    const dateString = `${selectedDate.value.toISOString().split('T')[0]}T${selectedTime.value}:00`;
+    console.log("datestring",dateString)
+    const reservationDate = new Date(dateString);
+    
+    // Convertir la date de réservation à l'ISO string pour l'envoi
+    const reservationDateISOString = reservationDate;
+
     const reservationData = {
       tableId: Math.floor(Math.random() * 10) + 1, // ID de table généré aléatoirement
       numberOfPersons: numberOfGuests.value,
-      reservationDate,
+      reservationDate: reservationDateISOString,
       restaurant: restaurant.value._id,
       user: user.value._id, // ID de l'utilisateur
     };
