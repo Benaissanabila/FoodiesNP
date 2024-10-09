@@ -80,7 +80,7 @@ console.log('reservation récupéré:', reservation. reservationDate);
      hour12: false,
      timeZone: 'America/New_York' // Change cela selon ton fuseau horaire
  };
-
+ reservationDate.setHours(reservationDate.getHours() + 4);
  // Utiliser 'fr-FR' pour le format français
  const formattedDate = reservationDate.toLocaleDateString('fr-FR', optionsDate).replace(',', '');
  const formattedTime = reservationDate.toLocaleTimeString('fr-FR', optionsTime);
