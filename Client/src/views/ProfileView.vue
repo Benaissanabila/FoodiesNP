@@ -4,6 +4,7 @@
   import { useRouter } from 'vue-router';
   import type { IUser } from '@/shared/interfaces/UserInterface';
   import editIcon from '@/assets/image/edit.svg';
+  import deleteIcon from '@/assets/image/delete.svg'
   import { useI18n } from 'vue-i18n';
   import Footer from '@/components/Footer.vue';
   import NavigationBar from '@/components/NavigationBar.vue';
@@ -60,8 +61,11 @@
 }
   
 function confirmDelete() {
-  if (confirm(t('myProfile.deleteConfirmation'))) {
-    deleteProfile();
+  const confirmationMessage = `Êtes-vous sûr de vouloir supprimer le profil de ${user.value.name} ?`;
+  const confirmed = confirm(confirmationMessage);
+
+  if (confirmed) {
+    deleteProfile();  
   }
 }
   
@@ -132,12 +136,12 @@ function formatDateForInput(date: string | Date | undefined): string {
   <template>
       <NavigationBar></NavigationBar> 
     <div class="page-container">
-      <header class="header">
-      
-          </header>
+     
   
-      <div class="profile-container">
+      <div class="profile-container"> 
+           
         <h1>{{ t('myProfile.title') }}</h1>
+    
         
         <div v-if="user" class="profile-info">
           <div class="photo-container">
@@ -163,43 +167,60 @@ function formatDateForInput(date: string | Date | undefined): string {
               <label for="email">{{ t('myProfile.email') }}:</label>
               <input id="email" v-model="editedUser.email" type="email" required>
             </div>
+            
             <div class="form-group">
   <label for="dob">{{ t('myProfile.dob') }}:</label>
   <input id="dob" v-model="editedUser.DOB" type="date" required>
 </div>
 
-            <button type="submit" class="btn btn-primary">{{ t('myProfile.save') }}</button>
-            <button @click="cancelEdit" class="btn btn-secondary">{{ t('myProfile.cancel') }}</button>
+<div class="form-buttons">
+    <button type="submit" class="btn btn-primary">{{ t('myProfile.save') }}</button>
+    <button @click="cancelEdit" class="btn btn-primary">{{ t('myProfile.cancel') }}</button>
+  </div>
           </form>
           
           <div v-else>
             <p><strong>{{ t('myProfile.name') }}:</strong> {{ user.name }}</p>
             <p><strong>{{ t('myProfile.email') }}:</strong> {{ user.email }}</p>
             <p><strong>{{ t('myProfile.dob') }}:</strong> {{ formatDate(user.DOB) }}</p>
-            <button @click="startEditing" class="btn btn-primary">
-    <img :src="editIcon" alt="Edit icon" width="16" height="16">
+            
+            <button @click="startEditing" class="btn-profile">
+    <img :src="editIcon" alt="Edit icon" width="25" height="25">
   </button>
-            <button @click="confirmDelete" class="btn btn-danger">{{ t('myProfile.delete') }}</button>
+  <button @click="confirmDelete" class="btn-profile"><img :src="deleteIcon" alt="Edit icon" width="25" height="25" ></button>
           </div>
+          
         </div>
+        
       </div>
     </div>
    <Footer></Footer>
   </template>
 
 <style scoped>
+
+
 .btn img {
   margin-right: 8px;
   width: 16px;
   height: 16px;
   vertical-align: middle;
 }
+
+.btn-profile {
+  background-color: transparent;
+  margin-top: -20px;
+
+  border: none;
+  cursor: pointer;
+  float: right;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  
 }
 
 .profile-container {
@@ -207,13 +228,13 @@ function formatDateForInput(date: string | Date | undefined): string {
   margin: 3rem auto;
   padding: 20px;
   background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
 
 h1 {
   font-size: 1.8rem;
-  color: #343a40;
+  color: #040404;
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -231,7 +252,7 @@ h1 {
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 10px;
-  border: 2px solid #00bcd4;
+  border: 3px solid #00bcd4;
 }
 
 .photo-change-btn {
@@ -249,25 +270,45 @@ h1 {
   background-color: #008c9e;
 }
 
+/* Form Edit Styles */
+form {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Ajoute un espace entre les boutons */
+  margin-top: 20px; /* Marge en haut pour espacer des champs de saisie */
+}
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 label {
   font-weight: bold;
   display: block;
   margin-bottom: 8px;
-  color: #495057;
+  color: #2f2f2f;
+  width: 100%;
+  max-width: 400px;
 }
 
 input {
   width: 100%;
+  max-width: 400px;
   padding: 10px;
-  border: none;
   border-radius: 5px;
   font-size: 1rem;
   color: #495057;
- 
+  border: 1px solid #ced4da;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 input:focus {
@@ -278,39 +319,24 @@ input:focus {
 
 .btn {
   padding: 10px 20px;
-  border: none;
+  border: black;
   border-radius: 25px;
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.3s ease;
+  margin-top: 1rem;
+
 }
 
 .btn-primary {
   background-color: #00bcd4;
   color: white;
+  width: 150px;
+  margin: 20px;
 }
 
 .btn-primary:hover {
   background-color: #008c9e;
-}
-
-.btn-secondary {
-  background-color: #00bcd4;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #008c9e;
-}
-
-.btn-danger {
-  margin-left: 40px;
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
 }
 
 .profile-info p {
@@ -336,7 +362,12 @@ input:focus {
     width: 100%;
     margin-bottom: 10px;
   }
+
+  input {
+    width: 100%;
+  }
 }
+
 </style>
 
  

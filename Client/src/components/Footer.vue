@@ -19,12 +19,18 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.footer {
-  width: 100%;
-  padding: 10px 0;
+
+  .footer {
+  height: 50px; /* Hauteur fixe */
+  width: 100%; /* Largeur maximale */
+  display: flex;
+  justify-content: center; /* Centrer le contenu horizontalement */
+  align-items: center; /* Centrer le contenu verticalement */
+  color: white; /* Couleur du texte */
   border-top: 1px solid black;
-  margin-top: auto; /* Pousse le footer vers le bas */
 }
+  
+  
 
 .copyright {
   text-align: center;
