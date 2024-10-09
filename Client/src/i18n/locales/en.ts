@@ -37,7 +37,7 @@ export default {
   enterName: 'Enter your name',
   createRestaurant: 'Create a Restaurant',
   myRestaurants: 'View My Restaurants',
-  avis:'Reviews',
+  avis: 'Reviews',
   sort: {
     label: 'Sort by',
     rating: 'Rating',
@@ -105,5 +105,13 @@ export default {
 
   footer: {
     copyright: '© {year} FOODIES - all rights reserved'
+  },
+
+  twoFA: {
+    title: 'Two-Factor Authentication',
+    instruction: 'Please enter the 6-digit code you received.',
+    codePlaceholder: 'Enter your code',
+    submit: 'Verify',
+    invalidCode: 'Invalid code. Please try again.'
   }
 }

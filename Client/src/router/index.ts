@@ -6,6 +6,7 @@ import CreateAccount from '@/views/CreateAccount.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import CreateRestaurant from '@/views/CreateRestaurant.vue';
 import { useUserStore } from '@/stores/UserStore';
+import TwoFAView from '@/views/TwoFAView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +41,11 @@ const router = createRouter({
       path: '/create-restaurant',
       name: 'CreateRestaurant',
       component: CreateRestaurant
+    },
+    {
+      path: '/two-fa',
+      name: 'TwoFA',
+      component: TwoFAView
     },
   ]
 })

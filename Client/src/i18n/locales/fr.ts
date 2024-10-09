@@ -38,7 +38,7 @@ export default {
   restaurateur: 'Restaurateur',
   createRestaurant: 'Créer un restaurant',
   myRestaurants: 'Voir mes restaurants',
-  avis:'Avis',
+  avis: 'Avis',
   sort: {
     label: 'Trier par',
     rating: 'Note',
@@ -54,7 +54,7 @@ export default {
     loading: 'Connexion en cours...',
     createAccount: 'Créer un compte'
   },
- 
+
   myProfile: {
     title: 'Mon profil',
     photoAlt: 'Photo de profil',
@@ -110,4 +110,11 @@ export default {
     copyright: '© {year} FOODIES - tous droits réservés'
   },
 
+  twoFA: {
+    title: 'Authentification à deux facteurs',
+    instruction: 'Veuillez entrer le code à 6 chiffres que vous avez reçu.',
+    codePlaceholder: 'Entrez votre code',
+    submit: 'Vérifier',
+    invalidCode: 'Code invalide. Veuillez réessayer.'
+  }
 }

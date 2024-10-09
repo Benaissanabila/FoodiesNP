@@ -12,5 +12,6 @@ router.put('/:id', controller.updateUser);
 router.delete('/:id', controller.deleteUser);
 router.post('/login', controller.loginUser);
 router.post('/:id/photo', controller.updateProfilePhoto);
+router.post('/verify2fa', controller.verify2FA);
 
 export default router;

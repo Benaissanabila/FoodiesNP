@@ -12,7 +12,7 @@ export const getUsersQuery = async () => {
 
 // Récupérer un utilisateur par ID
 export const getUserQuery = async (id) => {
-  return User.findById(id);
+  return User.findById(id).select('+twoFactorCode');
 };
 
 export const deleteUserQuery = async id => {
@@ -23,5 +23,5 @@ export const updateUserQuery = async (id, user) => {
   return User.findByIdAndUpdate(id, user)
 }
 export const getUserByEmailQuery = async (email) => {
-  return User.findOne({ email }).select('+password'); // On sélectionne explicitement le mot de passe
+  return User.findOne({ email }).select('+password +twoFactorCode');
 };
