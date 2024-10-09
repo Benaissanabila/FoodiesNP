@@ -66,17 +66,43 @@ export default {
     delete: 'Delete',
     deleteConfirmation: 'Are you sure you want to delete your account? This action is irreversible.'
   },
+
   createMyRestaurant: {
-    title: 'Create Restaurant Profile',
-    changePhoto: 'Change photo',
-    namePlaceholder: 'Restaurant name',
-    addressPlaceholder: 'Restaurant address',
-    phonePlaceholder: 'Phone number',
-    cuisineTypePlaceholder: 'Cuisine type',
-    schedulePlaceholder: 'Opening hours',
-    uploadMenu: 'Upload my menu',
-    submit: 'Create my restaurant'
+    title: 'Create My Restaurant',
+    changePhoto: 'Change Photo',
+    namePlaceholder: 'Restaurant Name',
+    streetAddressPlaceholder: 'Street Address',
+    cityPlaceholder: 'City',
+    stateProvincePlaceholder: 'State/Province',
+    countryPlaceholder: 'Country',
+    phonePlaceholder: 'Phone Number',
+    cuisineTypePlaceholder: 'Cuisine Type',
+    scheduleTitle: 'Opening Hours',
+    days: {
+      monday: 'Monday',
+      tuesday: 'Tuesday',
+      wednesday: 'Wednesday',
+      thursday: 'Thursday',
+      friday: 'Friday',
+      saturday: 'Saturday',
+      sunday: 'Sunday'
+    },
+    openTime: 'Open',
+    closeTime: 'Close',
+    uploadMenu: 'Upload Menu',
+    submit: 'Create Restaurant',
+    cuisineTypes: {
+      italian: 'Italian',
+      french: 'French',
+      japanese: 'Japanese',
+      chinese: 'Chinese',
+      mexican: 'Mexican',
+      indian: 'Indian',
+      thai: 'Thai',
+      american: 'American'
+    }
   },
+
   footer: {
     copyright: '© {year} FOODIES - all rights reserved'
   }
