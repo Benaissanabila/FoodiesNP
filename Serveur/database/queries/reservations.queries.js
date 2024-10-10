@@ -105,16 +105,19 @@ console.log('reservation récupéré:', reservation. reservationDate);
 
 // Fonction pour envoyer un email de demande d'avis
 export const sendReviewRequestEmail = async (userId, reservationId, restaurantId) => {
+    
+    console.log("Envoi de l'e-mail de demande d'avis pour la réservation:", reservationId);
     // Créer un transporteur SMTP
     const transporter = nodemailer.createTransport({
-        host: 'smtp-relay.brevo.com',
-        port: 587,
-        secure: false,
+        host: 'smtp-relay.brevo.com', // Serveur SMTP
+        port: 587, // Port
+        secure: false, // true pour le port 465, false pour les autres ports
         auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
+            user: process.env.SMTP_USER, // Ton identifiant
+            pass:  process.env.SMTP_PASS, // Remplace par ton mot de passe SMTP
         },
     });
+
 
     try {
         // Récupérer l'utilisateur, le restaurant et la réservation
