@@ -41,7 +41,8 @@ export default {
   sort: {
     label: 'Sort by',
     rating: 'Rating',
-    distance: 'Distance'
+    distance: 'Distance',
+    name: 'Name'
   },
   loginPage: {
     title: 'Login',
@@ -113,5 +114,18 @@ export default {
     codePlaceholder: 'Enter your code',
     submit: 'Verify',
     invalidCode: 'Invalid code. Please try again.'
+  },
+
+  filter: {
+    title: 'Filtrer',
+    category: 'Catégorie',
+    rating: 'Note',
+    anyRating: 'Toutes les notes',
+    starsMinimum: 'étoiles minimum',
+    apply: 'Appliquer',
+    reset: 'Réinitialiser'
+  },
+  categories: {
+    all: 'Toutes les catégories'
   }
 }
