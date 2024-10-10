@@ -37,7 +37,8 @@ export const useRestaurantStore = defineStore('Restaurant', {
     sortBy: 'rating' as string,
     filters: {
       category: '',
-      minRating: 0
+      minRating: 0,
+      priceFork: '',
     }
   }),
 
@@ -83,7 +84,8 @@ export const useRestaurantStore = defineStore('Restaurant', {
       let filtered = state.restaurants.filter(restaurant => {
         const categoryMatch = !state.filters.category || restaurant.cuisineType === state.filters.category;
         const ratingMatch = restaurant.globalRatingResaurant >= state.filters.minRating;
-        return categoryMatch && ratingMatch;
+        const priceMatch = !state.filters.priceFork || restaurant.priceFork === state.filters.priceFork;
+        return categoryMatch && ratingMatch && priceMatch;
       });
 
       if (state.sortBy === 'rating') {
@@ -247,7 +249,7 @@ export const useRestaurantStore = defineStore('Restaurant', {
       throw error;
     }
   },
-  setFilters(filters: { category: string; minRating: number }) {
+  setFilters(filters: { category: string; minRating: number; priceFork: string }) {
     this.filters = filters;
   }
 }

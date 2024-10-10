@@ -1,5 +1,3 @@
-
-
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore';
@@ -22,7 +20,7 @@ const toggleSortMenu = () => {
 };
 
 const onSortChange = () => {
-  restaurantStore.setSortBy(selectedSort.value as 'rating' | 'distance');
+  restaurantStore.setSortBy(selectedSort.value as 'rating' |'distance');
   isSortMenuOpen.value = false;
 };
 </script>
@@ -59,13 +57,16 @@ const onSortChange = () => {
 
 .sort-menu {
   position: absolute;
+  bottom: 100%; /* Change this from top to bottom */
+  left: 0;
   background-color: white;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px -8px 16px 0px rgba(0,0,0,0.2); /* Adjust shadow for upward opening */
   z-index: 1;
   border-radius: 5px;
   overflow: hidden;
   padding: 10px;
+  margin-bottom: 5px; /* Add some space between button and menu */
 }
 
 .sort-menu label {

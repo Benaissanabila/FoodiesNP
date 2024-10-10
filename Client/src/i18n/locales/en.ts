@@ -123,7 +123,9 @@ export default {
     anyRating: 'Toutes les notes',
     starsMinimum: 'étoiles minimum',
     apply: 'Appliquer',
-    reset: 'Réinitialiser'
+    reset: 'Réinitialiser',
+    price: 'Price'
+
   },
   categories: {
     all: 'Toutes les catégories'
