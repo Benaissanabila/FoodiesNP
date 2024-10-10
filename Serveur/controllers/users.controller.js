@@ -10,12 +10,15 @@ import crypto from 'crypto';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const TOKEN_EXPIRATION = '1h'; // Le token expirera après 1 heure
 
+const EMAIL = 'foodies.n.p.2024@gmail.com';
+const PASSWORD = 'qjkf surl yimr onpj';
+
 // Configuration de NodeMailer
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'foodies.n.p.2024@gmail.com',
-    pass: 'qjkf surl yimr onpj'
+    user: EMAIL,
+    pass: PASSWORD,
   }
 });
 
