@@ -33,7 +33,7 @@ export const createReservation = async (req, res) => {
     // Ici, calculer quand envoyer l'e-mail de demande d'avis
     const reservationDateTime = new Date(savedReservation.reservationDate);
     const currentTime = new Date();
-    currentTime.setHours(currentTime.getHours() - 3);
+    currentTime.setHours(currentTime.getHours() - 4);
     
     console.log("Date actuelle moins 4 heures:", currentTime);
 
@@ -123,4 +123,20 @@ export const deleteReservation = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getUserReservations = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Récupération de l'ID de l'utilisateur depuis les paramètres de l'URL
+    const reservations = await queries.getReservationsByUserId(userId); // Requête pour trouver les réservations de cet utilisateur
+
+    if (!reservations || reservations.length === 0) {
+      return res.status(404).json({ message: "Aucune réservation trouvée pour cet utilisateur." });
+    }
+
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 

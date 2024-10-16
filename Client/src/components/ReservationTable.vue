@@ -18,6 +18,8 @@ const userStore = useUserStore()
 const selectedDate = ref<Date | null>(null)
 const selectedTime = ref<string | null>(null)
 const numberOfGuests = ref<number>(1)
+ // Récupérer restaurantId depuis les paramètres de la route
+  const reservationId = ref('');
 const currentStep = ref(0) // Étape actuelle (0: date, 1: heure, 2: invités)
 const launchConfetti = () => {
   confetti({
@@ -140,7 +142,8 @@ const confirmReservation = async () => {
       const response = await reservationStore.createReservation(reservationData);
       
       // Vérifier si la réservation a été créée avec succès
-      if (response) {
+      if (response && response._id) {
+        reservationId.value = response._id;
         stepMessages.value[2] = `${numberOfGuests.value} invités`;
         currentStep.value = 3;
         console.log('Réservation confirmée avec succès !');
@@ -267,6 +270,9 @@ const formatDate = (date: Date | null) => {
   {{ formatDate(selectedDate) }} à <span class="restaurant-name">{{ restaurant.name }}</span>
 </p>
   </div>
+  <RouterLink to="/mes-reservations">
+      <button class="btn btn-primary">Afficher Mes Réservations</button>
+    </RouterLink>
 
       </div>
     </div>

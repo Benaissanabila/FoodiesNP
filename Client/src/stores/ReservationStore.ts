@@ -2,10 +2,11 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import type { IReservation } from '@/shared/interfaces/ReservationInterface';
-
+import type { IUser } from '@/shared/interfaces/UserInterface';
 export const useReservationStore = defineStore('reservation', {
   state: () => ({
     reservations: [] as IReservation[], // List of reservations
+    user: {} as IUser, // Current user
     currentReservation: null as IReservation | null, // Single reservation
     loading: false, // To manage loading state
     error: null as string | null, // Error message
@@ -37,6 +38,14 @@ export const useReservationStore = defineStore('reservation', {
         console.error(error);
       } finally {
         this.loading = false;
+      }
+    },
+    async fetchUserReservations(userId: string) {
+      try {
+        const response = await axios.get(`http://localhost:3000/reservations/user/${userId}`);
+        this.reservations = response.data;
+      } catch (error) {
+        console.error('Erreur lors de la récupération des réservations:', error);
       }
     },
 

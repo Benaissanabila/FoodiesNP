@@ -41,19 +41,31 @@ getCommentsByRestaurantId: (state) => (restaurantId: string) => {
         },
 
         // Action pour ajouter un commentaire
-        async addComment(comment: IComment) {
+        async addComment(payload: {
+          user: string; // ID de l'utilisateur
+          reservation: string; // ID de la réservation
+          quality: number; // Évaluation de la qualité de la nourriture
+          service: number; // Évaluation du service
+          ambiance: number; // Évaluation de l'ambiance
+          comment: string; // Commentaire
+          createdAt: Date; // Date de création
+          restaurant: string; // ID du restaurant
+        })  {
             this.loading = true;
             this.error = null;
             try {
-                const response = await axios.post('http://localhost:3000/comments', comment); // Remplace par ton URL
+                const response = await axios.post('http://localhost:3000/comments', payload); // Remplace par ton URL
                 this.comments.push(response.data); // Ajoute le nouveau commentaire à la liste
-            } catch (error) {
-                console.error('Erreur lors de l\'ajout du commentaire:', error);
-                this.error = 'Erreur lors de l\'ajout du commentaire';
-            } finally {
-                this.loading = false;
-            }
-        },
+                return response.data;
+              } catch (error) {
+                if (axios.isAxiosError(error) && error.response) {
+                  console.error('Erreur lors de l\'ajout du commentaire:', error.response.data);
+                  this.error = error.response.data.message || 'Erreur lors de l\'ajout du commentaire';
+                } else {
+                  console.error('Erreur lors de l\'ajout du commentaire:', error);
+                  this.error = 'Erreur lors de l\'ajout du commentaire';
+                }
+        }},
        
    // Action pour liker un commentaire
   // Action pour liker un commentaire

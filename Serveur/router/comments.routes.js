@@ -11,6 +11,7 @@ router.get('/', controller.getAllComments);
 router.get('/:id', controller.getComment);
 router.put('/:id', controller.updateComment);
 router.delete('/:id', controller.deleteComment);
+router.get('/restaurants/:restaurantId/reviews', controller.getReviewPageData);
 
 
 

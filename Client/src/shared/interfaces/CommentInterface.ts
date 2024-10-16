@@ -5,7 +5,7 @@ export interface IComment {
     quality: number;     
     service: number;     
     ambiance: number;   
-    globalRating: number;
+    globalRating?: number;
     upvotes?: number;     
     downvotes?: number;  
     comment: string;      

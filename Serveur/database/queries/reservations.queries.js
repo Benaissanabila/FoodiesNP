@@ -153,7 +153,11 @@ export const sendReviewRequestEmail = async (userId, reservationId, restaurantId
     }
 };
 
+// Dans queries.js
 
+export const getReservationsByUserId = async (userId) => {
+    return await Reservation.find({ user: userId }); 
+  };
 
 
 
