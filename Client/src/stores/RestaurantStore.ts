@@ -4,6 +4,8 @@ import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
 import type { IComment } from '@/shared/interfaces/CommentInterface';
 import mapboxgl from 'mapbox-gl';
 
+
+
 // Fonctions utilitaires en dehors du store
 function calculateDistance(userLocation: { latitude: number; longitude: number }, restaurant: IRestaurant): number {
   if (!restaurant.latitude || !restaurant.longitude) return Infinity;
@@ -225,30 +227,29 @@ export const useRestaurantStore = defineStore('Restaurant', {
     }
     return Infinity;
   },
-  async createRestaurant(restaurantData: any) {
+ 
+  async createRestaurant(formData: FormData) {
     try {
-      const formData = new FormData();
-      for (const [key, value] of Object.entries(restaurantData)) {
-        if (key === 'RestoPhoto' && value instanceof File) {
-          formData.append(key, value, value.name);
-        } else {
-          formData.append(key, value as string);
-        }
-      }
-  
       const response = await axios.post('http://localhost:3000/restaurants', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-  
-      this.restaurants.push(response.data);
-      return response.data;
+      const newRestaurant = response.data;
+      this.restaurants.push(newRestaurant);
+      return newRestaurant;
     } catch (error) {
       console.error('Erreur lors de la création du restaurant:', error);
       throw error;
     }
   },
+
+
+  isFile(value: unknown): value is File {
+    return value instanceof File;
+  },
+
+
   setFilters(filters: { category: string; minRating: number; priceFork: string }) {
     this.filters = filters;
   }

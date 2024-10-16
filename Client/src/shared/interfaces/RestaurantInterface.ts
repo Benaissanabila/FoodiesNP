@@ -3,7 +3,7 @@ export interface IRestaurant {
     name: string;         
     address: string;      
     cuisineType?: string; 
-    schedule: string;     
+    schedule: object;     
     phoneNumber?: string; 
     RestoPhoto: string;   
     owner?: string;  

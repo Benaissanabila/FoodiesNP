@@ -43,7 +43,7 @@ export default {
     label: 'Trier par',
     rating: 'Note',
     distance: 'Distance',
-    name: 'Nom',
+    name: 'Nom'
   },
   loginPage: {
     title: 'Connexion',
@@ -81,7 +81,17 @@ export default {
     countryPlaceholder: 'Pays',
     phonePlaceholder: 'Numéro de téléphone',
     cuisineTypePlaceholder: 'Type de cuisine',
+    descriptionPlaceholder: 'Description',
+    priceForkPlaceholder: 'Fourchette de prix',
     scheduleTitle: "Horaires d'ouverture",
+    submitting: 'Création en cours...',
+    error: 'Une erreur est survenue lors de la création du restaurant.',
+    success: 'Restaurant créé avec succès !',
+    fieldRequired: 'Le champ {field} est requis.',
+    photoRequired: 'Une photo du restaurant est requise.',
+    userNotFound: 'Utilisateur non trouvé. Veuillez vous reconnecter.',
+    unknownError: 'Une erreur inconnue est survenue : {message}',
+    serverError: 'Une erreur est survenue lors de la création du restaurant : {message}',
     days: {
       monday: 'Lundi',
       tuesday: 'Mardi',

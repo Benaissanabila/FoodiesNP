@@ -2,13 +2,20 @@ import { Restaurant } from "../models/restaurant.model.js";
 import Comment from "../models/comment.model.js";
 
 // Créer un nouveau restaurant
-export const createRestaurantQuery = async (restaurant) => {
+export const createRestaurantQuery = async (restaurantData) => {
     try {
-        return await Restaurant.create(restaurant);
+      console.log('Création du restaurant avec les données:', JSON.stringify(restaurantData, null, 2));
+      const restaurant = new Restaurant(restaurantData);
+      console.log('Modèle de restaurant créé:', JSON.stringify(restaurant, null, 2));
+      const savedRestaurant = await restaurant.save();
+      console.log('Restaurant sauvegardé:', JSON.stringify(savedRestaurant, null, 2));
+      return savedRestaurant;
     } catch (error) {
-        throw new Error(`Erreur lors de la création du restaurant : ${error.message}`);
+      console.error('Erreur lors de la création du restaurant dans la base de données:', error);
+      console.error('Validation errors:', error.errors);
+      throw error;
     }
-};
+  };
 
 // Lire un restaurant par ID
 export const getRestaurantQuery = async (id) => {

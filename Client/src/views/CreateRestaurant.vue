@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRestaurantStore } from '@/stores/RestaurantStore'
+import { useUserStore } from '@/stores/UserStore'
 import { useRouter } from 'vue-router'
 import Footer from '@/components/Footer.vue'
 import SettingButton from '@/components/SettingButton.vue'
 import Logo from '@/components/Logo.vue'
+import axios from 'axios'
+import { AxiosError } from 'axios'
 
 const { t } = useI18n()
 const restaurantStore = useRestaurantStore()
+const userStore = useUserStore()
 const router = useRouter()
 
 type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
@@ -32,6 +36,9 @@ interface Restaurant {
   cuisineType: string
   schedule: Schedule
   RestoPhoto: File | null
+  description: string
+  priceFork: string
+  owner?: string
 }
 
 const restaurant = reactive<Restaurant>({
@@ -51,7 +58,37 @@ const restaurant = reactive<Restaurant>({
     saturday: { open: '', close: '' },
     sunday: { open: '', close: '' }
   },
-  RestoPhoto: null
+  RestoPhoto: null,
+  description: '',
+  priceFork: '',
+  owner: '',
+})
+
+// Fonction pour formater l'horaire
+function formatSchedule(schedule: Schedule): { [key: string]: string } {
+  const formattedSchedule: { [key: string]: string } = {}
+  const dayTranslations: { [key in DayOfWeek]: string } = {
+    monday: 'lundi',
+    tuesday: 'mardi',
+    wednesday: 'mercredi',
+    thursday: 'jeudi',
+    friday: 'vendredi',
+    saturday: 'samedi',
+    sunday: 'dimanche'
+  }
+
+  for (const [day, hours] of Object.entries(schedule)) {
+    if (hours.open && hours.close) {
+      formattedSchedule[dayTranslations[day as DayOfWeek]] = `${hours.open}-${hours.close}`
+    }
+  }
+
+  return formattedSchedule
+}
+
+// Computed property pour combiner les champs d'adresse
+const fullAddress = computed(() => {
+  return `${restaurant.streetAddress}, ${restaurant.city}, ${restaurant.stateProvince}, ${restaurant.country}`.trim()
 })
 
 const previewImage = ref('')
@@ -67,6 +104,8 @@ const cuisineTypes = [
   'Thaïlandais',
   'Américain'
 ]
+
+const priceForks = ['$', '$$', '$$$', '$$$$', '$$$$$']
 
 const days: DayOfWeek[] = [
   'monday',
@@ -91,19 +130,70 @@ function handlePhotoChange(event: Event) {
   }
 }
 
-function uploadMenu() {
-  console.log('Téléversement du menu')
-}
+const isSubmitting = ref(false)
 
 async function createRestaurant() {
+  if (!userStore.isAuthenticated) {
+    alert(t('createMyRestaurant.notAuthenticated'))
+    router.push('/login')
+    return
+  }
+
+  const requiredFields: (keyof Restaurant)[] = ['name', 'streetAddress', 'city', 'stateProvince', 'country', 'phoneNumber', 'cuisineType', 'description', 'priceFork']
+  for (const field of requiredFields) {
+    if (!restaurant[field]) {
+      alert(t('createMyRestaurant.fieldRequired', { field: t(`createMyRestaurant.${field}`) }))
+      return
+    }
+  }
+
+  if (!restaurant.RestoPhoto) {
+    alert(t('createMyRestaurant.photoRequired'))
+    return
+  }
+
+  isSubmitting.value = true
+  
   try {
-    await restaurantStore.createRestaurant(restaurant)
-    router.push('/my-restaurants')
-  } catch (error) {
-    console.error('Erreur lors de la création du restaurant:', error)
+    
+    const formData = new FormData()
+    formData.append('name', restaurant.name)
+    formData.append('address', fullAddress.value)
+    formData.append('cuisineType', restaurant.cuisineType)
+    formData.append('phoneNumber', restaurant.phoneNumber)
+    formData.append('schedule', JSON.stringify(restaurant.schedule))
+    if (restaurant.RestoPhoto) {
+      formData.append('RestoPhoto', restaurant.RestoPhoto)
+    }
+    formData.append('description', restaurant.description)
+    formData.append('priceFork', restaurant.priceFork)
+    
+    if (userStore.user?._id) {
+      formData.append('owner', userStore.user._id)
+    } else {
+      throw new Error('User ID not found')
+    }
+
+        // Formatage et ajout de l'horaire
+        const formattedSchedule = formatSchedule(restaurant.schedule)
+    formData.append('schedule', JSON.stringify(formattedSchedule))
+
+
+    console.log('Données envoyées:', Object.fromEntries(formData))
+    console.log(formData)
+
+    const newRestaurant = await restaurantStore.createRestaurant(formData)
+    console.log('Nouveau restaurant créé:', newRestaurant)
+    alert(t('createMyRestaurant.success'))
+    router.push('/')
+  } catch (error: unknown) {
+    // ... gestion des erreurs ...
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>
+
 
 <template>
   <div class="page-container">
@@ -183,6 +273,23 @@ async function createRestaurant() {
             </select>
           </div>
 
+          <div class="form-group">
+            <textarea
+              v-model="restaurant.description"
+              :placeholder="$t('createMyRestaurant.descriptionPlaceholder')"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <select v-model="restaurant.priceFork" required>
+              <option value="" disabled selected>
+                {{ $t('createMyRestaurant.priceForkPlaceholder') }}
+              </option>
+              <option v-for="price in priceForks" :key="price" :value="price">{{ price }}</option>
+            </select>
+          </div>
+
           <div class="schedule-container">
             <h3>{{ $t('createMyRestaurant.scheduleTitle') }}</h3>
             <div v-for="day in days" :key="day" class="schedule-day">
@@ -204,12 +311,8 @@ async function createRestaurant() {
             </div>
           </div>
 
-          <button type="button" @click="uploadMenu" class="btn btn-secondary">
-            {{ $t('createMyRestaurant.uploadMenu') }}
-          </button>
-
-          <button type="submit" class="btn btn-primary">
-            {{ $t('createMyRestaurant.submit') }}
+          <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
+            {{ isSubmitting ? $t('createMyRestaurant.submitting') : $t('createMyRestaurant.submit') }}
           </button>
         </form>
       </div>
@@ -339,5 +442,13 @@ select {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-height: 100px;
 }
 </style>

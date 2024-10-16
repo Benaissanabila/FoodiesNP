@@ -78,7 +78,17 @@ export default {
     countryPlaceholder: 'Country',
     phonePlaceholder: 'Phone Number',
     cuisineTypePlaceholder: 'Cuisine Type',
+    descriptionPlaceholder: 'Description',
+    priceForkPlaceholder: 'Price Fork',
     scheduleTitle: 'Opening Hours',
+    submitting: 'Creating...',
+    error: 'An error occurred while creating the restaurant.',
+    success: 'Restaurant created successfully!',
+    fieldRequired: 'The {field} field is required.',
+    photoRequired: 'A restaurant photo is required.',
+    userNotFound: 'User not found. Please log in again.',
+    unknownError: 'An unknown error occurred: {message}',
+    serverError: 'An error occurred while creating the restaurant: {message}',
     days: {
       monday: 'Monday',
       tuesday: 'Tuesday',
@@ -125,7 +135,6 @@ export default {
     apply: 'Appliquer',
     reset: 'Réinitialiser',
     price: 'Price'
-
   },
   categories: {
     all: 'Toutes les catégories'

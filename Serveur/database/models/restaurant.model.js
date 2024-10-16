@@ -21,10 +21,10 @@ const restaurantSchema = new mongoose.Schema({
     trim: true,
   },
   schedule: {
-    type: String,
-    trim: true,
+    type: Object,  // Changé de String à Object
     required: true,
   },
+
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Owner",
@@ -33,15 +33,16 @@ const restaurantSchema = new mongoose.Schema({
   comments: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Comment",
+    required: false,
   },
   phoneNumber: {
     type: String,
     trim: true,
   },
   RestoPhoto: {
-    type: String,
+    type: Object,
     trim: true,
-    required: true,
+    required: false
   },
   globalRatingResaurant: {
     type: Number,
