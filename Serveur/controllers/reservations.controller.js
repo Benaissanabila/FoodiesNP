@@ -6,82 +6,65 @@ import { sendReviewRequestEmail } from "../database/queries/reservations.queries
 
 export const createReservation = async (req, res) => {
   try {
-    // Récupérer les données de la requête
     const { tableId, numberOfPersons, reservationDate, user, restaurant } = req.body;
 
-    // Vérifiez que les données requises sont présentes
     if (!tableId || !numberOfPersons || !reservationDate || !user || !restaurant) {
       return res.status(400).json({ message: 'Tous les champs sont requis.' });
     }
 
-    // Convertir la date de réservation (qui doit être au format UTC) en heure locale (GMT-4)
     const localReservationDate = new Date(reservationDate);
-
-    // Diminuer 4 heures
     localReservationDate.setHours(localReservationDate.getHours() - 4);
     console.log("localheur creation ", localReservationDate);
 
-    // Créer une nouvelle réservation avec toutes les propriétés nécessaires
     const newReservation = new Reservation({
-      tableId,              // ID de la table dans le restaurant
-      numberOfPersons,       // Nombre de personnes pour cette réservation
-      reservationDate: localReservationDate, // Date et heure prévues pour la réservation (en UTC)
-      status: 'pending',     // Statut de la réservation (initialement 'pending')
-      restaurant,            // ID du restaurant où la réservation a lieu
-      user                   // ID de l'utilisateur qui fait la réservation 
+      tableId,
+      numberOfPersons,
+      reservationDate: localReservationDate,
+      status: 'pending',
+      restaurant,
+      user
     });
 
-    // Sauvegarder la réservation dans la base de données
     const savedReservation = await newReservation.save();
     console.log("Réservation sauvegardée:", savedReservation);
 
-    // Envoyer un e-mail de confirmation après la création de la réservation
     await sendReservationEmail(user, savedReservation._id, restaurant);
-    console.log("E-mail de confirmation envoyé à l'utilisateur:", user);
 
-    // Calculer la date d'envoi de l'email
+    // Ici, calculer quand envoyer l'e-mail de demande d'avis
     const reservationDateTime = new Date(savedReservation.reservationDate);
-    const emailSendTime = new Date(reservationDateTime.getTime() +1* 60 * 1000); // Ajoute 5 heures
-    console.log("Date et heure de la réservation:", reservationDateTime);
-    console.log("L'e-mail sera envoyé à:", emailSendTime);
+    const currentTime = new Date();
+    currentTime.setHours(currentTime.getHours() - 4);
+    
+    console.log("Date actuelle moins 4 heures:", currentTime);
 
-    const currentTime = new Date(); // Date actuelle
-   
-    currentTime.setHours(currentTime.getHours() - 3);
-     console.log("Date actuelle:", currentTime); 
-    const timeUntilSend = emailSendTime - currentTime; 
-    console.log("Temps jusqu'à l'envoi de l'e-mail (ms):", timeUntilSend);
+    // Calculer si la réservation est dans le passé ou le futur
+    const timeUntilReservation = reservationDateTime - currentTime;
+    console.log("Temps avant la réservation:", timeUntilReservation / 1000, "secondes");
 
-    // Vérification si le jour, mois et année de la réservation correspondent à la date actuelle
-    const isSameDay = reservationDateTime.getDate() === currentTime.getDate() &&
-                      reservationDateTime.getMonth() === currentTime.getMonth() &&
-                      reservationDateTime.getFullYear() === currentTime.getFullYear();
+    // Envoyer l'email de demande d'avis 24 heures après l'heure de réservation
+    const emailSendTime = new Date(reservationDateTime.getTime() + 1 * 60 * 1000);
 
-    // Vérifier si le temps jusqu'à l'envoi est positif
-    if (timeUntilSend > 0) {
-        console.log("Envoi de l'e-mail programmé dans:", timeUntilSend / 1000, "secondes");
-        setTimeout(() => {
-            console.log("Envoi de l'e-mail de demande d'avis maintenant...");
-            if (isSameDay) {
-                sendReviewRequestEmail(user, savedReservation._id, restaurant);
-            } else {
-                console.log("La date de la réservation n'est pas le même jour que la date actuelle, pas d'envoi d'avis.");
-            }
-        }, timeUntilSend);
+    // Si la réservation est dans le futur, alors on programme l'envoi de l'email après l'utilisation
+    if (timeUntilReservation > 0) {
+      const timeUntilSend = emailSendTime - currentTime;
+
+      console.log("Envoi de l'e-mail programmé dans:", timeUntilSend / 1000, "secondes");
+      setTimeout(() => {
+        console.log("Envoi de l'e-mail de demande d'avis maintenant...");
+        sendReviewRequestEmail(user, savedReservation._id, restaurant);
+      }, timeUntilSend);
+
     } else {
-        console.log("Le temps d'envoi est déjà passé, envoi immédiat de l'e-mail.");
-        if (isSameDay) {
-            await sendReviewRequestEmail(user, savedReservation._id, restaurant);
-        } else {
-            console.log("La date de la réservation n'est pas le même jour que la date actuelle, pas d'envoi d'avis.");
-        }
+      // Si la réservation est déjà passée (ou très proche), envoyer l'e-mail immédiatement
+      console.log("La réservation est passée, envoi immédiat de l'e-mail.");
+      await sendReviewRequestEmail(user, savedReservation._id, restaurant);
     }
 
-    // Répondre avec succès et renvoyer les détails de la réservation
     res.status(201).json({
       message: 'Réservation créée avec succès et e-mail envoyé',
       reservation: savedReservation,
     });
+
   } catch (error) {
     console.error('Erreur lors de la création de la réservation:', error);
     res.status(500).json({ error: 'Erreur lors de la création de la réservation' });
@@ -140,4 +123,20 @@ export const deleteReservation = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getUserReservations = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Récupération de l'ID de l'utilisateur depuis les paramètres de l'URL
+    const reservations = await queries.getReservationsByUserId(userId); // Requête pour trouver les réservations de cet utilisateur
+
+    if (!reservations || reservations.length === 0) {
+      return res.status(404).json({ message: "Aucune réservation trouvée pour cet utilisateur." });
+    }
+
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 

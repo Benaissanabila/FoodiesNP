@@ -47,6 +47,7 @@ watch(
     <div class="restaurant-details">
       <h3>{{ restaurant.name }}</h3>
       <p>{{ restaurant.address }}</p>
+      <p class="price-fork">{{ restaurant.priceFork }}</p>
       <p>
       Distance: {{ getDistance }} km
     </p>
@@ -96,5 +97,10 @@ p {
   font-size: 12px;
   color: #666;
   margin: 5px 0;
+}
+
+.price-fork {
+  font-weight: bold;
+  color: #4a4a4a;
 }
 </style>

@@ -1,11 +1,17 @@
 
 import * as queries from "../database/queries/comments.queries.js";
 import Comment from '../database/models/comment.model.js'; 
+import {Restaurant }from '../database/models/restaurant.model.js';
+import User from '../database/models/user.model.js';
+import Reservation from '../database/models/reservation.model.js';
+
 export const createComment = async (req, res) => {
   try {
     const comment = await queries.createCommentQuery(req.body);
+    console.log(req.body);
     res.status(201).json(comment);
   } catch (error) {
+    console.error('Erreur lors de la création du commentaire:', error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -91,6 +97,29 @@ export const updateComment = async (req, res) => {
       error: error.message || 'Erreur inconnue',
       stack: error.stack,
     });
+  }
+};
+
+
+export const getReviewPageData = async (req, res) => {
+  const { restaurantId } = req.params;
+  const { userId, reservationId } = req.query;
+
+  try {
+      const restaurant = await Restaurant.findById(restaurantId);
+      const user = await User.findById(userId);
+      const reservation = await Reservation.findById(reservationId);
+
+      // Vérifie si les données existent
+      if (!restaurant || !user || !reservation) {
+          return res.status(404).json({ message: "Données non trouvées" });
+      }
+
+      // Renvoie les données au frontend
+      res.status(200).json({ restaurant, user, reservation });
+  } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+      res.status(500).send('Erreur serveur');
   }
 };
 

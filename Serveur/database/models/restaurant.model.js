@@ -55,6 +55,11 @@ const restaurantSchema = new mongoose.Schema({
       required: false, 
       minLength: [10, "Description must have at least 10 characters"], 
     },
+    priceFork: {
+      type: String,
+      enum: ['$', '$$', '$$$', '$$$$', '$$$$$'],
+      required: true
+    },
 });
 // Méthode pour récupérer les coordonnées à partir de l'adresse
 restaurantSchema.methods.fetchCoordinatesFromMapbox = async function () {

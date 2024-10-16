@@ -35,6 +35,11 @@ export const useRestaurantStore = defineStore('Restaurant', {
     error: null as string | null,
     userLocation: null as { latitude: number; longitude: number } | null,
     sortBy: 'rating' as string,
+    filters: {
+      category: '',
+      minRating: 0,
+      priceFork: '',
+    }
   }),
 
   getters: {
@@ -75,6 +80,29 @@ export const useRestaurantStore = defineStore('Restaurant', {
       }
       return sorted;
     },
+    filteredAndSortedRestaurants(state) {
+      let filtered = state.restaurants.filter(restaurant => {
+        const categoryMatch = !state.filters.category || restaurant.cuisineType === state.filters.category;
+        const ratingMatch = restaurant.globalRatingResaurant >= state.filters.minRating;
+        const priceMatch = !state.filters.priceFork || restaurant.priceFork === state.filters.priceFork;
+        return categoryMatch && ratingMatch && priceMatch;
+      });
+
+      if (state.sortBy === 'rating') {
+        filtered.sort((a, b) => b.globalRatingResaurant - a.globalRatingResaurant);
+      } else if (state.sortBy === 'name') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (state.sortBy === 'distance' && state.userLocation) {
+        filtered.sort((a, b) => {
+          const distanceA = calculateDistance(state.userLocation!, a);
+          const distanceB = calculateDistance(state.userLocation!, b);
+          return distanceA - distanceB;
+        });
+      }
+
+      return filtered;
+    },
+ 
   },
   
 
@@ -221,7 +249,9 @@ export const useRestaurantStore = defineStore('Restaurant', {
       throw error;
     }
   },
-
+  setFilters(filters: { category: string; minRating: number; priceFork: string }) {
+    this.filters = filters;
+  }
 }
 
    

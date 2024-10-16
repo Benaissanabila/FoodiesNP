@@ -7,6 +7,8 @@ import ProfileView from '@/views/ProfileView.vue';
 import CreateRestaurant from '@/views/CreateRestaurant.vue';
 import { useUserStore } from '@/stores/UserStore';
 import TwoFAView from '@/views/TwoFAView.vue';
+import ReviewPage from '@/views/ReviewPage.vue';
+import MesReservationsPage from '@/views/MesReservationsPage.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +49,18 @@ const router = createRouter({
       name: 'TwoFA',
       component: TwoFAView
     },
+    {
+      path: '/restaurant/:id/review/:reservationId',
+      name: 'Review',
+      component: ReviewPage
+    },
+    {
+      path: '/mes-reservations',
+      name: 'MesReservations',
+      component: MesReservationsPage // Créez un composant pour afficher les réservations de l'utilisateur
+    }
+    
+
   ]
 })
 

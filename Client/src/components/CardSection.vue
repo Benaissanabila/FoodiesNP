@@ -1,39 +1,39 @@
+
+
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import RestaurantCard from './RestaurantCard.vue'; // Importation du composant RestaurantCard
-import type { IRestaurant } from '../shared/interfaces/RestaurantInterface.ts';
+import RestaurantCard from './RestaurantCard.vue';
 import SortComponent from './SortComponent.vue';
+import FilterComponent from './FilterComponent.vue';
+import { useRestaurantStore } from '@/stores/RestaurantStore';
 
-const props = defineProps<{
-  restaurants: IRestaurant[];
-}>();
+const restaurantStore = useRestaurantStore();
 
-const currentIndex = ref(0); // Index actuel pour le carrousel
+const currentIndex = ref(0);
 
-// Calculer les restaurants visibles en fonction de l'index actuel
+const filteredAndSortedRestaurants = computed(() => restaurantStore.filteredAndSortedRestaurants);
+
 const visibleRestaurants = computed(() => {
-  return props.restaurants.slice(currentIndex.value, currentIndex.value + 3);
+  return filteredAndSortedRestaurants.value.slice(currentIndex.value, currentIndex.value + 3);
 });
 
-// Fonction pour faire défiler à gauche
 const scrollLeft = () => {
   if (currentIndex.value > 0) {
     currentIndex.value--;
   }
 };
 
-// Fonction pour faire défiler à droite
 const scrollRight = () => {
-  if (currentIndex.value < props.restaurants.length - 3) {
+  if (currentIndex.value < filteredAndSortedRestaurants.value.length - 3) {
     currentIndex.value++;
   }
 };
-
 </script>
 
 <template>
-  <!-- SortComponent placé par dessus, avec une bonne position -->
-  <div class="sort-component-container">
+  <!-- Conteneur pour SortComponent et FilterComponent -->
+  <div class="controls-container">
+    <FilterComponent />
     <SortComponent />
   </div>
 
@@ -48,12 +48,12 @@ const scrollRight = () => {
     </button>
     <div class="restaurant-cards">
       <RestaurantCard
-        v-for="(restaurant, index) in visibleRestaurants"
+        v-for="restaurant in visibleRestaurants"
         :key="restaurant._id"
         :restaurant="restaurant"
       />
     </div>
-    <button class="scroll-button right" @click="scrollRight" :disabled="currentIndex >= restaurants.length - 3">
+    <button class="scroll-button right" @click="scrollRight" :disabled="currentIndex >= filteredAndSortedRestaurants.length - 3">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
         <path fill="currentColor"
           d="M11.166 23.963L22.36 17.5c1.43-.824 1.43-2.175 0-3L11.165 8.037c-1.43-.826-2.598-.15-2.598 1.5v12.926c0 1.65 1.17 2.326 2.598 1.5z"
@@ -64,14 +64,13 @@ const scrollRight = () => {
 </template>
 
 <style scoped>
-.sort-component-container {
+.controls-container {
   position: absolute;
-  top: 72%; /* Ajustez cette valeur pour positionner par rapport à la card-section */
-  right: 20px; /* Positionné à droite */
-  z-index: 100; /* Assurez-vous qu'il est bien au-dessus du card-section */
-  padding: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
+  top: 72%;
+  right: 15%;
+  z-index: 100;
+  display: flex;
+  gap: 10px;
 }
 
 .card-section {
@@ -87,12 +86,12 @@ const scrollRight = () => {
 
 .restaurant-cards {
   display: flex;
-  gap: 10px; /* Espace entre les cartes */
-  overflow: hidden; /* Masque les cartes qui débordent */
+  gap: 10px;
+  overflow: hidden;
   width: 100%;
   justify-content: center;
   max-width: 1100px;
-  flex-wrap: nowrap; /* Pas d'empilement, même sur mobile */
+  flex-wrap: nowrap;
 }
 
 .scroll-button {
@@ -134,17 +133,16 @@ svg {
   color: white;
 }
 
-/* Styles pour les petits écrans (mobiles) */
 @media (max-width: 768px) {
   .restaurant-cards {
- border-radius: 10px;
-    width: 60%; /* Prend la largeur totale */
-    max-width: 100%; /* S'assure que la largeur ne dépasse pas */
+    border-radius: 10px;
+    width: 60%;
+    max-width: 100%;
   }
 
   .restaurant-cards > * {
-    flex: 0 0 100%; /* Chaque carte prend 100% de la largeur, donc une seule à la fois */
-    max-width: 100%; /* Carte à pleine largeur */
+    flex: 0 0 100%;
+    max-width: 100%;
   }
 
   .scroll-button {
@@ -154,17 +152,23 @@ svg {
   }
 
   .scroll-button.left {
-    left: 80px; /* Ajuster la position pour mobile */
+    left: 80px;
   }
 
   .scroll-button.right {
-    right: 80px; /* Ajuster la position pour mobile */
+    right: 80px;
+  }
+
+  .controls-container {
+    top: 65%;
+    right: 10px;
+    flex-direction: column;
   }
 }
 
 @media (max-width: 480px) {
   .restaurant-cards > * {
-    flex: 0 0 100%; /* Sur très petit écran, chaque carte prend toute la largeur */
+    flex: 0 0 100%;
   }
 
   .scroll-button {
@@ -172,13 +176,10 @@ svg {
     height: 25px;
     font-size: 14px;
   }
-}
-.sort-component {
-  position: absolute;
-  top: -50px; /* Ajuste cette valeur selon ton besoin */
-  right: 20px;
-  z-index: 2; /* Plus élevé que le card-section pour qu'il soit au-dessus */
-}
 
-
+  .controls-container {
+    top: 60%;
+    right: 5px;
+  }
+}
 </style>
