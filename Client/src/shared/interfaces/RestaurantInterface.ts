@@ -11,5 +11,6 @@ export interface IRestaurant {
     latitude?: number; 
     longitude?: number; 
     description:string 
+    priceFork:string
   }
   
