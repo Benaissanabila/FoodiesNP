@@ -228,11 +228,12 @@ export const useRestaurantStore = defineStore('Restaurant', {
     return Infinity;
   },
  
-  async createRestaurant(formData: FormData) {
+  async createRestaurant(formData: any) {
     try {
+      //debugger
       const response = await axios.post('http://localhost:3000/restaurants', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'application/json'
         }
       });
       const newRestaurant = response.data;

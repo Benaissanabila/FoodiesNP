@@ -92,6 +92,8 @@ export default {
     userNotFound: 'Utilisateur non trouvé. Veuillez vous reconnecter.',
     unknownError: 'Une erreur inconnue est survenue : {message}',
     serverError: 'Une erreur est survenue lors de la création du restaurant : {message}',
+    restaurateur: 'Restaurateur',
+    notAuthenticated: 'Vous devez être connecté pour créer un restaurant.',
     days: {
       monday: 'Lundi',
       tuesday: 'Mardi',

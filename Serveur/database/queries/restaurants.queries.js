@@ -61,6 +61,3 @@ export const getCommentsByRestaurantIdQuery = async (restaurantId) => {
         throw new Error(`Erreur lors de la récupération des commentaires : ${error.message}`);
     }
 };
-
-
-

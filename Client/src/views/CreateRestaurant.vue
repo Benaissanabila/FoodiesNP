@@ -7,13 +7,16 @@ import { useRouter } from 'vue-router'
 import Footer from '@/components/Footer.vue'
 import SettingButton from '@/components/SettingButton.vue'
 import Logo from '@/components/Logo.vue'
-import axios from 'axios'
-import { AxiosError } from 'axios'
+import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
 
 const { t } = useI18n()
 const restaurantStore = useRestaurantStore()
 const userStore = useUserStore()
 const router = useRouter()
+
+// Définissez un type pour les données du restaurant à envoyer
+type RestaurantDataToSend = Partial<IRestaurant> & { RestoPhoto?: File }
+
 
 type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
 
@@ -26,60 +29,48 @@ type Schedule = {
   [K in DayOfWeek]: DaySchedule
 }
 
-interface Restaurant {
-  name: string
+interface Address {
   streetAddress: string
   city: string
   stateProvince: string
   country: string
-  phoneNumber: string
-  cuisineType: string
-  schedule: Schedule
-  RestoPhoto: File | null
-  description: string
-  priceFork: string
-  owner?: string
 }
 
-const restaurant = reactive<Restaurant>({
-  name: '',
+const address = reactive<Address>({
   streetAddress: '',
   city: '',
   stateProvince: '',
-  country: '',
+  country: ''
+})
+
+const restaurant = reactive<
+  Omit<IRestaurant, 'address' | '_id' | 'globalRatingResaurant' | 'latitude' | 'longitude'> & { RestoPhoto: File | null, schedule: Schedule }
+>({
+  name: '',
   phoneNumber: '',
   cuisineType: '',
   schedule: {
-    monday: { open: '', close: '' },
-    tuesday: { open: '', close: '' },
-    wednesday: { open: '', close: '' },
-    thursday: { open: '', close: '' },
-    friday: { open: '', close: '' },
-    saturday: { open: '', close: '' },
-    sunday: { open: '', close: '' }
+    monday: { open: '08:00:00', close: '08:00:00' },
+    tuesday: { open: '08:00:00', close: '08:00:00' },
+    wednesday: { open: '08:00:00', close: '08:00:00' },
+    thursday: { open: '08:00:00', close: '08:00:00' },
+    friday: { open: '08:00:00', close: '08:00:00' },
+    saturday: { open: '08:00:00', close: '08:00:00' },
+    sunday: { open: '08:00:00', close: '08:00:00' }
   },
   RestoPhoto: null,
   description: '',
   priceFork: '',
-  owner: '',
+  owner: ''
 })
 
 // Fonction pour formater l'horaire
 function formatSchedule(schedule: Schedule): { [key: string]: string } {
   const formattedSchedule: { [key: string]: string } = {}
-  const dayTranslations: { [key in DayOfWeek]: string } = {
-    monday: 'lundi',
-    tuesday: 'mardi',
-    wednesday: 'mercredi',
-    thursday: 'jeudi',
-    friday: 'vendredi',
-    saturday: 'samedi',
-    sunday: 'dimanche'
-  }
 
   for (const [day, hours] of Object.entries(schedule)) {
     if (hours.open && hours.close) {
-      formattedSchedule[dayTranslations[day as DayOfWeek]] = `${hours.open}-${hours.close}`
+      formattedSchedule[day] = `${hours.open}-${hours.close}`
     }
   }
 
@@ -88,7 +79,7 @@ function formatSchedule(schedule: Schedule): { [key: string]: string } {
 
 // Computed property pour combiner les champs d'adresse
 const fullAddress = computed(() => {
-  return `${restaurant.streetAddress}, ${restaurant.city}, ${restaurant.stateProvince}, ${restaurant.country}`.trim()
+  return `${address.streetAddress}, ${address.city}, ${address.stateProvince}, ${address.country}`.trim()
 })
 
 const previewImage = ref('')
@@ -139,9 +130,17 @@ async function createRestaurant() {
     return
   }
 
-  const requiredFields: (keyof Restaurant)[] = ['name', 'streetAddress', 'city', 'stateProvince', 'country', 'phoneNumber', 'cuisineType', 'description', 'priceFork']
+  const requiredFields: (keyof typeof restaurant | keyof Address)[] = [
+    'name', 'phoneNumber', 'cuisineType', 'description', 'priceFork',
+    'streetAddress', 'city', 'stateProvince', 'country'
+  ]
   for (const field of requiredFields) {
-    if (!restaurant[field]) {
+    if (field in address) {
+      if (!address[field as keyof Address]) {
+        alert(t('createMyRestaurant.fieldRequired', { field: t(`createMyRestaurant.${field}`) }))
+        return
+      }
+    } else if (!restaurant[field as keyof typeof restaurant]) {
       alert(t('createMyRestaurant.fieldRequired', { field: t(`createMyRestaurant.${field}`) }))
       return
     }
@@ -153,47 +152,36 @@ async function createRestaurant() {
   }
 
   isSubmitting.value = true
-  
+
   try {
-    
-    const formData = new FormData()
-    formData.append('name', restaurant.name)
-    formData.append('address', fullAddress.value)
-    formData.append('cuisineType', restaurant.cuisineType)
-    formData.append('phoneNumber', restaurant.phoneNumber)
-    formData.append('schedule', JSON.stringify(restaurant.schedule))
-    if (restaurant.RestoPhoto) {
-      formData.append('RestoPhoto', restaurant.RestoPhoto)
-    }
-    formData.append('description', restaurant.description)
-    formData.append('priceFork', restaurant.priceFork)
-    
-    if (userStore.user?._id) {
-      formData.append('owner', userStore.user._id)
-    } else {
-      throw new Error('User ID not found')
+    const restaurantData: RestaurantDataToSend = {
+      name: restaurant.name,
+      address: fullAddress.value,
+      cuisineType: restaurant.cuisineType,
+      phoneNumber: restaurant.phoneNumber,
+      description: restaurant.description,
+      priceFork: restaurant.priceFork,
+      owner: userStore.user?._id,
+      schedule: formatSchedule(restaurant.schedule)
     }
 
-        // Formatage et ajout de l'horaire
-        const formattedSchedule = formatSchedule(restaurant.schedule)
-    formData.append('schedule', JSON.stringify(formattedSchedule))
+    // Ajoutez RestoPhoto seulement s'il existe et est un File
+    if (restaurant.RestoPhoto instanceof File) {
+      restaurantData.RestoPhoto = restaurant.RestoPhoto
+    }
 
-
-    console.log('Données envoyées:', Object.fromEntries(formData))
-    console.log(formData)
-
-    const newRestaurant = await restaurantStore.createRestaurant(formData)
+    const newRestaurant = await restaurantStore.createRestaurant(restaurantData)
     console.log('Nouveau restaurant créé:', newRestaurant)
     alert(t('createMyRestaurant.success'))
     router.push('/')
-  } catch (error: unknown) {
-    // ... gestion des erreurs ...
+  } catch (error) {
+    console.error('Erreur lors de la création du restaurant:', error)
+    alert(t('createMyRestaurant.error'))
   } finally {
     isSubmitting.value = false
   }
 }
 </script>
-
 
 <template>
   <div class="page-container">
@@ -235,22 +223,22 @@ async function createRestaurant() {
           <div class="form-group address-group">
             <input
               class="street-address"
-              v-model="restaurant.streetAddress"
+              v-model="address.streetAddress"
               :placeholder="$t('createMyRestaurant.streetAddressPlaceholder')"
               required
             />
             <input
-              v-model="restaurant.city"
+              v-model="address.city"
               :placeholder="$t('createMyRestaurant.cityPlaceholder')"
               required
             />
             <input
-              v-model="restaurant.stateProvince"
+              v-model="address.stateProvince"
               :placeholder="$t('createMyRestaurant.stateProvincePlaceholder')"
               required
             />
             <input
-              v-model="restaurant.country"
+              v-model="address.country"
               :placeholder="$t('createMyRestaurant.countryPlaceholder')"
               required
             />
@@ -312,7 +300,9 @@ async function createRestaurant() {
           </div>
 
           <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
-            {{ isSubmitting ? $t('createMyRestaurant.submitting') : $t('createMyRestaurant.submit') }}
+            {{
+              isSubmitting ? $t('createMyRestaurant.submitting') : $t('createMyRestaurant.submit')
+            }}
           </button>
         </form>
       </div>

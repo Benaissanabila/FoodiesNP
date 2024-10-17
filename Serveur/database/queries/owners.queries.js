@@ -10,6 +10,10 @@ export const getOwnerQuery = async id => {
     return Owner.findById(id)
 }
 
+export const getOwnerByUser = async id => {
+    return Owner.findOne({user: id})
+}
+
 // Lire tous les propriétaires
 export const getAllOwnersQuery = async () => {
     return Owner.find({})

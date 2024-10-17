@@ -5,7 +5,7 @@ export interface IRestaurant {
     cuisineType?: string; 
     schedule: object;     
     phoneNumber?: string; 
-    RestoPhoto: string;   
+    RestoPhoto: string | null | File;   
     owner?: string;  
     globalRatingResaurant:number; 
     latitude?: number; 

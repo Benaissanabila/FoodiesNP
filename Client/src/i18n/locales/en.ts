@@ -38,6 +38,7 @@ export default {
   createRestaurant: 'Create a Restaurant',
   myRestaurants: 'View My Restaurants',
   avis: 'Reviews',
+  restaurateur: 'Restaurateur',
   sort: {
     label: 'Sort by',
     rating: 'Rating',
@@ -89,6 +90,7 @@ export default {
     userNotFound: 'User not found. Please log in again.',
     unknownError: 'An unknown error occurred: {message}',
     serverError: 'An error occurred while creating the restaurant: {message}',
+    notAuthenticated: 'You must be logged in to create a restaurant.',
     days: {
       monday: 'Monday',
       tuesday: 'Tuesday',

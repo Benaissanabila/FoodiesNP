@@ -1,5 +1,6 @@
 import * as queries from "../database/queries/restaurants.queries.js";
 import Comment from "../database/models/comment.model.js"; 
+import {getOwnerByUser, createOwnerQuery} from "../database/queries/owners.queries.js";
 
 
 
@@ -29,6 +30,11 @@ export const createRestaurant = async (req, res) => {
       throw new Error('Le format de l\'horaire est invalide. Assurez-vous que c\'est un objet JSON valide.');
     }
 
+    let owner = await getOwnerByUser(req.body.owner);
+    if (!owner) {
+      owner = await  createOwnerQuery({user: req.body.owner, restaurant:[]});
+    }
+
     const restaurantData = {
       name: req.body.name,
       address: req.body.address,
@@ -37,7 +43,7 @@ export const createRestaurant = async (req, res) => {
       schedule: scheduleObj,
       description: req.body.description,
       priceFork: req.body.priceFork,
-      owner: req.body.owner
+      owner: owner._id,
     };
 
     // Ajouter RestoPhoto seulement s'il est présent
