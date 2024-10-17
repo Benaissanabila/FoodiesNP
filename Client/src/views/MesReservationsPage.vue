@@ -1,21 +1,36 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useReservationStore } from '@/stores/ReservationStore';
 import { useUserStore } from '@/stores/UserStore';
 import { useRestaurantStore } from '@/stores/RestaurantStore';
 import type { IReservation } from '@/shared/interfaces/ReservationInterface';
 import { useRouter } from 'vue-router'; 
-import { useCommentStore } from '@/stores/CommentStore'; // Importer le store des commentaires
+import { useCommentStore } from '@/stores/CommentStore';
+import NavigationBar from '@/components/NavigationBar.vue';
+import Footer from '@/components/Footer.vue';
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const reservationStore = useReservationStore();
 const userStore = useUserStore();
 const restaurantStore = useRestaurantStore();
-const commentStore = useCommentStore(); // Store pour gérer les commentaires
+const commentStore = useCommentStore();
 const router = useRouter();
+
 const userId = ref<string | null>(null);
 const editingReservation = ref<IReservation | null>(null);
-const editedReservationDate = ref<string | null>(null); // To handle date input
-const editedReservationTime = ref<string | null>(null); // To handle time input
+const editedReservationDate = ref<string | null>(null);
+const editedReservationTime = ref<string | null>(null);
+
+// Pagination variables
+const currentPage = ref(1);
+const itemsPerPage = ref(6); // Number of reservations per page
+const totalPages = ref(0);
+
+// Function to update total pages
+const updatePagination = () => {
+  totalPages.value = Math.ceil(reservationStore.reservations.length / itemsPerPage.value);
+};
 
 onMounted(async () => {
   userStore.checkAuth();
@@ -23,40 +38,62 @@ onMounted(async () => {
     userId.value = userStore.user._id;
     await reservationStore.fetchUserReservations(userId.value);
     
+    // Tri des réservations par date (de la plus lointaine à la plus proche)
+    reservationStore.reservations.sort((a, b) => new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime());
+
+    // Récupérer les commentaires après avoir chargé les réservations
+    await commentStore.loadComments();
+
     const restaurantIds = reservationStore.reservations.map(reservation => reservation.restaurant);
     await Promise.all(restaurantIds.map(id => restaurantStore.fetchRestaurantById(id)));
+    
+    // Update pagination after fetching reservations
+    updatePagination();
   }
 });
+
+// Function to get current page reservations
+const currentReservations = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+  return reservationStore.reservations.slice(startIndex, startIndex + itemsPerPage.value);
+});
+
+// Function to check if the reservation date has passed
 const isReservationPast = (reservationDate: Date) => {
   const currentDate = new Date();
   return currentDate > new Date(reservationDate);
 };
-// Fonction pour vérifier si l'utilisateur a déjà laissé un commentaire
+
+// Check if the user has commented on the reservation
 const hasCommented = (reservationId: string) => {
+  if (!userId.value) return false; // Vérifiez si l'utilisateur est connecté
   const comments = commentStore.comments.filter(comment => comment.reservation === reservationId && comment.user === userId.value);
   return comments.length > 0;
 };
 
-// Vérifier si le bouton pour laisser un avis doit être affiché
+// Function to determine if the review button should be shown
 const shouldShowReviewButton = (reservationDate: Date) => {
   const reservationDateObj = new Date(reservationDate);
   const currentDate = new Date();
-  const oneDayAfterReservation = new Date(reservationDateObj);
-  oneDayAfterReservation.setDate(reservationDateObj.getDate() + 1);
-  return currentDate >= oneDayAfterReservation;
+  return currentDate >= reservationDateObj ;
 };
 
+
+// Function to get restaurant name by ID
 const getRestaurantName = (restaurantId: string) => {
   const restaurant = restaurantStore.getRestaurantById(restaurantId);
   return restaurant ? restaurant.name : 'Nom non disponible';
 };
 
+// Function to start editing a reservation
 const startEditing = (reservation: IReservation) => {
-  editingReservation.value = { ...reservation }; // Create a copy of the reservation
-  editedReservationDate.value = new Date(reservation.reservationDate).toISOString().split('T')[0]; // Set date input
-  editedReservationTime.value = new Date(reservation.reservationDate).toTimeString().split(' ')[0].slice(0, 5); // Set time input
+  editingReservation.value = { ...reservation };
+  editedReservationDate.value = new Date(reservation.reservationDate).toLocaleDateString('en-CA'); 
+
+  editedReservationTime.value = new Date(reservation.reservationDate).toTimeString().split(' ')[0].slice(0, 5);
 };
 
+// Function to cancel a reservation
 const cancelReservation = async (reservationId: string) => {
   if (confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
     await reservationStore.deleteReservation(reservationId);
@@ -64,180 +101,297 @@ const cancelReservation = async (reservationId: string) => {
       await reservationStore.fetchUserReservations(userId.value);
     }
     alert('Réservation annulée avec succès.');
+    updatePagination(); // Update pagination after deletion
   }
 };
 
+// Function to update a reservation
 const updateReservation = async () => {
   if (!editingReservation.value) return;
 
   try {
-    // Combine edited date and time into a single Date object
     const combinedDateTime = new Date(`${editedReservationDate.value}T${editedReservationTime.value}`);
     const updatedReservation = {
       ...editingReservation.value,
-      reservationDate: combinedDateTime // Set the combined date
+      reservationDate: combinedDateTime
     };
 
     await reservationStore.updateReservation(updatedReservation._id, updatedReservation);
     if (userId.value) {
       await reservationStore.fetchUserReservations(userId.value);
     }
-    editingReservation.value = null; // Reset the form
-    editedReservationDate.value = null; // Reset date input
-    editedReservationTime.value = null; // Reset time input
+    editingReservation.value = null;
+    editedReservationDate.value = null;
+    editedReservationTime.value = null;
     alert('Réservation mise à jour avec succès.');
+    updatePagination(); // Update pagination after update
   } catch (error) {
     alert('Erreur lors de la mise à jour de la réservation.');
   }
 };
 
+// Function to cancel editing a reservation
 const cancelEditing = () => {
-  editingReservation.value = null; // Reset the editing
-  editedReservationDate.value = null; // Reset date input
-  editedReservationTime.value = null; // Reset time input
+  editingReservation.value = null;
+  editedReservationDate.value = null;
+  editedReservationTime.value = null;
 };
 
+// Function to navigate to the review page
 const goToReviewPage = (restaurantId: string, reservationId: string) => {
   router.push(`/restaurant/${restaurantId}/review/${reservationId}`);
 };
+
+// Functions for pagination
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const previousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+
 </script>
 
 
 <template>
-    <div>
-      <h1>Mes Réservations</h1>
-  
-      <div v-if="reservationStore.reservations.length > 0">
-        <ul>
-          <li v-for="reservation in reservationStore.reservations" :key="reservation._id">
-            <p>Réservation pour le {{ new Date(reservation.reservationDate).toLocaleDateString() }}</p>
-            <p>Heure: {{ new Date(reservation.reservationDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}</p>
-            <p>Nombre d'invités: {{ reservation.numberOfPersons }}</p>
-            <p>Restaurant: {{ getRestaurantName(reservation.restaurant) }}</p>
-            
-            <!-- Vérifier si la réservation est passée pour afficher ou masquer les boutons -->
+    <NavigationBar />
+    <div class="myReservation">
+  <h1>{{ $t('title') }}</h1>
+
+  <div v-if="currentReservations.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ $t('date') }}</th>
+          <th>{{ $t('time') }}</th>
+          <th>{{ $t('guests') }}</th>
+          <th>{{ $t('restaurant') }}</th>
+          <th>{{ $t('actions') }}</th>
+          <th>{{ $t('review') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="reservation in currentReservations" :key="reservation._id">
+          <td>
+            <template v-if="editingReservation && editingReservation._id === reservation._id">
+              <input type="date" v-model="editedReservationDate" required />
+            </template>
+            <template v-else>
+              {{ new Date(reservation.reservationDate).toLocaleDateString() }}
+            </template>
+          </td>
+          <td>
+            <template v-if="editingReservation && editingReservation._id === reservation._id">
+              <input type="time" v-model="editedReservationTime" required />
+            </template>
+            <template v-else>
+              {{ new Date(reservation.reservationDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+            </template>
+          </td>
+          <td>
+            <template v-if="editingReservation && editingReservation._id === reservation._id">
+              <input type="number" v-model="editingReservation.numberOfPersons" required />
+            </template>
+            <template v-else>
+              {{ reservation.numberOfPersons }}
+            </template>
+          </td>
+          <td>{{ getRestaurantName(reservation.restaurant) }}</td>
+          <td>
             <div v-if="!isReservationPast(reservation.reservationDate)">
-              <button @click="startEditing(reservation)">Modifier</button>
-              <button @click="cancelReservation(reservation._id)">Annuler</button>
+              <template v-if="editingReservation && editingReservation._id === reservation._id">
+                <button class="primary-button" @click="updateReservation">{{ $t('save') }}</button>
+                <button class="secondary-button" @click="cancelEditing">{{ $t('cancel') }}</button>
+              </template>
+              <template v-else>
+                <button class="primary-button" @click="startEditing(reservation)">{{ $t('edit') }}</button>
+                <button class="secondary-button" @click="cancelReservation(reservation._id)">{{ $t('cancel') }}</button>
+              </template>
             </div>
-  
-            <!-- Afficher le bouton pour laisser un avis si la date est passée d'un jour et l'utilisateur n'a pas commenté -->
-            <button v-if="shouldShowReviewButton(reservation.reservationDate) && !hasCommented(reservation._id)" 
-                    @click="goToReviewPage(reservation.restaurant, reservation._id)">Laisser un avis</button> 
-  
-            <div v-if="editingReservation && editingReservation._id === reservation._id">
-              <h3>Modifier la Réservation</h3>
-              <form @submit.prevent="updateReservation">
-                <label>
-                  Nombre d'invités:
-                  <input type="number" v-model="editingReservation.numberOfPersons" required />
-                </label>
-                <label>
-                  Date:
-                  <input type="date" v-model="editedReservationDate" required />
-                </label>
-                <label>
-                  Heure:
-                  <input type="time" v-model="editedReservationTime" required />
-                </label>
-                <button type="submit">Sauvegarder</button>
-                <button type="button" @click="cancelEditing">Annuler</button>
-              </form>
-            </div>
-          </li>
-        </ul>
-        
-      </div>
-      
-  
-      <div v-else>
-        <p>Aucune réservation trouvée pour cet utilisateur.</p>
-      </div>
+          </td>
+          <td>
+            <button 
+              v-if="shouldShowReviewButton(reservation.reservationDate) && !hasCommented(reservation._id)"
+              class="primary-button"
+              @click="goToReviewPage(reservation.restaurant, reservation._id)"
+            >
+              {{ $t('leaveReview') }}
+            </button>
+            <button 
+              v-else-if="shouldShowReviewButton(reservation.reservationDate) && hasCommented(reservation._id)"
+              class="disabled-button"
+              disabled
+            >
+              {{ $t('reviewGiven') }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button @click="previousPage" :disabled="currentPage === 1">{{ $t('previous') }}</button>
+      <span>{{ $t('pageInfo', { currentPage, totalPages }) }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">{{ $t('next') }}</button>
     </div>
+  </div>
+
+  <div v-else>
+    <p>{{ $t('noReservations') }}</p>
+  </div>
+</div>
+
+    <Footer></Footer>
   </template>
-  <style scoped>
-  /* Style pour le conteneur principal */
-  div {
-    max-width: 800px; /* Limite la largeur pour un meilleur aspect */
+  
+
+<style scoped>
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%); /* Commence hors de l'écran à gauche */
+        opacity: 0; /* Commence transparent */
+    }
+    to {
+        transform: translateX(0); /* Termine à sa position originale */
+        opacity: 1; /* Termine complètement visible */
+    }
+}
+
+h1 {
+    text-align: center; /* Centre le texte */
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    animation: slideInFromLeft 1s ease forwards; /* Applique l'animation */
+}
+
+.myReservation {
+    background: url('@/assets/image/fondEcran.webp') no-repeat;
+    background-size: cover;
+    max-width: 85%; /* Limite la largeur pour un meilleur aspect */
     margin: 20px auto; /* Centre le conteneur */
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour du conteneur */
-    background-color: #f9f9f9; /* Couleur de fond */
-  }
-  
-  /* Style pour les titres */
-  h1 {
-    text-align: center;
-    color: #333; /* Couleur du texte */
-  }
-  
-  h3 {
-    color: #555; /* Couleur pour les sous-titres */
-  }
-  
-  /* Style pour la liste des réservations */
-  ul {
-    list-style: none; /* Supprime les puces */
-    padding: 0;
-  }
-  
-  li {
-    background-color: #fff; /* Fond blanc pour chaque réservation */
-    margin: 10px 0; /* Espacement entre les réservations */
-    padding: 15px; /* Espacement interne */
-    border-radius: 6px; /* Coins arrondis */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Ombre légère */
-  }
-  
-  /* Style pour les paragraphes */
-  p {
-    margin: 5px 0; /* Marges pour les paragraphes */
-    color: #666; /* Couleur de texte gris pour les détails */
-  }
-  
-  /* Style pour les boutons */
-  button {
-    background-color: #007bff; /* Couleur principale du bouton */
-    color: white; /* Couleur du texte */
-    border: none; /* Pas de bordure */
-    border-radius: 4px; /* Coins arrondis */
-    padding: 10px 15px; /* Espacement interne */
-    margin-right: 10px; /* Espacement entre les boutons */
-    cursor: pointer; /* Curseur en main pour indiquer le clic */
-    transition: background-color 0.3s; /* Animation de couleur */
-  }
-  
-  /* Effet au survol des boutons */
-  button:hover {
-    background-color: #0056b3; /* Couleur plus foncée au survol */
-  }
-  
-  /* Style pour les formulaires */
-  form {
-    margin-top: 10px; /* Espacement au-dessus du formulaire */
-    display: flex;
-    flex-direction: column; /* Colonne pour les champs de formulaire */
-  }
-  
-  label {
-    margin-bottom: 5px; /* Espacement sous chaque label */
-    color: #333; /* Couleur du texte des labels */
-  }
-  
-  input[type="number"],
-  input[type="date"],
-  input[type="time"] {
-    padding: 10px; /* Espacement interne */
-    border: 1px solid #ccc; /* Bordure grise */
-    border-radius: 4px; /* Coins arrondis */
-    margin-bottom: 10px; /* Espacement sous chaque champ */
-  }
-  
-  /* Style pour les messages d'erreur */
-  .error-message {
-    color: red; /* Couleur rouge pour les messages d'erreur */
-    margin-top: 5px; /* Espacement au-dessus des messages */
-  }
-  </style>
-  
+    
+}
+
+body {
+    background: linear-gradient(rgba(0, 188, 212, 0.6), rgba(0, 188, 212, 0.6)), 
+    url('@/assets/image/fond-ecran.webp') no-repeat center center fixed;
+    background-size: cover;
+  font-family: 'Roboto', sans-serif;
+  margin: 20px;
+  padding: 20px;
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+table {
+ 
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 5px;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+th, td {
+
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s;
+}
+
+tr:hover {
+
+  background-color: #f1f1f1;
+}
+
+th {  
+  background-color: #00bcd4;
+  color: white;
+}
+
+.primary-button:hover {
+  background-color: #77d2de; /* Darker shade on hover */
+}
+
+.secondary-button,.primary-button {
+  background-color: #00bcd4; /* Secondary button color */
+  margin-left: 15px;
+  color: white;
+  width: 100px; /* Ajustez la largeur comme vous le souhaitez */
+  height: 40px; /* Ajustez la hauteur comme vous le souhaitez */
+  margin: 5px; /* Espace autour des boutons */
+  text-align: center;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.secondary-button:hover {
+  background-color: #da2b2b; /* Darker shade on hover */
+}
+
+.disabled-button {
+  background-color: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  border-radius: 20px;
+  width: 100px; /* Ajustez la largeur comme vous le souhaitez */
+  height: 40px; /* Ajustez la hauteur comme vous le souhaitez */
+  margin: 5px; /* Espace autour des boutons */
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  margin: 0 10px;
+  width: 100px; /* Ajustez la largeur comme vous le souhaitez */
+  height: 40px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 20px;
+  background-color: #00bcd4; /* Primary button color for pagination */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination button:hover {
+  background-color: #00bcd4;
+   /* Darker shade on hover for pagination */
+}
+
+.pagination button:disabled {
+  background-color: #e0e0e0; /* Disabled button color */
+  cursor: not-allowed;
+  color: rgb(66, 66, 66);
+}
+.pagination span{
+    margin-top: 10px
+}
+
+</style>

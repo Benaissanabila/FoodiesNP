@@ -143,5 +143,23 @@ export default {
   },
   categories: {
     all: 'Toutes les catégories'
-  }
+  },
+  title: "Mes Réservations",
+  noReservations: "Aucune réservation trouvée pour cet utilisateur.",
+  previous: "Précédent",
+  next: "Suivant",
+  leaveReview: "Laisser un avis",
+  reviewGiven: "Avis laissé",
+  cancel: "Annuler",
+  edit: "Modifier",
+  save: "Sauvegarder",
+  reservationCancelled: "Réservation annulée avec succès.",
+  reservationUpdated: "Réservation mise à jour avec succès.",
+  pageInfo: "Page {currentPage} sur {totalPages}",
+  date: "Date",
+  time: "Heure",
+  guests: "Invités",
+  restaurant: "Restaurant",
+  actions: "Actions",
+  review: "Avis"
 }

@@ -1,54 +1,4 @@
-<template>
-    <div class="review-container">
-      <h1 class="review-title">Questionnaire d’appréciation</h1>
-      <h2 class="review-subtitle">Vous avez visité {{ restaurant?.name }}</h2>
-  
-      <div v-if="restaurant">
-        <div class="rating-section">
-          <label class="rating-label">Comment avez-vous trouvé la nourriture ?</label>
-          <div class="stars">
-            <span v-for="star in 5" :key="star" @click="setFoodRating(star)" class="star">
-              <span v-if="foodRating >= star">★</span>
-              <span v-else>☆</span>
-            </span>
-          </div>
-        </div>
-  
-        <div class="rating-section">
-          <label class="rating-label">Comment avez-vous trouvé l’ambiance ?</label>
-          <div class="stars">
-            <span v-for="star in 5" :key="star" @click="setAmbianceRating(star)" class="star">
-              <span v-if="ambianceRating >= star">★</span>
-              <span v-else>☆</span>
-            </span>
-          </div>
-        </div>
-  
-        <div class="rating-section">
-          <label class="rating-label">Comment avez-vous trouvé le service ?</label>
-          <div class="stars">
-            <span v-for="star in 5" :key="star" @click="setServiceRating(star)" class="star">
-              <span v-if="serviceRating >= star">★</span>
-              <span v-else>☆</span>
-            </span>
-          </div>
-        </div>
-  
-        <div class="comment-section">
-          <label class="comment-label">Laissez un commentaire :</label>
-          <textarea v-model="comment" class="comment-input" rows="4"></textarea>
-        </div>
-  
-        <button class="submit-button" @click="submitReview">Soumettre mon évaluation</button>
-      </div>
-  
-      <div v-else>
-        <p class="loading-message">Chargement du restaurant...</p>
-      </div>
-    </div>
-  </template>
-  
-  
+
   <script lang="ts">
   import { defineComponent, ref, onMounted } from 'vue';
   import { useRoute } from 'vue-router';
@@ -59,6 +9,12 @@
   import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
   import type { IUser } from '@/shared/interfaces/UserInterface';
 import { useReservationStore } from '@/stores/ReservationStore';
+
+import NavigationBar from '@/components/NavigationBar.vue';
+import Footer from '@/components/Footer.vue';
+
+
+
   
   export default defineComponent({
     setup() {
@@ -176,6 +132,59 @@ import { useReservationStore } from '@/stores/ReservationStore';
     },
   });
   </script>
+  <template>
+    <NavigationBar></NavigationBar> 
+    <div class="review-container">
+      
+      <h1 class="review-title">Questionnaire d’appréciation</h1>
+      <h2 class="review-subtitle">Vous avez visité {{ restaurant?.name }}</h2>
+  
+      <div v-if="restaurant">
+        <div class="rating-section">
+          <label class="rating-label">Comment avez-vous trouvé la nourriture ?</label>
+          <div class="stars">
+            <span v-for="star in 5" :key="star" @click="setFoodRating(star)" class="star">
+              <span v-if="foodRating >= star">★</span>
+              <span v-else>☆</span>
+            </span>
+          </div>
+        </div>
+  
+        <div class="rating-section">
+          <label class="rating-label">Comment avez-vous trouvé l’ambiance ?</label>
+          <div class="stars">
+            <span v-for="star in 5" :key="star" @click="setAmbianceRating(star)" class="star">
+              <span v-if="ambianceRating >= star">★</span>
+              <span v-else>☆</span>
+            </span>
+          </div>
+        </div>
+  
+        <div class="rating-section">
+          <label class="rating-label">Comment avez-vous trouvé le service ?</label>
+          <div class="stars">
+            <span v-for="star in 5" :key="star" @click="setServiceRating(star)" class="star">
+              <span v-if="serviceRating >= star">★</span>
+              <span v-else>☆</span>
+            </span>
+          </div>
+        </div>
+  
+        <div class="comment-section">
+          <label class="comment-label">Laissez un commentaire :</label>
+          <textarea v-model="comment" class="comment-input" rows="4"></textarea>
+        </div>
+  
+        <button class="submit-button" @click="submitReview">Soumettre mon évaluation</button>
+      </div>
+  
+      <div v-else>
+        <p class="loading-message">Chargement du restaurant...</p>
+      </div>
+    </div>
+    <Footer></Footer>
+  </template>
+  
   
  <style scoped>
 /* Style pour le conteneur principal */
