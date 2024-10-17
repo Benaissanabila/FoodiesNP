@@ -57,7 +57,7 @@ const router = createRouter({
     {
       path: '/mes-reservations',
       name: 'MesReservations',
-      component: MesReservationsPage // Créez un composant pour afficher les réservations de l'utilisateur
+      component: MesReservationsPage 
     }
     
 

@@ -130,7 +130,7 @@ export const sendReviewRequestEmail = async (userId, reservationId, restaurantId
         }
 
         // Créer un lien vers une page où l'utilisateur peut donner son avis
-        const reviewLink = `http://localhost:3000/restaurants/${restaurant._id}/reviews?userId=${user._id}&reservationId=${reservation._id}`;
+        const reviewLink = `http://localhost:5173/restaurant/${restaurant._id}/review/${reservation._id}`;
 
         // Options de l'email
         const mailOptions = {
