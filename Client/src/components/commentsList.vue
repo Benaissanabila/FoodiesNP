@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore';
 import { useUserStore } from '@/stores/UserStore';
 import StarRating from '@/components/StarRating.vue';
@@ -37,7 +37,9 @@ onMounted(async () => {
       const userId = comment.user;
       if (!userPhotos.value[userId]) {
         const user = await userStore.fetchUserById(userId);
+        console.log("user",user)
         userPhotos.value[userId] = user.UserPhoto;
+        
         userNames.value[userId] = user.name;
       }
     }
@@ -54,6 +56,17 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+const showAllComments = ref(false); // Variable pour suivre l'affichage
+
+// Propriété calculée pour limiter les commentaires affichés
+const displayedComments = computed(() => {
+  return showAllComments.value ? comments.value : comments.value.slice(0, 4);
+});
+
+// Méthode pour basculer l'affichage
+const toggleShowAllComments = () => {
+  showAllComments.value = !showAllComments.value;
+};
 
 // Sauvegarder les votes dans localStorage
 const saveVotesToLocalStorage = () => {
@@ -156,20 +169,30 @@ const toggleDislike = async (commentId: string) => {
 
 <template> 
 <div>
-<h3>{{ t('avis') }}</h3>
+    <h3>{{ t('avis') }}</h3>
     <div class="comment-card">
-      
       <div v-if="loading">Chargement des commentaires...</div>
       <div v-if="error">{{ error }}</div>
-      <div v-if="comments.length > 0">
-        <div v-for="comment in comments" :key="comment._id" class="comment">
+      <div v-if="displayedComments.length > 0">
+        <div v-for="comment in displayedComments" :key="comment._id" class="comment">
           <div class="user-info">
-            <img :src="userPhotos[comment.user]" alt="User Photo" class="user-photo" v-if="userPhotos[comment.user]" />
+            <img 
+              :src="userPhotos[comment.user] && userPhotos[comment.user].startsWith('http') 
+              ? userPhotos[comment.user] 
+              : `http://localhost:3000/uploads/${userPhotos[comment.user]}`" 
+              alt="User Photo" 
+              class="user-photo" 
+            />
             <span class="user-name">{{ userNames[comment.user] }}</span>
           </div>
           <div class="content-comment">
             <div class="rating-info">
-              <StarRating :rating="comment.globalRating" />
+              <template v-if="comment.globalRating !== undefined">
+  <StarRating :rating="comment.globalRating" />
+</template>
+<template v-else>
+  <span>No rating</span>
+</template>
               <span class="comment-date">{{ formatDate(comment.createdAt.toString()) }}</span>
             </div>
             <p class="comment-text">{{ comment.comment }}</p>
@@ -195,6 +218,9 @@ const toggleDislike = async (commentId: string) => {
         </div>
       </div>
       <div v-else>Aucun avis trouvé.</div>
+      <button v-if="comments.length >= 4" class="comment-toggle-button" @click="toggleShowAllComments">
+      {{ showAllComments ? t('voirMoins') : t('voirTous') }}
+    </button>
     </div>
   </div>
   </template>
@@ -285,6 +311,36 @@ h3{
     font-size: 2rem;
     margin-left: 18px;
 }
+
+.comment-toggle-button {
+  padding: 8px 12px; /* Espacement intérieur */
+  border: none; /* Pas de bordure */
+  border-radius: 4px; /* Coins légèrement arrondis */
+  background-color: #00bcd4; /* Couleur de fond verte */
+  color: white; /* Couleur du texte */
+  font-size: 14px; /* Taille de police */
+  cursor: pointer; /* Curseur en forme de main */
+  transition: background-color 0.3s, transform 0.2s; /* Transition pour les effets */
+  margin-top: 10px; /* Marge en haut */
+  display: block; /* Le bouton devient un bloc pour occuper toute la largeur disponible */
+  margin-left: auto; /* Marge gauche automatique pour centrer */
+  margin-right: auto; /* Marge droite automatique pour centrer */
+  text-align: center; 
+} 
+
+.comment-toggle-button:hover {
+  background-color: #77d2de; /* Couleur au survol */
+}
+
+.comment-toggle-button:active {
+  transform: scale(0.95); /* Réduction légère lors du clic */
+}
+
+.comment-toggle-button:focus {
+  outline: none; /* Supprime la bordure de focus */
+  box-shadow: 0 0 0 3px #00bcd4; /* Ombre autour du bouton au focus */
+}
+
 
 @media (max-width: 768px) {
   .comment-card {

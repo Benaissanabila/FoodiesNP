@@ -161,5 +161,7 @@ export default {
   guests: "Invités",
   restaurant: "Restaurant",
   actions: "Actions",
-  review: "Avis"
+  review: "Avis",
+  voirTous:"voir plus d'avis",
+  voirMoins:"voir moins d'avis"
 }

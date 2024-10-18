@@ -158,5 +158,8 @@ export default {
   guests: "Guests",
   restaurant: "Restaurant",
   actions: "Actions",
-  review: "Review"
+  review: "Review",
+   voirTous:"view more reviews",
+   voirMoins:"view fewer reviews"
+
 }

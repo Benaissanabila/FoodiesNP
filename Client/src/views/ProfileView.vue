@@ -225,6 +225,7 @@ function formatDateForInput(date: string | Date | undefined): string {
 }
 
 .profile-container {
+  background: linear-gradient(to bottom left, rgba(0, 188, 212, 0.5), rgba(255, 255, 255, 0.5));
   max-width: 600px;
   margin: 3rem auto;
   padding: 20px;
