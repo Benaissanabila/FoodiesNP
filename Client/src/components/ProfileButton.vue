@@ -142,6 +142,9 @@ const toggleRestaurateurSubmenu = (event: Event) => {
     <div v-if="showDropdown" class="dropdown-menu">
       <template v-if="isAuthenticated">
         <div @click="goToProfile">{{ t('profile') }}</div>
+        <RouterLink to="/mes-reservations" class="reservation-link">
+    <div>{{ t('title') }}</div>
+</RouterLink>
         <div class="restaurateur-menu" @click="toggleRestaurateurSubmenu">
           {{ t('restaurateur') }}
           <span class="arrow" :class="{ 'arrow-down': !showRestaurateurSubmenu, 'arrow-up': showRestaurateurSubmenu }"></span>
@@ -149,6 +152,7 @@ const toggleRestaurateurSubmenu = (event: Event) => {
         <div v-if="showRestaurateurSubmenu" class="submenu">
           <div @click="goToCreateRestaurant">{{ t('createRestaurant') }}</div>
           <div @click="goToMyRestaurants">{{ t('myRestaurants') }}</div>
+          
         </div>
         <div @click="logout">{{ t('logout') }}</div>
       </template>
@@ -160,7 +164,7 @@ const toggleRestaurateurSubmenu = (event: Event) => {
 </template>
 
 <style scoped>
-.profile-button {
+.profile-button{
   width: 60px;
   height: 60px;
   background-color: #00bcd4;
@@ -189,10 +193,6 @@ const toggleRestaurateurSubmenu = (event: Event) => {
   font-weight: bold;
 }
 
-svg {
-  color: white;
-}
-
 .profile-dropdown {
   position: relative;
 }
@@ -201,13 +201,25 @@ svg {
   position: absolute;
   top: 70px;
   right: 0;
-  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+ 
   min-width: 160px;
-}
 
+}
+.reservation-link{
+  color: black;
+  text-decoration: none;
+} 
+.dropdown-menu div{
+  background-color: rgb(238, 238, 238);
+  margin: 5px;
+  border-radius: 5px;
+}
+svg{
+  color: white;
+}
 .dropdown-menu div {
   padding: 10px;
   cursor: pointer;
@@ -215,5 +227,7 @@ svg {
 
 .dropdown-menu div:hover {
   background-color: #f5f5f5;
+  color: #00bcd4;
 }
+
 </style>

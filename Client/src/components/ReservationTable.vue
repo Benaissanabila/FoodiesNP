@@ -270,9 +270,7 @@ const formatDate = (date: Date | null) => {
   {{ formatDate(selectedDate) }} à <span class="restaurant-name">{{ restaurant.name }}</span>
 </p>
   </div>
-  <RouterLink to="/mes-reservations">
-      <button class="btn btn-primary">Afficher Mes Réservations</button>
-    </RouterLink>
+  
 
       </div>
     </div>

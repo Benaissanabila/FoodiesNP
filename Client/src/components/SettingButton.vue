@@ -70,6 +70,7 @@ const changeLanguage = (lang: 'en' | 'fr') => {
   align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  
 }
 
 .setting-button:hover {
@@ -97,6 +98,7 @@ const changeLanguage = (lang: 'en' | 'fr') => {
   border: none; /* Pas de bordure */
   color: #000000; /* Couleur du texte */
   width: 150px; /* Largeur fixe pour tous les boutons */
+  border-radius: 5px;
 }
 
 .language-button:hover {
@@ -121,6 +123,7 @@ const changeLanguage = (lang: 'en' | 'fr') => {
   padding: 5px; /* Ajout d'un peu d'espace autour */
   border: none; /* Pas de bordure */
   width: 150px; /* Largeur uniforme pour les options de langue */
+  border-radius: 5px;
 }
 
 .language-selector button {
