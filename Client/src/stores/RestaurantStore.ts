@@ -233,7 +233,7 @@ export const useRestaurantStore = defineStore('Restaurant', {
       //debugger
       const response = await axios.post('http://localhost:3000/restaurants', formData, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         }
       });
       const newRestaurant = response.data;

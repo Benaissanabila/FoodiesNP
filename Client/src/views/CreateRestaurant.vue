@@ -15,7 +15,7 @@ const userStore = useUserStore()
 const router = useRouter()
 
 // Définissez un type pour les données du restaurant à envoyer
-type RestaurantDataToSend = Partial<IRestaurant> & { RestoPhoto?: File }
+type RestaurantDataToSend = Partial<IRestaurant> 
 
 
 type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
@@ -44,7 +44,7 @@ const address = reactive<Address>({
 })
 
 const restaurant = reactive<
-  Omit<IRestaurant, 'address' | '_id' | 'globalRatingResaurant' | 'latitude' | 'longitude'> & { RestoPhoto: File | null, schedule: Schedule }
+  Omit<IRestaurant, 'address' | '_id' | 'globalRatingResaurant' | 'latitude' | 'longitude'> & { schedule: Schedule }
 >({
   name: '',
   phoneNumber: '',
@@ -65,17 +65,21 @@ const restaurant = reactive<
 })
 
 // Fonction pour formater l'horaire
-function formatSchedule(schedule: Schedule): { [key: string]: string } {
-  const formattedSchedule: { [key: string]: string } = {}
+function formatSchedule(schedule: Schedule): Schedule {
+  const formattedSchedule: Schedule = {} as Schedule;
 
   for (const [day, hours] of Object.entries(schedule)) {
     if (hours.open && hours.close) {
-      formattedSchedule[day] = `${hours.open}-${hours.close}`
+      formattedSchedule[day as DayOfWeek] = {
+        open: hours.open,
+        close: hours.close
+      };
     }
   }
 
-  return formattedSchedule
+  return formattedSchedule;
 }
+
 
 // Computed property pour combiner les champs d'adresse
 const fullAddress = computed(() => {
@@ -165,12 +169,22 @@ async function createRestaurant() {
       schedule: formatSchedule(restaurant.schedule)
     }
 
-    // Ajoutez RestoPhoto seulement s'il existe et est un File
-    if (restaurant.RestoPhoto instanceof File) {
-      restaurantData.RestoPhoto = restaurant.RestoPhoto
-    }
+    // Utilisez FormData pour envoyer les données et le fichier
+    const formData = new FormData();
+    
+    // Ajoutez toutes les données du restaurant à FormData
+    for (const [key, value] of Object.entries(restaurantData)) {
+  // Vérifiez si la valeur est non nulle avant de l'ajouter
+  if (value !== null && value !== undefined) {
+    formData.append(key, value as string | Blob); 
+  }
+}
 
-    const newRestaurant = await restaurantStore.createRestaurant(restaurantData)
+    // Ajoutez le fichier RestoPhoto
+    formData.append('RestoPhoto', restaurant.RestoPhoto as File);
+
+    const newRestaurant = await restaurantStore.createRestaurant(formData);
+
     console.log('Nouveau restaurant créé:', newRestaurant)
     alert(t('createMyRestaurant.success'))
     router.push('/')
