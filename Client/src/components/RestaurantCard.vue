@@ -20,7 +20,18 @@ const getDistance = computed(() => {
   const distance = store.calculateDistanceToRestaurant(props.restaurant);
   return distance === Infinity ? 'N/A' : distance.toFixed(2); // Si la distance est infinie, afficher 'N/A'
 });
-
+const restaurantPhotoUrl = computed(() => {
+  const restoPhoto = props.restaurant.RestoPhoto;
+  // Vérifier si RestoPhoto est une chaîne et commence par "http"
+  if (typeof restoPhoto === 'string' && restoPhoto.startsWith('http')) {
+    return restoPhoto; // URL complète, retourner directement
+  } else if (typeof restoPhoto === 'string') {
+    // Construire l'URL à partir du nom de fichier
+    return `http://localhost:3000/uploads/${restoPhoto}`;
+  } else {
+    return '/placeholder-restaurant.png'; // Valeur par défaut
+  }
+});
 
 
 // Watcher pour surveiller la note globale du restaurant
@@ -42,7 +53,11 @@ watch(
 <template>
   <div class="restaurant-card">
     <RouterLink :to="{ name: 'restaurantdetails', params: { id: restaurant._id } }">
-      <img :src="restaurant.RestoPhoto" alt="Photo du restaurant" class="restaurant-image" />
+      <img 
+        :src="restaurantPhotoUrl" 
+        alt="Photo du restaurant" 
+        class="restaurant-image" 
+      />
     </RouterLink>
     <div class="restaurant-details">
       <h3>{{ restaurant.name }}</h3>

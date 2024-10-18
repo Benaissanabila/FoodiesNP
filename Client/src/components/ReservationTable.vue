@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRestaurantStore } from '@/stores/RestaurantStore'
 import type { IRestaurant } from '../shared/interfaces/RestaurantInterface'
@@ -18,8 +18,9 @@ const userStore = useUserStore()
 const selectedDate = ref<Date | null>(null)
 const selectedTime = ref<string | null>(null)
 const numberOfGuests = ref<number>(1)
- // Récupérer restaurantId depuis les paramètres de la route
-  const reservationId = ref('');
+ 
+ 
+ const reservationId = ref('');
 const currentStep = ref(0) // Étape actuelle (0: date, 1: heure, 2: invités)
 const launchConfetti = () => {
   confetti({
@@ -62,6 +63,18 @@ onMounted(async () => {
     console.warn("Aucun utilisateur trouvé.");
   } else {
     console.log("Utilisateur trouvé :", user.value);
+  }
+});
+const restaurantPhotoUrl = computed(() => {
+  const restoPhoto = restaurant.value?.RestoPhoto;
+  // Vérifier si RestoPhoto est une chaîne et commence par "http"
+  if (typeof restoPhoto === 'string' && restoPhoto.startsWith('http')) {
+    return restoPhoto; // URL complète, retourner directement
+  } else if (typeof restoPhoto === 'string') {
+    // Construire l'URL à partir du nom de fichier
+    return `http://localhost:3000/uploads/${restoPhoto}`;
+  } else {
+    return '/placeholder-restaurant.png'; // Valeur par défaut
   }
 });
 
@@ -185,7 +198,11 @@ const formatDate = (date: Date | null) => {
     <div v-if="restaurant" class="restaurant-container">
       <!-- Left Side: Restaurant Details -->
       <div class="restaurant-header">
-        <img :src="restaurant.RestoPhoto" alt="Photo du restaurant" class="restaurant-image" />
+        <img 
+        :src="restaurantPhotoUrl" 
+        alt="Photo du restaurant" 
+        class="restaurant-image" 
+      />
         <div class="restaurant-info">
           <h1>{{ restaurant.name }}</h1>
           <p>Adresse : {{ restaurant.address }}</p>

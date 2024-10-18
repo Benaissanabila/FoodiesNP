@@ -6,9 +6,12 @@ import RestaurantCard from './RestaurantCard.vue';
 import SortComponent from './SortComponent.vue';
 import FilterComponent from './FilterComponent.vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore';
+import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
 
 const restaurantStore = useRestaurantStore();
-
+const props = defineProps<{
+  restaurants: IRestaurant[];
+}>();
 const currentIndex = ref(0);
 
 const filteredAndSortedRestaurants = computed(() => restaurantStore.filteredAndSortedRestaurants);

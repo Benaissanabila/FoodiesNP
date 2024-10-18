@@ -25,7 +25,7 @@ onMounted(async () => {
 <template>
   <div>
     <NavigationBar />
-    <ReservationTable />
+    <ReservationTable :restaurant="restaurant" />
     <CommentsList 
       v-if="restaurant" 
       :restaurantId="restaurant._id" 
