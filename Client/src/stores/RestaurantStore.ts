@@ -174,8 +174,7 @@ export const useRestaurantStore = defineStore('Restaurant', {
     
 
     // Action pour mettre à jour les marqueurs de restaurant sur la carte pour les restaurants filtrés
-   // Mettre à jour les marqueurs des restaurants sur la carte
-  // store/RestaurantStore.ts (ou .js selon votre configuration)
+   
   updateRestaurantMarkers(map: mapboxgl.Map, restaurants: IRestaurant[]) {
     this.clearMarkers(map);
   
