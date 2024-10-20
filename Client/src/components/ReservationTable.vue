@@ -9,6 +9,8 @@ import confetti from 'canvas-confetti';
 import type { IUser } from '@/shared/interfaces/UserInterface'
 import { useUserStore } from '@/stores/UserStore'
 
+
+
 const reservationStore = useReservationStore()
 const route = useRoute()
 const store = useRestaurantStore()
@@ -18,7 +20,7 @@ const userStore = useUserStore()
 const selectedDate = ref<Date | null>(null)
 const selectedTime = ref<string | null>(null)
 const numberOfGuests = ref<number>(1)
- 
+  const isExpanded = ref(false);
  
  const reservationId = ref('');
 const currentStep = ref(0) // Étape actuelle (0: date, 1: heure, 2: invités)
@@ -28,6 +30,9 @@ const launchConfetti = () => {
     spread: 70,
     origin: { y: 0.6 }
   });
+}
+function toggleDescription() {
+  isExpanded.value = !isExpanded.value;
 }
 // Horaires disponibles
 const breakfastTimes = ref(['08:00', '08:30', '09:00', '09:30', '10:00', '10:30'])
@@ -42,14 +47,16 @@ const dinnerTimes = ref([
 ])
 
 const stepMessages = ref(['Date', 'Heure', 'Invité(s)'])
-
+const numberOfComments = ref(0)
 onMounted(async () => {
   const restaurantId = route.params.id as string;
 
   // Récupérer les données du restaurant
   await store.fetchRestaurantById(restaurantId);
+  await store.fetchCommentsByRestaurantId(restaurantId)
   restaurant.value = store.restaurants.find((r) => r._id === restaurantId) || null;
-
+// Update the number of comments
+numberOfComments.value = store.comments.length || 0
   // Récupérer les données de l'utilisateur
   userStore.checkAuth(); // Appel de la méthode checkAuth
   user.value = userStore.user; // Assurez-vous de récupérer l'utilisateur depuis le store
@@ -134,39 +141,39 @@ const confirmReservation = async () => {
   ) {
     // Créer la date de réservation en utilisant l'heure locale
     const dateString = `${selectedDate.value.toISOString().split('T')[0]}T${selectedTime.value}:00`;
-    console.log("datestring",dateString)
+    console.log("Date sélectionnée pour réservation:", dateString);
     const reservationDate = new Date(dateString);
-    
-    // Convertir la date de réservation à l'ISO string pour l'envoi
-    const reservationDateISOString = reservationDate;
 
     const reservationData = {
       tableId: Math.floor(Math.random() * 10) + 1, // ID de table généré aléatoirement
       numberOfPersons: numberOfGuests.value,
-      reservationDate: reservationDateISOString,
+      reservationDate: reservationDate,  // Convertir à ISO
       restaurant: restaurant.value._id,
       user: user.value._id, // ID de l'utilisateur
     };
 
-    console.log('Tentative de réservation:', reservationData);
+    console.log('Données de réservation envoyées:', reservationData);
 
     try {
-      // Appel à l'API pour créer la réservation
-      const response = await reservationStore.createReservation(reservationData);
-      
-      // Vérifier si la réservation a été créée avec succès
-      if (response && response._id) {
-        reservationId.value = response._id;
-        stepMessages.value[2] = `${numberOfGuests.value} invités`;
-        currentStep.value = 3;
-        console.log('Réservation confirmée avec succès !');
-        
-        // Lancer les confettis après confirmation
-        launchConfetti();
-      }
-    } catch (error) {
-      console.error('Erreur lors de la confirmation de la réservation :', error);
-    }
+  // Appel à l'API pour créer la réservation
+  const response = await reservationStore.createReservation(reservationData);
+  
+  // Vérifier si la réservation a été créée avec succès
+  if (response && response.reservation && response.reservation._id) {
+    reservationId.value = response.reservation._id; // Assure-toi de récupérer l'ID dans "reservation"
+    stepMessages.value[2] = `${numberOfGuests.value} invités`;
+    currentStep.value = 3;
+    console.log('Réservation confirmée avec succès !');
+    
+    // Lancer les confettis après confirmation
+    launchConfetti();
+  } else {
+    console.warn("La réponse de l'API n'a pas retourné d'ID de réservation.");
+  }
+} catch (error) {
+  console.error('Erreur lors de la confirmation de la réservation :', error);
+}
+
   } else {
     console.error("Les informations de la réservation sont invalides.", {
       dateValid: selectedDate.value instanceof Date && !isNaN(selectedDate.value.getTime()),
@@ -176,6 +183,7 @@ const confirmReservation = async () => {
     });
   }
 };
+
 
 
 // Fonction pour formater la date
@@ -202,19 +210,39 @@ const formatDate = (date: Date | null) => {
         :src="restaurantPhotoUrl" 
         alt="Photo du restaurant" 
         class="restaurant-image" 
-      />
+      /> </div>
         <div class="restaurant-info">
           <h1>{{ restaurant.name }}</h1>
-          <p>Adresse : {{ restaurant.address }}</p>
-          <p>Numero de telephone: {{ restaurant.phoneNumber }}</p>
+          <p><img src="@/assets/image/adresse.svg" alt="Adresse Icon" class="address-icon" /> {{ restaurant.address }}</p>
+          <p> <img src="@/assets/image/phone.svg" alt="phone Icon" class="phone-icon" /> {{ restaurant.phoneNumber }}</p>
           <div class="cuisine-rating">
-            <p>Type de cuisine : {{ restaurant.cuisineType }}</p>
-            <StarRating :rating="restaurant.globalRatingResaurant" />
+            <p><img src="@/assets/image/typeCuisine.svg" alt="typeCuisine Icon" class="typeCuisine-icon" /> {{ restaurant.cuisineType }}</p>
+            <div>
+      <StarRating :rating="restaurant.globalRatingResaurant" />
+      
+    </div>
+    <span v-if="numberOfComments > 0">
+        <img src="@/assets/image/comments.svg" alt="comment" class="comment-icon" />   <strong>{{ numberOfComments }} </strong>
+      </span>
+      <span v-else>
+        0 <img src="@/assets/image/comments.svg" alt="comment" class="comment-icon" />
+      </span>
           </div>
-          <p>Description du restaurant :</p>
-          <div class="description-restaurant"><p>{{ restaurant.description }}</p></div>
+          
+          <div class="aProps">
+    <h4>A propos</h4>
+    <div class="description-restaurant" :class="{ expanded: isExpanded }">
+      <p>{{ restaurant.description }}</p>
+    </div>
+    <button v-if="!isExpanded" @click="toggleDescription" class="show-more">
+      En savoir plus
+    </button>
+    <button v-if="isExpanded" @click="toggleDescription" class="show-more">
+      Réduire
+    </button>
+  </div>
         </div>
-      </div>
+    
 
       <!-- Right Side: Reservation Form -->
       <div class="reservation">
@@ -243,7 +271,7 @@ const formatDate = (date: Date | null) => {
 
         <!-- Step 2: Time Selector -->
         <div v-if="currentStep === 1">
-          <h3>Choisissez l'heure :</h3>
+          <h4>Choisissez l'heure :</h4>
 
           <div>
             <h4>Petit déjeuner :</h4>
@@ -275,7 +303,7 @@ const formatDate = (date: Date | null) => {
 
         <!-- Step 3: Guest Picker -->
         <div v-if="currentStep === 2" class="guest-picker">
-          <h3>Nombre d'invités :</h3>
+          <h4>Nombre d'invités :</h4>
           <input type="number" v-model="numberOfGuests" min="1" />
           <button @click="confirmReservation">Confirmer la réservation</button>
         </div>
@@ -308,12 +336,9 @@ const formatDate = (date: Date | null) => {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombre légère */
 }
 
-/* Style pour le titre */
-.guest-picker h3 {
-  margin-bottom: 10px; /* Espacement en bas */
-  font-size: 1.5rem; /* Taille de police */
-  color: #333; /* Couleur du texte */
-}
+
+
+
 
 /* Style pour l'input */
 .guest-picker input[type='number'] {
@@ -366,16 +391,39 @@ const formatDate = (date: Date | null) => {
   align-items: flex-start;
 }
 
-.restaurant-header {
+.restaurant-header img {
   display: flex;
   flex: 1;
+  width: 500px;
+  height: 600px;
 }
 .description-restaurant {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  padding: 20px;
-width: 80%;
-  border-radius: 10px;
-  background-color: #f9f9f9;
+  
+width: 70%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 3; /* Limite l'affichage à 3 lignes */
+  height: 4.5em;
+  margin-bottom: 1em;
+ 
+}
+.aProps h4 {
+  border-bottom: #00bcd4 solid 3px;
+  width: 85px;
+}
+
+.show-more {
+  cursor: pointer;
+  color: rgb(111, 111, 111); /* Change la couleur pour qu'elle ressemble à un lien */
+  text-decoration: underline;
+  background-color: transparent;
+  border: none;
+}
+.expanded {
+  -webkit-line-clamp: unset; /* Affiche tout le texte lorsque développé */
+  height: auto; /* Ajuste la hauteur automatiquement */
+ 
 }
 .restaurant-image {
   width: 350px;
@@ -392,14 +440,22 @@ width: 80%;
 .cuisine-rating {
   display: flex;
   align-items: center;
+  gap: 15px;
 }
+
+.comment-icon{
+  margin-left: 15px;
+
+ 
+}
+
 .cuisine-rating p {
   margin-right: 100px;
 }
 .reservation {
   background-color: #f9f9f9;
-  width: 320px;
-  height: 630px;
+  width: 380px;
+  height: 770px;
   padding: 20px;
   margin-right: 20px;
   border-radius: 8px;

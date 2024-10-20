@@ -1,6 +1,7 @@
 export interface IRestaurant {
     _id: string;          
-    name: string;         
+    name: string; 
+    comments?:[];        
     address: string;      
     cuisineType?: string; 
     schedule: object;     

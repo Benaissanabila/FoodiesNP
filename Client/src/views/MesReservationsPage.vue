@@ -97,38 +97,54 @@ const startEditing = (reservation: IReservation) => {
 const cancelReservation = async (reservationId: string) => {
   if (confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
     await reservationStore.deleteReservation(reservationId);
-    if (userId.value) {
-      await reservationStore.fetchUserReservations(userId.value);
+
+    // Supprimer la réservation localement du store sans tout recharger
+    const index = reservationStore.reservations.findIndex(res => res._id === reservationId);
+    if (index !== -1) {
+      reservationStore.reservations.splice(index, 1); // Supprimer l'élément du tableau
     }
+
     alert('Réservation annulée avec succès.');
-    updatePagination(); // Update pagination after deletion
+    updatePagination(); // Mettre à jour la pagination après suppression
   }
 };
+
 
 // Function to update a reservation
 const updateReservation = async () => {
   if (!editingReservation.value) return;
 
   try {
+    // Combiner la date et l'heure dans un objet Date
     const combinedDateTime = new Date(`${editedReservationDate.value}T${editedReservationTime.value}`);
+
+    // Création de l'objet réservation mis à jour
     const updatedReservation = {
       ...editingReservation.value,
       reservationDate: combinedDateTime
     };
 
+    // Appel à la fonction pour mettre à jour la réservation dans le store
     await reservationStore.updateReservation(updatedReservation._id, updatedReservation);
-    if (userId.value) {
-      await reservationStore.fetchUserReservations(userId.value);
+
+    // Mise à jour locale du tableau des réservations sans recharger toutes les réservations
+    const index = reservationStore.reservations.findIndex(res => res._id === updatedReservation._id);
+    if (index !== -1) {
+      reservationStore.reservations[index] = updatedReservation;
     }
+
+    // Remettre à zéro les champs de modification
     editingReservation.value = null;
     editedReservationDate.value = null;
     editedReservationTime.value = null;
+
     alert('Réservation mise à jour avec succès.');
-    updatePagination(); // Update pagination after update
+    updatePagination(); // Mettre à jour la pagination après mise à jour
   } catch (error) {
     alert('Erreur lors de la mise à jour de la réservation.');
   }
 };
+
 
 // Function to cancel editing a reservation
 const cancelEditing = () => {

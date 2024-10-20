@@ -85,6 +85,7 @@ const scrollRight = () => {
   align-items: center;
   overflow-x: hidden;
   padding-top: 10px;
+  padding-bottom: 30px;
 }
 
 .restaurant-cards {

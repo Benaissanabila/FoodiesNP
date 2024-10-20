@@ -7,7 +7,7 @@ import CommentsList from '@/components/commentsList.vue';
 import NavigationBar from '@/components/NavigationBar.vue';
 import ReservationTable from '@/components/ReservationTable.vue';
 import Footer from '@/components/Footer.vue';
-
+import LocalisationResataurant from '@/components/LocalisationRestaurant.vue'
 const restaurantStore = useRestaurantStore();
 const restaurant = ref<IRestaurant | null>(null); // Type explicite ici
 
@@ -26,15 +26,36 @@ onMounted(async () => {
   <div>
     <NavigationBar />
     <ReservationTable :restaurant="restaurant" />
-    <CommentsList 
-      v-if="restaurant" 
-      :restaurantId="restaurant._id" 
-      :restaurantName="restaurant.name" 
-    />
-    <p v-else>Chargement du restaurant...</p> <!-- Message de chargement -->
+    <div class="comments-localisation-container">
+      <CommentsList 
+        v-if="restaurant" 
+        :restaurantId="restaurant._id" 
+        :restaurantName="restaurant.name" 
+      />
+      <LocalisationResataurant 
+        v-if="restaurant" 
+        :restaurantId="restaurant._id" 
+      />
+      <p v-else>Chargement du restaurant...</p>
+    </div> 
   </div>
   <Footer />
 </template>
 <style>
-/* Ajoutez vos styles ici si nécessaire */
+.comments-localisation-container {
+  display: flex; /* Utiliser flexbox */
+  margin-top: 20px; /* Espacement au-dessus */
+}
+
+.comments-localisation-container > * {
+  margin-right: 10px; /* Espacement entre les composants */
+}
+
+.comments-localisation-container > :first-child {
+  flex: 0 0 75%; /* 75% pour CommentsList */
+}
+
+.comments-localisation-container > :last-child {
+  flex: 0 0 25%; /* 25% pour LocalisationRestaurant */
+}
 </style>

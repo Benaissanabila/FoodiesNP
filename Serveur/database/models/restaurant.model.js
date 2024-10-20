@@ -21,7 +21,7 @@ const restaurantSchema = new mongoose.Schema({
     trim: true,
   },
   schedule: {
-    type: Object,  // Changé de String à Object
+    type: Object,  
     required: true,
   },
 
