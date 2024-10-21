@@ -54,3 +54,16 @@ export const deleteOwner = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
+
+export const getOwnerId = async (req, res) => {
+  try {
+    const owner = await queries.getOwnerIdQuery();
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
+    }
+    res.status(200).json(owner);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+

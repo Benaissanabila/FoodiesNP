@@ -155,3 +155,22 @@ export const getCommentsByRestaurantId = async (req, res) => {
   }
 };
 
+
+export async function getRestaurantsByOwner(req, res) {
+  const ownerId = req.params.ownerId;
+  console.log('Recherche des restaurants pour le propriétaire:', ownerId);
+
+  try {
+      const restaurants = await queries.getRestaurantsByOwnerIdQuery(ownerId);
+      if (restaurants.length === 0) {
+          console.log('Aucun restaurant trouvé pour le propriétaire:', ownerId);
+          return res.status(404).json({ message: 'Aucun restaurant trouvé pour cet owner.' });
+      }
+      console.log(`${restaurants.length} restaurants trouvés pour le propriétaire:`, ownerId);
+      res.status(200).json(restaurants);
+  } catch (error) {
+      console.error('Erreur lors de la récupération des restaurants:', error);
+      res.status(500).json({ message: 'Erreur lors de la récupération des restaurants.', error: error.message });
+  }
+}
+

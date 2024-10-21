@@ -9,6 +9,8 @@ import { useUserStore } from '@/stores/UserStore';
 import TwoFAView from '@/views/TwoFAView.vue';
 import ReviewPage from '@/views/ReviewPage.vue';
 import MesReservationsPage from '@/views/MesReservationsPage.vue';
+import MyRestaurantsList from '@/views/MyRestaurantsList.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,8 +60,13 @@ const router = createRouter({
       path: '/mes-reservations',
       name: 'MesReservations',
       component: MesReservationsPage 
-    }
-    
+    },
+    {
+      path: '/my-restaurants',
+      name: 'MyRestaurants',
+      component: MyRestaurantsList
+    },
+  
 
   ]
 })

@@ -3,8 +3,9 @@ import axios from 'axios';
 import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
 import type { IComment } from '@/shared/interfaces/CommentInterface';
 import mapboxgl from 'mapbox-gl';
+import { useUserStore } from '@/stores/UserStore';
 
-
+axios.defaults.withCredentials = true;
 
 // Fonctions utilitaires en dehors du store
 function calculateDistance(userLocation: { latitude: number; longitude: number }, restaurant: IRestaurant): number {
@@ -35,8 +36,10 @@ export const useRestaurantStore = defineStore('Restaurant', {
     comments: [] as IComment[],
     loading: false,
     error: null as string | null,
+    userRestaurants: [] as IRestaurant[],
     userLocation: null as { latitude: number; longitude: number } | null,
     sortBy: 'rating' as string,
+    owner: null as string | null,
     filters: {
       category: '',
       minRating: 0,
@@ -229,7 +232,6 @@ export const useRestaurantStore = defineStore('Restaurant', {
  
   async createRestaurant(formData: any) {
     try {
-      //debugger
       const response = await axios.post('http://localhost:3000/restaurants', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -245,14 +247,73 @@ export const useRestaurantStore = defineStore('Restaurant', {
   },
 
 
-  isFile(value: unknown): value is File {
-    return value instanceof File;
+  setFilters(filters: { category: string; minRating: number; priceFork: string }) {
+    this.filters = filters;
   },
 
 
-  setFilters(filters: { category: string; minRating: number; priceFork: string }) {
-    this.filters = filters;
-  }
+  async loadUserRestaurants() {
+    const userStore = useUserStore();
+    if (!userStore.user || !userStore.user._id) {
+      console.error('Utilisateur non connecté ou ID non disponible');
+      this.error = 'Utilisateur non connecté';
+      return;
+    }
+
+    this.loading = true;
+    this.error = null;
+    try {
+      const response = await axios.get<IRestaurant[]>(`http://localhost:3000/restaurants/owner/${userStore.user._id}`);
+      this.userRestaurants = response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Erreur Axios lors de la récupération des restaurants de l\'utilisateur:', error.response?.data || error.message);
+        this.error = error.response?.data?.message || error.message || 'Erreur lors de la récupération des restaurants';
+      } else {
+        console.error('Erreur inconnue lors de la récupération des restaurants de l\'utilisateur:', error);
+        this.error = 'Une erreur inattendue s\'est produite';
+      }
+    } finally {
+      this.loading = false;
+    }
+  },
+  async deleteRestaurant(id: string) {
+    this.loading = true;
+    this.error = null;
+    try {
+      await axios.delete(`http://localhost:3000/restaurants/${id}`);
+      this.restaurants = this.restaurants.filter(restaurant => restaurant._id !== id);
+      this.userRestaurants = this.userRestaurants.filter(restaurant => restaurant._id !== id);
+    } catch (error) {
+      console.error('Erreur lors de la suppression du restaurant:', error);
+      this.error = 'Erreur lors de la suppression du restaurant';
+    } finally {
+      this.loading = false;
+    }
+  },
+
+  // Vous pouvez ajouter une méthode pour la mise à jour si nécessaire
+  async updateRestaurant(id: string, updatedData: Partial<IRestaurant>) {
+    this.loading = true;
+    this.error = null;
+    try {
+      const response = await axios.put(`http://localhost:3000/restaurants/${id}`, updatedData);
+      const updatedRestaurant = response.data;
+      const index = this.restaurants.findIndex(r => r._id === id);
+      if (index !== -1) {
+        this.restaurants[index] = updatedRestaurant;
+      }
+      const userIndex = this.userRestaurants.findIndex(r => r._id === id);
+      if (userIndex !== -1) {
+        this.userRestaurants[userIndex] = updatedRestaurant;
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du restaurant:', error);
+      this.error = 'Erreur lors de la mise à jour du restaurant';
+    } finally {
+      this.loading = false;
+    }
+  },
 }
 
    

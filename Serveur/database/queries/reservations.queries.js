@@ -2,6 +2,7 @@ import Reservation from "../models/reservation.model.js";
 import nodemailer from 'nodemailer';
 import User from '../models/user.model.js'
 import {Restaurant}  from '../models/restaurant.model.js'
+import { Owner } from "../models/owner.model.js";
 import dotenv from 'dotenv';
 dotenv.config();
 

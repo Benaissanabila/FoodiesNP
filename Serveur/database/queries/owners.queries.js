@@ -7,16 +7,16 @@ export const createOwnerQuery = async owner => {
 
 // Lire un propriétaire par ID
 export const getOwnerQuery = async id => {
-    return Owner.findById(id)
+    return Owner.findById(id).populate('restaurant');
 }
 
 export const getOwnerByUser = async id => {
-    return Owner.findOne({user: id})
+    return Owner.findOne({user: id}).populate('restaurant');
 }
 
 // Lire tous les propriétaires
 export const getAllOwnersQuery = async () => {
-    return Owner.find({})
+    return Owner.find({}).populate('restaurant');
 }
 export const deleteOwnerQuery = async id => {
     return Owner.findByIdAndDelete(id)

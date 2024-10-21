@@ -38,7 +38,7 @@ router.delete('/:id', controller.deleteRestaurant);
 // Obtenir tous les commentaires d'un restaurant par ID
 router.get('/:restaurantId/comments', controller.getCommentsByRestaurantId);
 
-/*router.post('/', upload.single('RestoPhoto'), controller.createRestaurant);*/
+router.get('/owner/:ownerId', controller.getRestaurantsByOwner);
 
 
 

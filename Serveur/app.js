@@ -14,7 +14,12 @@ import cors from 'cors';
 
 // création de l'application serveur elle même
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:5173', // L'URL de votre application frontend
+  credentials: true, // Autorise l'envoi de cookies et d'en-têtes d'authentification
+};
+
+app.use(cors(corsOptions));
 // permet au serveur de comprendre les requêtes en JSON
 app.use(express.json());
 // permet au serveur de comprendre les requêtes en x-form-urlencoded
