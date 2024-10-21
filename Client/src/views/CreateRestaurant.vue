@@ -171,7 +171,8 @@ async function createRestaurant() {
 
     // Utilisez FormData pour envoyer les données et le fichier
     const formData = new FormData();
-    
+    formData.append('schedule', JSON.stringify(formatSchedule(restaurant.schedule)));
+
     // Ajoutez toutes les données du restaurant à FormData
     for (const [key, value] of Object.entries(restaurantData)) {
   // Vérifiez si la valeur est non nulle avant de l'ajouter

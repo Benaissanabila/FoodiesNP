@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineProps, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore'; // Ajustez le chemin selon vos fichiers
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
