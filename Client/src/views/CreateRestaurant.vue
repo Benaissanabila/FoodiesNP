@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router'
 import Footer from '@/components/Footer.vue'
 import SettingButton from '@/components/SettingButton.vue'
 import Logo from '@/components/Logo.vue'
-import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface'
+import type { IRestaurant  } from '@/shared/interfaces/RestaurantInterface'
 
 const { t } = useI18n()
 const restaurantStore = useRestaurantStore()
@@ -166,7 +166,7 @@ async function createRestaurant() {
       description: restaurant.description,
       priceFork: restaurant.priceFork,
       owner: userStore.user?._id,
-      schedule: formatSchedule(restaurant.schedule)
+      schedule: { ...restaurant.schedule }
     }
 
     // Utilisez FormData pour envoyer les données et le fichier

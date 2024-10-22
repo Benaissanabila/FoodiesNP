@@ -4,7 +4,7 @@ export interface IRestaurant {
     comments?:[];        
     address: string;      
     cuisineType?: string; 
-    schedule: object;     
+    schedule: { [key: string]: Schedule }     
     phoneNumber?: string; 
     RestoPhoto: string | null | File;   
     owner?: string;  
@@ -14,4 +14,9 @@ export interface IRestaurant {
     description:string 
     priceFork:string
   }
+  export interface Schedule {
+    open: string;
+    close: string;
+  }
+  
   

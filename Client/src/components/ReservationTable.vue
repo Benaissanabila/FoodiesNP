@@ -22,7 +22,7 @@ const selectedDate = ref<Date | null>(null)
 const selectedTime = ref<string | null>(null)
 const numberOfGuests = ref<number>(1)
   const isExpanded = ref(false);
- 
+  const showSchedule = ref(false);
  const reservationId = ref('');
 const currentStep = ref(0) // Étape actuelle (0: date, 1: heure, 2: invités)
 const launchConfetti = () => {
@@ -32,6 +32,37 @@ const launchConfetti = () => {
     origin: { y: 0.6 }
   });
 }
+const toggleSchedule = () => {
+  showSchedule.value = !showSchedule.value; // Inverse l'état de showSchedule
+};
+
+const getScheduleDisplay = () => {
+  // Vérifie si le restaurant est null
+  if (!restaurant.value) {
+    return 'Restaurant non trouvé';
+  }
+
+  const schedule = restaurant.value.schedule; // Récupère l'objet d'horaire
+
+  // Vérifie si le planning est un objet
+  if (!schedule || typeof schedule !== 'object') {
+    return 'Horaires non disponibles';
+  }
+
+  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+  return daysOfWeek.map(day => {
+    const hours = schedule[day]; // Récupère les heures pour le jour courant
+    if (hours) {
+      return `${day.charAt(0).toUpperCase() + day.slice(1)}: ${hours.open} - ${hours.close}`;
+    } else {
+      return `${day.charAt(0).toUpperCase() + day.slice(1)}: Fermé`; // Gérer le cas où le restaurant est fermé
+    }
+  }).join(', ');
+};
+
+
+
 function toggleDescription() {
   isExpanded.value = !isExpanded.value;
 }
@@ -242,7 +273,17 @@ const formatDate = (date: Date | null) => {
       Réduire
     </button>
   </div>
-        </div>
+  <div class="restaurant-schedule">
+  <button @click="toggleSchedule">{{ showSchedule ? 'Masquer les horaires' : 'Afficher les horaires' }}</button>
+  
+  <transition name="fade">
+    <div v-show="showSchedule" class="schedule-section">
+      <h4>Horaires d'ouverture</h4>
+      <p>{{ getScheduleDisplay() }}</p>
+    </div>
+  </transition>
+</div>
+ </div>
     
 
       <!-- Right Side: Reservation Form -->
