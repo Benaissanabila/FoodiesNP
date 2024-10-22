@@ -71,7 +71,7 @@ export default {
 
   createMyRestaurant: {
     title: 'Create My Restaurant',
-    changePhoto: 'Change Photo',
+    changePhoto: 'upload photo',
     namePlaceholder: 'Restaurant Name',
     streetAddressPlaceholder: 'Street Address',
     cityPlaceholder: 'City',
@@ -202,4 +202,10 @@ export default {
     saturday: 'Saturday',
     sunday: 'Sunday'
   }
-}
+  }
+  
+ 
+  
+  
+  
+

@@ -9,7 +9,10 @@ import confetti from 'canvas-confetti';
 import type { IUser } from '@/shared/interfaces/UserInterface'
 import { useUserStore } from '@/stores/UserStore'
 import ShareLink from './ShareLink.vue'
+import { useI18n } from 'vue-i18n'; 
 
+
+const { t } = useI18n();
 
 
 const reservationStore = useReservationStore()

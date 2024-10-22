@@ -211,22 +211,26 @@ async function createRestaurant() {
         <h1>{{ $t('createMyRestaurant.title') }}</h1>
 
         <div class="photo-container">
-          <img
-            :src="previewImage || '/placeholder-restaurant.png'"
-            alt="Restaurant Photo"
-            class="restaurant-photo"
-          />
-          <button @click="triggerPhotoUpload" class="btn btn-secondary">
-            {{ $t('createMyRestaurant.changePhoto') }}
-          </button>
-          <input
-            type="file"
-            ref="photoInput"
-            @change="handlePhotoChange"
-            accept="image/*"
-            style="display: none"
-          />
-        </div>
+    <!-- Afficher l'image uniquement si elle a été téléchargée -->
+    <img
+      v-if="previewImage" 
+      :src="previewImage"
+      alt="Restaurant Photo"
+      class="restaurant-photo"
+    />
+    
+    <button @click="triggerPhotoUpload" class="btn btn-secondary">
+      {{ $t('createMyRestaurant.changePhoto') }}
+    </button>
+    
+    <input
+      type="file"
+      ref="photoInput"
+      @change="handlePhotoChange"
+      accept="image/*"
+      style="display: none"
+    />
+  </div>
 
         <form @submit.prevent="createRestaurant">
           <div class="form-group">
@@ -351,6 +355,9 @@ async function createRestaurant() {
 .photo-container {
   text-align: center;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .restaurant-photo {
@@ -381,15 +388,12 @@ select {
   margin-top: 10px;
 }
 
-.btn-primary {
+.btn-primary,.btn-secondary {
   background-color: #00bcd4;
-  color: white;
+  color: white; 
 }
 
-.btn-secondary {
-  background-color: #6c757d;
-  color: white;
-}
+
 
 .header {
   display: flex;
@@ -447,7 +451,7 @@ input,
 select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #00bcd4;
   border-radius: 4px;
 }
 
@@ -458,4 +462,5 @@ textarea {
   border-radius: 4px;
   min-height: 100px;
 }
+
 </style>

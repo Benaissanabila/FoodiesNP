@@ -73,7 +73,7 @@ export default {
 
   createMyRestaurant: {
     title: 'Créer mon restaurant',
-    changePhoto: 'Changer la photo',
+    changePhoto: 'télécharge photo',
     namePlaceholder: 'Nom du restaurant',
     streetAddressPlaceholder: 'Numéro et rue',
     cityPlaceholder: 'Ville',
