@@ -211,5 +211,8 @@ export const useUserStore = defineStore('UserStore', {
     isAuthenticated(): boolean {
       return !!this.user && !!this.token;
     },
+    currentUser(): IUser | null {
+      return this.user; // Getter pour récupérer l'utilisateur actuel
+    },
   },
 });

@@ -10,7 +10,7 @@ export const getOwnerQuery = async id => {
     return Owner.findById(id).populate('restaurant');
 }
 
-export const getOwnerByUser = async id => {
+export const getOwnerByUserQuery = async id => {
     return Owner.findOne({user: id}).populate('restaurant');
 }
 

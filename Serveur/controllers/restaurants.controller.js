@@ -1,6 +1,6 @@
 import * as queries from "../database/queries/restaurants.queries.js";
 import Comment from "../database/models/comment.model.js"; 
-import {getOwnerByUser, createOwnerQuery} from "../database/queries/owners.queries.js";
+import { createOwnerQuery} from "../database/queries/owners.queries.js";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';

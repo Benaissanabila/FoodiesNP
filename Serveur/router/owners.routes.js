@@ -11,6 +11,7 @@ router.get('/:id', controller.getOwner);
 router.put('/:id', controller.updateOwner);
 router.delete('/:id', controller.deleteOwner);
 router.get('/ownerId', controller.getOwnerId);
+router.get('/user/:userId', controller.getOwnerByUser);
 
 
 export default router;

@@ -4,7 +4,7 @@ import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
 import type { IComment } from '@/shared/interfaces/CommentInterface';
 import mapboxgl from 'mapbox-gl';
 import { useUserStore } from '@/stores/UserStore';
-
+import { useOwnerStore } from '@/stores/OwnerStore';
 axios.defaults.withCredentials = true;
 
 // Fonctions utilitaires en dehors du store
@@ -314,7 +314,45 @@ export const useRestaurantStore = defineStore('Restaurant', {
       this.loading = false;
     }
   },
-}
+  // Action pour récupérer les restaurants d'un owner
+  async fetchRestaurantsByOwner() {
+    this.loading = true;
+    this.error = null;
+
+    try {
+      const userStore = useUserStore(); // Utiliser UserStore pour récupérer l'utilisateur connecté
+      const ownerStore = useOwnerStore(); // Utiliser OwnerStore pour récupérer l'owner lié à l'utilisateur
+
+      // Vérifie si l'utilisateur est connecté et si son _id est défini
+      const userId = userStore.user?._id;
+
+      if (!userId) {
+        this.error = 'ID utilisateur manquant';
+        return; // Sortir de la fonction si l'ID est manquant
+      }
+
+      // Récupérer le owner associé à l'utilisateur
+      await ownerStore.fetchOwnerByUser(userId); // Utiliser l'ID avec la vérification
+
+      // Si un owner est trouvé, récupérer les restaurants associés à cet owner
+      if (ownerStore.owner) {
+        const ownerId = ownerStore.owner._id;
+        console.log("ownerid",ownerId)
+        const response = await axios.get<IRestaurant[]>(`http://localhost:3000/restaurants/owner/${ownerId}`);
+        this.restaurants = response.data;
+      } else {
+        this.error = 'Aucun propriétaire trouvé pour cet utilisateur';
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des restaurants:', error);
+      this.error = 'Erreur lors de la récupération des restaurants';
+    } finally {
+      this.loading = false;
+    }
+  },
+},
+
+
 
    
 });

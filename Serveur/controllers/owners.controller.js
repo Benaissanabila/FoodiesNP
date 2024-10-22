@@ -67,3 +67,25 @@ export const getOwnerId = async (req, res) => {
   }
 }
 
+
+
+export const getOwnerByUser = async (req, res) => {
+  const userId = req.params.userId; // Récupération de l'ID utilisateur à partir des paramètres de la requête
+
+  try {
+    // Utilisation de la requête pour récupérer l'owner avec les restaurants peuplés
+    const owner = await queries.getOwnerByUserQuery(userId);
+
+    if (!owner) {
+      // Si aucun owner n'a été trouvé
+      return res.status(404).json({ message: 'Owner not found for the provided user ID' });
+    }
+
+    // Si l'owner est trouvé, renvoyer l'owner avec ses restaurants
+    return res.status(200).json(owner);
+  } catch (error) {
+    // Gestion des erreurs et renvoi d'une réponse avec le statut 500
+    console.error('Error fetching owner by user ID:', error);
+    return res.status(500).json({ error: 'An error occurred while fetching the owner' });
+  }
+};
