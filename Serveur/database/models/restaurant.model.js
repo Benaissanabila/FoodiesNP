@@ -22,13 +22,13 @@ const restaurantSchema = new mongoose.Schema({
   },
   schedule: {
     type: Object,  
-    required: true,
+    required: false,
   },
 
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Owner",
-    required: true,
+    required: false,
   },
   comments: {
     type: [mongoose.Schema.Types.ObjectId],
@@ -61,7 +61,7 @@ const restaurantSchema = new mongoose.Schema({
       enum: ['$', '$$', '$$$', '$$$$', '$$$$$'],
       required: true
     },
-});
+},{ timestamps: true });
 // Méthode pour récupérer les coordonnées à partir de l'adresse
 restaurantSchema.methods.fetchCoordinatesFromMapbox = async function () {
   const mapboxToken = 'pk.eyJ1IjoicGF0cmlja2M1MTQiLCJhIjoiY2x3aTlibWh3MDRxZTJscGszYnJoODI2ZSJ9.7abA_VeG2IHewqyfW7iAqw' // Assurez-vous que votre clé est dans .env

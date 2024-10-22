@@ -293,23 +293,35 @@ export const useRestaurantStore = defineStore('Restaurant', {
   },
 
   // Vous pouvez ajouter une méthode pour la mise à jour si nécessaire
-  async updateRestaurant(id: string, updatedData: Partial<IRestaurant>) {
+  async updateRestaurant(id: string, formData: FormData) {
     this.loading = true;
     this.error = null;
     try {
-      const response = await axios.put(`http://localhost:3000/restaurants/${id}`, updatedData);
+      const response = await axios.put(
+        `http://localhost:3000/restaurants/${id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+  
       const updatedRestaurant = response.data;
+      
+      // Mettre à jour le state
       const index = this.restaurants.findIndex(r => r._id === id);
       if (index !== -1) {
         this.restaurants[index] = updatedRestaurant;
       }
-      const userIndex = this.userRestaurants.findIndex(r => r._id === id);
-      if (userIndex !== -1) {
-        this.userRestaurants[userIndex] = updatedRestaurant;
-      }
+  
+      return updatedRestaurant;
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du restaurant:', error);
-      this.error = 'Erreur lors de la mise à jour du restaurant';
+      console.error('Erreur lors de la mise à jour:', error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Réponse du serveur:', error.response.data);
+      }
+      throw error;
     } finally {
       this.loading = false;
     }

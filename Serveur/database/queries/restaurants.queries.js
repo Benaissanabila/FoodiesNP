@@ -57,11 +57,28 @@ export const deleteRestaurantQuery = async (id) => {
 };
 
 // Mettre à jour un restaurant par ID
-export const updateRestaurantQuery = async (id, restaurant) => {
+export const updateRestaurantQuery = async (id, restaurantData) => {
     try {
-        return await Restaurant.findByIdAndUpdate(id, restaurant, { new: true }); // L'option { new: true } retourne le document mis à jour
+        console.log('Mise à jour du restaurant:', id);
+        console.log('Données de mise à jour:', restaurantData);
+        
+        const restaurant = await Restaurant.findByIdAndUpdate(
+            id,
+            restaurantData,
+            { 
+                new: true,        // Retourne le document mis à jour
+                runValidators: true  // Lance la validation du schéma
+            }
+        );
+        
+        if (!restaurant) {
+            throw new Error('Restaurant non trouvé');
+        }
+        
+        return restaurant;
     } catch (error) {
-        throw new Error(`Erreur lors de la mise à jour du restaurant : ${error.message}`);
+        console.error('Erreur dans updateRestaurantQuery:', error);
+        throw error;
     }
 };
 

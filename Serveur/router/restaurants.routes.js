@@ -30,7 +30,7 @@ router.get('/', controller.getAllRestaurants);
 router.get('/:id', controller.getRestaurant);
 
 // Mettre à jour un restaurant par ID
-router.put('/:id', controller.updateRestaurant);
+router.put('/:id', upload.single('photo'), controller.updateRestaurant);
 
 // Supprimer un restaurant par ID
 router.delete('/:id', controller.deleteRestaurant);
@@ -40,6 +40,6 @@ router.get('/:restaurantId/comments', controller.getCommentsByRestaurantId);
 
 router.get('/owner/:ownerId', controller.getRestaurantsByOwner);
 
-
+router.put('/:id', upload.single('photo'), controller.updateRestaurant);
 
 export default router;
