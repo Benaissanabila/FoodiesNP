@@ -12,11 +12,12 @@
     <div v-if="restaurants.length">
       <ul class="restaurant-list">
         <li v-for="restaurant in restaurants" :key="restaurant._id" class="restaurant-item">
+          <img :src="getRestaurantPhotoUrl(restaurant)" alt="Photo du restaurant" class="restaurant-photo" />
           <div class="restaurant-info">
             <h3>{{ restaurant.name }}</h3>
             <p>{{ restaurant.address }}</p>
             <p>Type de cuisine : {{ restaurant.cuisineType }}</p>
-            <p>{{ restaurant.description }}</p>
+            
           </div>
         </li>
       </ul>
@@ -32,6 +33,7 @@ import { computed, onMounted } from 'vue';
 import { useRestaurantStore } from '@/stores/RestaurantStore';
 import { useUserStore } from '@/stores/UserStore';
 import { useOwnerStore } from '@/stores/OwnerStore';
+import type { IRestaurant } from '@/shared/interfaces/RestaurantInterface';
 
 // Créer les stores nécessaires
 const restaurantStore = useRestaurantStore();
@@ -50,6 +52,20 @@ onMounted(async () => {
 const restaurants = computed(() => restaurantStore.restaurants);
 const loading = computed(() => restaurantStore.loading);
 const error = computed(() => restaurantStore.error);
+
+// Fonction pour récupérer l'URL de la photo du restaurant
+const getRestaurantPhotoUrl = (restaurant:IRestaurant) => {
+  const restoPhoto = restaurant.RestoPhoto;
+  // Vérifier si RestoPhoto est une chaîne et commence par "http"
+  if (typeof restoPhoto === 'string' && restoPhoto.startsWith('http')) {
+    return restoPhoto; // URL complète, retourner directement
+  } else if (typeof restoPhoto === 'string') {
+    // Construire l'URL à partir du nom de fichier
+    return `http://localhost:3000/uploads/${restoPhoto}`;
+  } else {
+    return '/placeholder-restaurant.png'; // Valeur par défaut
+  }
+};
 </script>
 
 <style scoped>

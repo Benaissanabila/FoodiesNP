@@ -26,6 +26,7 @@ onMounted(async () => {
   <div>
     <NavigationBar />
     <ReservationTable :restaurant="restaurant" />
+    
     <div class="comments-localisation-container">
       <CommentsList 
         v-if="restaurant" 

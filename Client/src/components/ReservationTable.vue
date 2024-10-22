@@ -8,6 +8,7 @@ import { useReservationStore } from '@/stores/ReservationStore'
 import confetti from 'canvas-confetti';
 import type { IUser } from '@/shared/interfaces/UserInterface'
 import { useUserStore } from '@/stores/UserStore'
+import ShareLink from './ShareLink.vue'
 
 
 
@@ -210,9 +211,9 @@ const formatDate = (date: Date | null) => {
         :src="restaurantPhotoUrl" 
         alt="Photo du restaurant" 
         class="restaurant-image" 
-      /> </div>
+      />  <ShareLink/></div>
         <div class="restaurant-info">
-          <h1>{{ restaurant.name }}</h1>
+          <h1>{{ restaurant.name }}</h1> 
           <p><img src="@/assets/image/adresse.svg" alt="Adresse Icon" class="address-icon" /> {{ restaurant.address }}</p>
           <p> <img src="@/assets/image/phone.svg" alt="phone Icon" class="phone-icon" /> {{ restaurant.phoneNumber }}</p>
           <div class="cuisine-rating">
@@ -389,6 +390,14 @@ const formatDate = (date: Date | null) => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin: 10px;
+
+}
+.restaurant-header {
+  display: flex; /* Utilisez flexbox pour aligner les éléments */
+
+  align-items:flex-end;
+  flex-direction: column; /* Centre verticalement les éléments */
 }
 
 .restaurant-header img {
