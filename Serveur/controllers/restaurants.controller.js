@@ -1,6 +1,6 @@
 import * as queries from "../database/queries/restaurants.queries.js";
 import Comment from "../database/models/comment.model.js"; 
-import { createOwnerQuery} from "../database/queries/owners.queries.js";
+import {getOwnerByUserQuery, createOwnerQuery} from "../database/queries/owners.queries.js";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -43,15 +43,27 @@ export const createRestaurant = [
           throw new Error(`Le champ ${field} est requis`);
         }
       }
-
       let scheduleObj;
-      try {
-        scheduleObj = typeof req.body.schedule === 'object' ? req.body.schedule : JSON.parse(req.body.schedule);
-      } catch (error) {
-        throw new Error('Le format de l\'horaire est invalide. Assurez-vous que c\'est un objet JSON valide.');
-      }
 
-      let owner = await getOwnerByUser(req.body.owner);
+      if (typeof req.body.schedule === 'object' && req.body.schedule !== null) {
+          scheduleObj = req.body.schedule;
+          // Vous pouvez ajouter une validation supplémentaire ici si nécessaire
+      } else {
+          throw new Error('Le format de l\'horaire est invalide. Assurez-vous que c\'est un objet JSON valide.');
+      }
+      
+      // Vérification de la structure
+      const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+      for (const day of daysOfWeek) {
+          if (!scheduleObj[day] || !scheduleObj[day].open || !scheduleObj[day].close) {
+              throw new Error(`L'horaire pour ${day} est manquant ou mal formé.`);
+          }
+      }
+      
+      // Continuez avec le reste de votre logique...
+      
+
+      let owner = await getOwnerByUserQuery(req.body.owner);
       if (!owner) {
         owner = await createOwnerQuery({ user: req.body.owner, restaurant: [] });
       }
@@ -89,6 +101,7 @@ export const createRestaurant = [
     }
   }
 ];
+
 
 
 export const getRestaurant = async (req, res) => {

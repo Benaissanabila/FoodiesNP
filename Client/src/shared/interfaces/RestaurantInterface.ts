@@ -1,7 +1,9 @@
+import type { IComment } from "./CommentInterface";
+
 export interface IRestaurant {
     _id: string;          
     name: string; 
-    comments?:[];        
+    comments?:IComment[];        
     address: string;      
     cuisineType?: string; 
     schedule: { [key: string]: Schedule }     

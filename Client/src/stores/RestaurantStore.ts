@@ -236,6 +236,7 @@ export const useRestaurantStore = defineStore('Restaurant', {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
+        
       });
       const newRestaurant = response.data;
       this.restaurants.push(newRestaurant);
