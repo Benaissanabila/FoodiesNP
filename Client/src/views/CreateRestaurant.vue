@@ -166,20 +166,22 @@ async function createRestaurant() {
       description: restaurant.description,
       priceFork: restaurant.priceFork,
       owner: userStore.user?._id,
-      schedule: { ...restaurant.schedule }
+     schedule: JSON.parse(JSON.stringify(restaurant.schedule))
     }
+    console.log("restaurant.schedule avant",restaurant.schedule)
 
     // Utilisez FormData pour envoyer les données et le fichier
     const formData = new FormData();
-    formData.append('schedule', JSON.stringify(formatSchedule(restaurant.schedule)));
+   console.log("formdata", formData)
+   console.log("restaurant.schedule apres",restaurant.schedule)
 
-    // Ajoutez toutes les données du restaurant à FormData
-    for (const [key, value] of Object.entries(restaurantData)) {
-  // Vérifiez si la valeur est non nulle avant de l'ajouter
-  if (value !== null && value !== undefined) {
-    formData.append(key, value as string | Blob); 
-  }
-}
+   // Ajoutez toutes les autres données du restaurant à FormData
+   for (const [key, value] of Object.entries(restaurantData)) {
+      if (value !== null && value !== undefined) {
+        // Si c'est un objet (pour l'adresse ou l'horaire), il faut le stringifier
+        formData.append(key, typeof value === 'object' ? JSON.stringify(value) : value as string);
+      }
+    }
 
     // Ajoutez le fichier RestoPhoto
     formData.append('RestoPhoto', restaurant.RestoPhoto as File);

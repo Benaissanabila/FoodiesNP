@@ -32,37 +32,33 @@ export const createRestaurant = [
       console.log('Body reçu:', JSON.stringify(req.body, null, 2));
       console.log('Fichier reçu:', req.file);
 
-      if (!req.body) {
-        return res.status(500).json({ message: 'Aucune donnée reçue dans le corps de la requête' });
+      // Vérification des données du corps de la requête
+      if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).json({ message: 'Aucune donnée reçue dans le corps de la requête' });
       }
 
       // Vérification des champs requis
       const requiredFields = ['name', 'address', 'cuisineType', 'phoneNumber', 'schedule', 'description', 'priceFork', 'owner'];
       for (const field of requiredFields) {
         if (!req.body[field]) {
-          throw new Error(`Le champ ${field} est requis`);
+          return res.status(400).json({ message: `Le champ ${field} est requis` });
         }
       }
-      let scheduleObj;
 
-      if (typeof req.body.schedule === 'object' && req.body.schedule !== null) {
-          scheduleObj = req.body.schedule;
-          // Vous pouvez ajouter une validation supplémentaire ici si nécessaire
-      } else {
-          throw new Error('Le format de l\'horaire est invalide. Assurez-vous que c\'est un objet JSON valide.');
+      // Vérification de l'horaire
+      const scheduleObj = JSON.parse(req.body.schedule); // Assurez-vous de parser ici si nécessaire
+      if (typeof scheduleObj !== 'object' || scheduleObj === null) {
+        return res.status(400).json({ message: 'Le format de l\'horaire est invalide.' });
       }
-      
-      // Vérification de la structure
+
       const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
       for (const day of daysOfWeek) {
-          if (!scheduleObj[day] || !scheduleObj[day].open || !scheduleObj[day].close) {
-              throw new Error(`L'horaire pour ${day} est manquant ou mal formé.`);
-          }
+        if (!scheduleObj[day] || !scheduleObj[day].open || !scheduleObj[day].close) {
+          return res.status(400).json({ message: `L'horaire pour ${day} est manquant ou mal formé.` });
+        }
       }
-      
-      // Continuez avec le reste de votre logique...
-      
 
+      // Continuez avec le reste de votre logique...
       let owner = await getOwnerByUserQuery(req.body.owner);
       if (!owner) {
         owner = await createOwnerQuery({ user: req.body.owner, restaurant: [] });
@@ -77,7 +73,7 @@ export const createRestaurant = [
         description: req.body.description,
         priceFork: req.body.priceFork,
         owner: owner._id,
-       RestoPhoto: req.file ? req.file.filename : null, 
+        RestoPhoto: req.file ? req.file.filename : null,
       };
 
       console.log('Données du restaurant à créer:', JSON.stringify(restaurantData, null, 2));
@@ -85,18 +81,14 @@ export const createRestaurant = [
       const restaurant = await queries.createRestaurantQuery(restaurantData);
       console.log('Restaurant créé:', JSON.stringify(restaurant, null, 2));
       
-      // Récupérer les coordonnées après la création
       await restaurant.fetchCoordinatesFromMapbox();
       
       res.status(201).json(restaurant);
     } catch (error) {
-      console.error('Erreur détaillée lors de la création du restaurant:', error);
-      console.error('Stack trace:', error.stack);
+      console.error('Erreur lors de la création du restaurant:', error);
       res.status(500).json({ 
         message: 'Erreur lors de la création du restaurant',
         error: error.message,
-        stack: error.stack,
-        details: error.toString()
       });
     }
   }
