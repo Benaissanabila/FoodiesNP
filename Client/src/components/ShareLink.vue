@@ -1,18 +1,15 @@
 <template>  
     <div class="share-component">
-      
-        <img 
-          src="@/assets/image/share.svg" 
-          alt="Share Icon" 
-          @click="toggleShareOptions" 
-          class="share-icon" 
-        />
-     
-  
+      <img 
+        src="@/assets/image/share.svg" 
+        alt="Share Icon" 
+        @click="toggleShareOptions" 
+        class="share-icon" 
+      />
+    
       <!-- Section de partage -->
       <div v-if="showShareOptions" class="share-options">
         <div class="share-header">
-          
           <button @click="toggleShareOptions" class="close-button">X</button>
         </div>
         <div class="share-buttons">
@@ -112,23 +109,21 @@
   .share-component {
     position: relative;
     display: inline-block;
- 
-    padding: 15px
+    padding: 15px;
   }
   .share-icon {
-  cursor: pointer;
-  width: 40px; /* Ajustez la taille selon vos besoins */
-  height: 40px;
-  margin-right: 10px; /* Espace entre les icônes */
-  transition: transform 0.2s ease; /* Ajoute une transition douce */
-}
-
-/* Effet de survol */
-.share-icon:hover {
-  transform: scale(1.1); /* Agrandit l'icône lors du survol */
-  opacity: 0.8; /* Change l'opacité lors du survol */
-}
- 
+    cursor: pointer;
+    width: 40px; /* Ajustez la taille selon vos besoins */
+    height: 40px;
+    margin-right: 10px; /* Espace entre les icônes */
+    transition: transform 0.2s ease; /* Ajoute une transition douce */
+  }
+  
+  /* Effet de survol */
+  .share-icon:hover {
+    transform: scale(1.1); /* Agrandit l'icône lors du survol */
+    opacity: 0.8; /* Change l'opacité lors du survol */
+  }
   
   .share-options {
     position: absolute;
@@ -136,8 +131,10 @@
     border: 1px solid #ccc;
     box-shadow: 4px 4px 5px #00bbd482;
     padding: 10px;
-border-radius: 5px;
+    border-radius: 5px;
+    left: -320px; /* Positionne à gauche */
     width: auto; /* Largeur automatique pour la section de partage */
+    z-index: 100; /* Assurez-vous que la section est au-dessus d'autres éléments */
   }
   
   .share-header {
@@ -147,14 +144,13 @@ border-radius: 5px;
   }
   
   .close-button {
-  background: none;
-  border: none;
-  color: #666666; /* Couleur du bouton de fermeture */
-  cursor: pointer;
-  font-weight: bold; /* Pour le rendre plus visible */
-  margin-left: auto; /* Aligne le bouton de fermeture à droite */
-}
-
+    background: none;
+    border: none;
+    color: #666666; /* Couleur du bouton de fermeture */
+    cursor: pointer;
+    font-weight: bold; /* Pour le rendre plus visible */
+    margin-left: auto; /* Aligne le bouton de fermeture à droite */
+  }
   
   .share-buttons {
     display: flex; /* Changez de colonne à ligne */

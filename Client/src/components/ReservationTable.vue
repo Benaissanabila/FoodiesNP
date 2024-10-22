@@ -22,9 +22,12 @@ const selectedDate = ref<Date | null>(null)
 const selectedTime = ref<string | null>(null)
 const numberOfGuests = ref<number>(1)
   const isExpanded = ref(false);
-  const showSchedule = ref(false);
+
  const reservationId = ref('');
 const currentStep = ref(0) // Étape actuelle (0: date, 1: heure, 2: invités)
+const showSchedule = ref(false);
+
+
 const launchConfetti = () => {
   confetti({
     particleCount: 150,
@@ -35,31 +38,50 @@ const launchConfetti = () => {
 const toggleSchedule = () => {
   showSchedule.value = !showSchedule.value; // Inverse l'état de showSchedule
 };
+const scheduleDisplay = computed(() => {
+  return restaurant.value ? getScheduleDisplay(restaurant.value) : ['Aucun restaurant sélectionné'];
+});
+export interface IHours {
+  open: string;  // Format d'heure (par exemple, "09:00")
+  close: string; // Format d'heure (par exemple, "22:00")
+}
 
-const getScheduleDisplay = () => {
-  // Vérifie si le restaurant est null
-  if (!restaurant.value) {
-    return 'Restaurant non trouvé';
+export interface ISchedule {
+  monday?: IHours;
+  tuesday?: IHours;
+  wednesday?: IHours;
+  thursday?: IHours;
+  friday?: IHours;
+  saturday?: IHours;
+  sunday?: IHours;
+}
+
+
+const getScheduleDisplay = (restaurant: IRestaurant): Record<string, string> => {
+  if (!restaurant) {
+    return { 'Erreur': 'Restaurant non trouvé' };
   }
 
-  const schedule = restaurant.value.schedule; // Récupère l'objet d'horaire
-
-  // Vérifie si le planning est un objet
+  const schedule = restaurant.schedule;
   if (!schedule || typeof schedule !== 'object') {
-    return 'Horaires non disponibles';
+    return { 'Erreur': 'Horaires non disponibles' };
   }
 
   const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-  return daysOfWeek.map(day => {
-    const hours = schedule[day]; // Récupère les heures pour le jour courant
+  return daysOfWeek.reduce((acc, day) => {
+    const hours = (schedule as any)[day];
     if (hours) {
-      return `${day.charAt(0).toUpperCase() + day.slice(1)}: ${hours.open} - ${hours.close}`;
+      acc[day] = `${hours.open.replace(/:00$/, '')} - ${hours.close.replace(/:00$/, '')}`; // Enlève les secondes
     } else {
-      return `${day.charAt(0).toUpperCase() + day.slice(1)}: Fermé`; // Gérer le cas où le restaurant est fermé
+      acc[day] = 'Fermé'; // Cas où le restaurant est fermé
     }
-  }).join(', ');
+    return acc;
+  }, {} as Record<string, string>);
 };
+
+
+
 
 
 
@@ -274,15 +296,19 @@ const formatDate = (date: Date | null) => {
     </button>
   </div>
   <div class="restaurant-schedule">
-  <button @click="toggleSchedule">{{ showSchedule ? 'Masquer les horaires' : 'Afficher les horaires' }}</button>
-  
-  <transition name="fade">
-    <div v-show="showSchedule" class="schedule-section">
-      <h4>Horaires d'ouverture</h4>
-      <p>{{ getScheduleDisplay() }}</p>
-    </div>
-  </transition>
-</div>
+    <button @click="toggleSchedule">{{ showSchedule ? 'Horaires' : 'Horaires' }}</button>
+    
+    <transition name="fade">
+      <div v-if="showSchedule" class="schedule-popup">
+       
+        <div class="schedule-columns">
+          <div v-for="(hours, day) in scheduleDisplay" :key="day" class="schedule-column">
+            <strong>{{ day.charAt(0).toUpperCase() + day.slice(1) }}:</strong> {{ hours }}
+          </div>
+        </div>
+      </div>
+    </transition>
+  </div>
  </div>
     
 
@@ -509,7 +535,7 @@ width: 70%;
   padding: 20px;
   margin-right: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px #00bbd48e;
 }
 input[type='number'] {
   width: 50px;
@@ -616,5 +642,39 @@ input[type='number'] {
   color: #000000; /* Remplace par la couleur souhaitée */
   font-weight: bold;
 
+}
+
+
+.schedule-popup {
+  position: absolute; /* Positionne la fenêtre par rapport à son parent */
+  background-color: white; /* Fond blanc */
+  border: 1px solid #ccc; /* Bordure grise */
+  box-shadow: 0 4px 8px #00bbd4a9; /* Ombre */
+  padding: 20px; /* Espacement interne */
+  z-index: 100; /* Assure que le popup est au-dessus des autres éléments */
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.schedule-columns {
+  display: flex;
+  flex-direction: column; /* Colonne pour chaque jour */
+  margin-top: 10px; /* Espace au-dessus des horaires */
+}
+
+.schedule-column {
+  margin: 5px 0; /* Espace entre les jours */
+}
+.restaurant-schedule button{
+  background-color: #00bcd4;
+  padding: 7px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+}
+
+.restaurant-schedule button:hover{
+background-color: #0097a7;
 }
 </style>
