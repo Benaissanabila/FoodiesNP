@@ -119,16 +119,32 @@ export const getAllRestaurants = async (req, res) => {
 
 export const updateRestaurant = async (req, res) => {
   try {
+    console.log('Body reçu:', req.body);
+    console.log('Fichier reçu:', req.file);
+    
+    const updateData = { ...req.body };
+    
+    // Gérer la nouvelle photo si elle existe
+    if (req.file) {
+      updateData.RestoPhoto = req.file.filename;
+    }
+
     const restaurant = await queries.updateRestaurantQuery(
       req.params.id,
-      req.body
+      updateData
     );
+
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant non trouvé" });
     }
+
     res.status(200).json(restaurant);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Erreur lors de la mise à jour:', error);
+    res.status(500).json({ 
+      message: "Erreur lors de la mise à jour",
+      error: error.message 
+    });
   }
 };
 

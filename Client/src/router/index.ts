@@ -10,7 +10,7 @@ import TwoFAView from '@/views/TwoFAView.vue';
 import ReviewPage from '@/views/ReviewPage.vue';
 import MesReservationsPage from '@/views/MesReservationsPage.vue';
 import MyRestaurantsList from '@/views/MyRestaurantsList.vue'
-
+import EditRestaurant from '@/views/EditRestaurant.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +66,11 @@ const router = createRouter({
       name: 'MyRestaurants',
       component: MyRestaurantsList
     },
+    {
+      path: '/edit-restaurant/edit/:id',
+      name: 'EditRestaurant',
+      component: EditRestaurant,
+    }
   
 
   ]
