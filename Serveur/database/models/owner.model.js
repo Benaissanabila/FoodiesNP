@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import User from "./user.model.js"; // Assurez-vous d'importer correctement le modèle User
 import Plan from "./plan.model.js"; // Assurez-vous d'importer correctement le modèle Plan
-import { Restaurant } from "./restaurant.model.js";
+
 
 const ownerSchema = new mongoose.Schema({
   user: {

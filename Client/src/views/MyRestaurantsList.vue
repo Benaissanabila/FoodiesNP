@@ -14,7 +14,7 @@ import SettingButton from '@/components/SettingButton.vue';
   const router = useRouter();
   const restaurantStore = useRestaurantStore();
   const userStore = useUserStore();
-  const ownerStore = useOwnerStore();
+ 
   
   onMounted(async () => {
     if (userStore.isAuthenticated) {
