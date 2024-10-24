@@ -6,10 +6,11 @@ import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
+import User from '../database/models/user.model.js'; 
 
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const TOKEN_EXPIRATION = '1h'; // Le token expirera après 1 heure
+const JWT_SECRET = '6bcc26158864fc481c2a5b1e23356c7117701bf9d2c9f3999f6b3f3476bb70eae5cbd1c5c579e537b77e3558bcadebf9230b57890f2a212c0fd752a567281642'
+const TOKEN_EXPIRATION = '1h'; 
 
 const EMAIL = 'foodies.n.p.2024@gmail.com';
 const PASSWORD = 'qjkf surl yimr onpj';
@@ -30,13 +31,30 @@ transporter.verify(function(error, success) {
     console.log("Server is ready to take our messages");
   }
 });
+export const verifyRole = (role) => {
+  return (req, res, next) => {
+    if (req.userId) {
+      User.findById(req.userId)
+        .then(user => {
+          if (!user || user.role !== role) {
+            return res.status(403).json({ error: 'Access denied' });
+          }
+          next();
+        })
+        .catch(error => res.status(500).json({ error: error.message }));
+    } else {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+  };
+};
+
 
 export default transporter;
 
 // Fonction pour générer un code 2FA
-function generateTwoFactorCode() {
-  return crypto.randomInt(100000, 999999).toString();
-}
+const generateRandomCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); 
+};
 
 // Fonction pour envoyer le code 2FA par email
 async function sendTwoFactorCode(email, code) {
@@ -186,71 +204,72 @@ export const deleteUser = async (req, res) => {
 // Fonction pour gérer la connexion de l'utilisateur
 export const loginUser = async (req, res) => {
   try {
-    console.log('Login attempt for:', req.body.email);
     const { email, password } = req.body;
-    const user = await queries.getUserByEmailQuery(email);
-    console.log('User found:', user ? 'Yes' : 'No');
+    let user = await queries.getUserByEmailQuery(email).select('+twoFactorCode'); // Sélectionner explicitement twoFactorCode
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      console.log('Invalid credentials');
-      return res.status(401).json({ error: 'Invalid email or password' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    console.log('Generating 2FA code');
-    const twoFactorCode = generateTwoFactorCode();
-    console.log('2FA code generated:', twoFactorCode);
-
+    // Générer le code 2FA
+    const twoFactorCode = generateRandomCode();
     user.twoFactorCode = twoFactorCode;
-    await user.save();
-    console.log('2FA code saved to user');
 
-    console.log('Attempting to send 2FA email');
-    const emailSent = await sendTwoFactorCode(user.email, twoFactorCode);
-    
+    // Sauvegarder le code 2FA dans la base de données
+    await user.save();
+
+    // Recharger l'utilisateur avec le code 2FA mis à jour
+    user = await queries.getUserByEmailQuery(email).select('+twoFactorCode');
+console.log("usssser",user)
+    // Générer un token temporaire pour l'authentification
+    const tempToken = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+
+    // Envoyer l'email avec le code 2FA
+    const emailSent = await sendTwoFactorCode(user.email, user.twoFactorCode);
     if (!emailSent) {
-      console.error('Failed to send 2FA email');
       return res.status(500).json({ error: 'Failed to send 2FA code' });
     }
 
-    console.log('2FA email sent successfully');
-    const tempToken = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '5m' });
-
-    res.status(200).json({ message: 'Veuillez vérifier votre email pour le code 2FA', tempToken });
+    res.status(200).json({ message: 'Veuillez vérifier votre email pour le code 2FA', tempToken,twoFactorCode: user.twoFactorCode  });
   } catch (error) {
-    console.error('Error in loginUser:', error);
     res.status(500).json({ error: error.message });
   }
 };
-// Ajouter une nouvelle fonction pour vérifier le code 2FA
+
+
+
+// Fonction pour vérifier le code 2FA et générer le token d'accès complet
 export const verify2FA = async (req, res) => {
+  const { tempToken, twoFactorCode } = req.body;
+
+  // Vérification des paramètres requis
+  if (!tempToken || !twoFactorCode) {
+    return res.status(400).json({ error: 'Temp token and 2FA code are required' });
+  }
+
   try {
-    console.log('Verifying 2FA code:', req.body.code);
-    const { code, tempToken } = req.body;
     const decoded = jwt.verify(tempToken, JWT_SECRET);
     const user = await queries.getUserQuery(decoded.userId);
 
-    console.log('User found:', user ? 'Yes' : 'No');
-    console.log('Stored 2FA code:', user.twoFactorCode);
-    console.log('Received 2FA code:', code);
-
-    if (!user || user.twoFactorCode !== code) {
-      console.log('Invalid 2FA code');
-      return res.status(401).json({ error: 'Invalid 2FA code' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    // Réinitialiser le code 2FA
-    user.twoFactorCode = null;
-    await user.save();
-
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
-
-    const { password: _, ...userWithoutPassword } = user._doc;
-    res.status(200).json({ user: userWithoutPassword, token });
+    if (user.twoFactorCode !== twoFactorCode) {
+      return res.status(403).json({ error: 'Invalid 2FA code' });
+    }
+    
+    const accessToken = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+    
+    res.status(200).json({ message: 'Authentication successful', accessToken });
   } catch (error) {
-    console.error('Error in verify2FA:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error verifying token:', error);
+    return res.status(401).json({ error: 'Invalid or expired temp token' });
   }
 };
+
+
+
 
 export const verifyToken = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -271,6 +290,72 @@ export const verifyToken = (req, res, next) => {
   }
 };
 
-export const getUserByEmailQuery = async (email) => {
-  return User.findOne({ email }).select('+password'); // Sélection explicite du champ password
+
+
+
+export const createAdminUser = async (req, res) => {
+  const { name, email, password, DOB } = req.body;
+
+  // Vérifiez que les champs requis sont présents
+  if (!name || !email || !password || !DOB) {
+    return res.status(400).json({ error: "Les champs name, email, password et DOB sont requis." });
+  }
+
+  try {
+    // Créez un nouvel utilisateur admin en utilisant la requête
+    const newAdmin = await queries.createAdminUserQuery({ name, email, password, DOB });
+
+    // Excluez le mot de passe de la réponse
+    newAdmin.password = undefined;
+
+    // Générer le token JWT pour l'utilisateur admin créé
+    const accessToken = jwt.sign({ userId: newAdmin._id, role: 'admin' }, JWT_SECRET, { expiresIn: '1h' });
+
+    // Inclure le token dans la réponse
+    res.status(201).json({ newAdmin, accessToken }); // Renvoie l'utilisateur admin et le token
+  } catch (error) {
+    console.error('Erreur lors de la création de l’administrateur :', error);
+    res.status(500).json({ error: error.message });
+  }
 };
+
+
+  export const refreshToken = (req, res) => {
+      const token = req.headers['authorization']?.split(' ')[1]; // Extraire le token de l'en-tête Authorization
+
+      if (!token) {
+          return res.status(403).json({ error: 'Token not provided' });
+      }
+
+      jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, decoded) => {
+          if (err) {
+              return res.status(401).json({ error: 'Unauthorized' });
+          }
+
+          // Si le token est valide, générez un nouveau token
+          const newToken = generateToken(decoded.userId); // Utiliser l'ID de l'utilisateur du token décodé
+
+          return res.json({ token: newToken });
+      });
+    }
+    const generateToken = (userId) => {
+      return jwt.sign({ userId }, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '1h' }); // Ajustez la durée d'expiration si nécessaire
+  };
+  
+
+  export const getUserByEmail = async (req, res) => {
+    try {
+      const { email } = req.params; 
+      const user = await queries.getUserByEmailQuery(email); // Assurez-vous que cette fonction est définie dans votre fichier de requêtes
+  
+      if (!user) {
+        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+      }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
+

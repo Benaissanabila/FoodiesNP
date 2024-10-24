@@ -24,9 +24,9 @@
       : '/default-profile.png';
   });
   
-  onMounted(() => {
+  onMounted(async() => {
     if (!userStore.user) {
-      userStore.checkAuth();
+      await userStore.checkAuth();
     }
   });
   

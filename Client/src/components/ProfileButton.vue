@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/UserStore';
-import { useI18n } from 'vue-i18n';
-import axios from 'axios';
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/UserStore'
+import { useI18n } from 'vue-i18n'
+import axios from 'axios'
 
-const store = useUserStore();
-const router = useRouter();
-const { t } = useI18n();
-const showDropdown = ref(false);
-const showRestaurateurSubmenu = ref(false);
-const imageError = ref(false);
+const store = useUserStore()
+const router = useRouter()
+const { t } = useI18n()
+const showDropdown = ref(false)
+const showRestaurateurSubmenu = ref(false)
+const imageError = ref(false)
 
 // Intercepteur pour gérer l'expiration du token
 axios.interceptors.response.use(
@@ -18,104 +18,105 @@ axios.interceptors.response.use(
   async (error) => {
     if (error.response && error.response.status === 401) {
       if (error.response.data.error === 'Token expired') {
-        console.log('Token expired, attempting to refresh');
+        console.log('Token expired, attempting to refresh')
         try {
-          await store.refreshToken();
+          await store.refreshToken()
           // Retry the original request
-          return axios(error.config);
+          return axios(error.config)
         } catch (refreshError) {
-          console.log('Token refresh failed, logging out');
-          store.logoutUser();
-          router.push('/login');
+          console.log('Token refresh failed, logging out')
+          store.logoutUser()
+          router.push('/login')
         }
       } else {
-        store.logoutUser();
-        router.push('/login');
+        store.logoutUser()
+        router.push('/login')
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
 const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
+  showDropdown.value = !showDropdown.value
+}
 
 const goToLogin = () => {
-  router.push('/login');
-  showDropdown.value = false;
-};
+  router.push('/login')
+  showDropdown.value = false
+}
 
 const goToProfile = () => {
-  router.push('/profile');
-  showDropdown.value = false;
-};
-
+  router.push('/profile')
+  showDropdown.value = false
+}
 
 const logout = () => {
-  store.logoutUser();
-  router.push('/');
-  showDropdown.value = false;
-};
+  store.logoutUser()
+  router.push('/')
+  showDropdown.value = false
+}
 
-const isAuthenticated = computed(() => store.isAuthenticated);
+const isAuthenticated = computed(() => store.isAuthenticated)
 
 const userInitial = computed(() => {
-  return store.user?.name?.charAt(0).toUpperCase() ?? '';
-});
+  return store.user?.name?.charAt(0).toUpperCase() ?? ''
+})
 
 const hasProfilePhoto = computed(() => {
-  return !!store.user?.UserPhoto;
-});
+  return !!store.user?.UserPhoto
+})
 
 // URL fixe du serveur backend
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'http://localhost:3000'
 const profilePhotoUrl = computed(() => {
   if (!store.user || !store.user.UserPhoto) {
-    console.log('User or UserPhoto is undefined');
-    return ''; // Retourne une chaîne vide si l'utilisateur ou la photo n'est pas défini
+    console.log('User or UserPhoto is undefined')
+    return '' // Retourne une chaîne vide si l'utilisateur ou la photo n'est pas défini
   }
 
-  const photoPath = store.user.UserPhoto.startsWith('/') 
-    ? store.user.UserPhoto.slice(1) 
-    : store.user.UserPhoto;
-  
-  const fullUrl = `${BACKEND_URL}/uploads/${photoPath}`;
-  console.log('URL complète de la photo de profil:', fullUrl);
-  return fullUrl;
-});
+  const photoPath = store.user.UserPhoto.startsWith('/')
+    ? store.user.UserPhoto.slice(1)
+    : store.user.UserPhoto
 
-
+  const fullUrl = `${BACKEND_URL}/uploads/${photoPath}`
+  console.log('URL complète de la photo de profil:', fullUrl)
+  return fullUrl
+})
 
 const handleImageError = () => {
-  imageError.value = true; 
-  console.error('Échec du chargement de l\'image de profil');
-};
+  imageError.value = true
+  console.error("Échec du chargement de l'image de profil")
+}
 
+watch(
+  () => store.user,
+  () => {
+    imageError.value = false
+  },
+  { deep: true }
+)
 
-watch(() => store.user, () => {
-  imageError.value = false;
-}, { deep: true });
-
-onMounted(() => {
-  store.checkAuth();
-  console.log('User data:', store.user);
-});
+onMounted(async() => {
+  debugger
+  await store.checkAuth()
+  console.log('User data:', store.user)
+})
 
 const goToCreateRestaurant = () => {
-  router.push('/create-restaurant');
-  showDropdown.value = false;
-};
+  router.push('/create-restaurant')
+  showDropdown.value = false
+}
 
 const goToMyRestaurants = () => {
-  router.push('/my-restaurants');
-  showDropdown.value = false;
-};
+  router.push('/my-restaurants')
+  showDropdown.value = false
+}
 
 const toggleRestaurateurSubmenu = (event: Event) => {
-  event.stopPropagation();
-  showRestaurateurSubmenu.value = !showRestaurateurSubmenu.value;
-};
+  event.stopPropagation()
+  showRestaurateurSubmenu.value = !showRestaurateurSubmenu.value
+}
 </script>
 
 <template>
@@ -124,10 +125,10 @@ const toggleRestaurateurSubmenu = (event: Event) => {
       <img
         v-if="hasProfilePhoto && !imageError"
         :src="profilePhotoUrl"
-       alt="Photo de profil"
+        alt="Photo de profil"
         class="profile-photo"
         @error="handleImageError"
-      >
+      />
       <div v-else-if="isAuthenticated" class="profile-initial">{{ userInitial }}</div>
       <svg v-else xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
         <path
@@ -143,16 +144,18 @@ const toggleRestaurateurSubmenu = (event: Event) => {
       <template v-if="isAuthenticated">
         <div @click="goToProfile">{{ t('profile') }}</div>
         <RouterLink to="/mes-reservations" class="reservation-link">
-    <div>{{ t('title') }}</div>
-</RouterLink>
+          <div>{{ t('title') }}</div>
+        </RouterLink>
         <div class="restaurateur-menu" @click="toggleRestaurateurSubmenu">
           {{ t('restaurateur') }}
-          <span class="arrow" :class="{ 'arrow-down': !showRestaurateurSubmenu, 'arrow-up': showRestaurateurSubmenu }"></span>
+          <span
+            class="arrow"
+            :class="{ 'arrow-down': !showRestaurateurSubmenu, 'arrow-up': showRestaurateurSubmenu }"
+          ></span>
         </div>
         <div v-if="showRestaurateurSubmenu" class="submenu">
           <div @click="goToCreateRestaurant">{{ t('createRestaurant') }}</div>
           <div @click="goToMyRestaurants">{{ t('myRestaurants') }}</div>
-          
         </div>
         <div @click="logout">{{ t('logout') }}</div>
       </template>
@@ -164,7 +167,7 @@ const toggleRestaurateurSubmenu = (event: Event) => {
 </template>
 
 <style scoped>
-.profile-button{
+.profile-button {
   width: 60px;
   height: 60px;
   background-color: #00bcd4;
@@ -204,20 +207,19 @@ const toggleRestaurateurSubmenu = (event: Event) => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid #ccc;
   border-radius: 5px;
- 
-  min-width: 160px;
 
+  min-width: 160px;
 }
-.reservation-link{
+.reservation-link {
   color: black;
   text-decoration: none;
-} 
-.dropdown-menu div{
+}
+.dropdown-menu div {
   background-color: rgb(238, 238, 238);
   margin: 5px;
   border-radius: 5px;
 }
-svg{
+svg {
   color: white;
 }
 .dropdown-menu div {
@@ -229,5 +231,4 @@ svg{
   background-color: #f5f5f5;
   color: #00bcd4;
 }
-
 </style>

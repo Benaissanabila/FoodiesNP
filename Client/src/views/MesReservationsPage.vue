@@ -33,7 +33,7 @@ const updatePagination = () => {
 };
 
 onMounted(async () => {
-  userStore.checkAuth();
+  await userStore.checkAuth();
   if (userStore.user && userStore.user._id) {
     userId.value = userStore.user._id;
     await reservationStore.fetchUserReservations(userId.value);

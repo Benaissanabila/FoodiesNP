@@ -1,57 +1,68 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useUserStore } from '@/stores/UserStore'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import Logo from '@/components/Logo.vue'
+import SettingButton from '@/components/SettingButton.vue'
+import Footer from '@/components/Footer.vue'
 
-  
-  <script setup lang="ts">
-  import { ref } from 'vue';
-  import { useUserStore } from '@/stores/UserStore';
-  import { useRouter } from 'vue-router';
-  import { useI18n } from 'vue-i18n';
-  import Logo from '@/components/Logo.vue';
-  import SettingButton from '@/components/SettingButton.vue';
-  import Footer from '@/components/Footer.vue';
-  
-  const userStore = useUserStore();
-  const router = useRouter();
-  const { t } = useI18n();
-  
-  const code = ref('');
-  const error = ref('');
-  
-  const verify2FA = async () => {
-    try {
-      await userStore.verify2FA(code.value);
-      router.push('/');
-    } catch (err) {
-      error.value = t('twoFA.invalidCode');
-    }
-  };
-  </script>
+const userStore = useUserStore()
+const router = useRouter()
+const { t } = useI18n()
+
+const code = ref('')
+const errorMessage = ref('')
+const twoFactorCode = ref('')
+
+// Vérifiez le 2FA
+const verifyTwoFA = async () => {
+  const user = userStore.user
+  const tempToken = userStore.tempToken
+  const twoFactorCode = userStore.twoFactorCode
+
+  console.log('user', userStore.user)
+  console.log('twoFactorCode', twoFactorCode)
+  console.log('usertoken hhhh', tempToken) // Récupération du tempToken
+  try {
+    await userStore.verifyTwoFA(tempToken, twoFactorCode)
+    router.push('/')
+    console.log('userrrr', user)
+    await userStore.checkAuth()
+  } catch (error) {
+    console.error('Erreur lors de la vérification 2FA:', error)
+    // Affiche l'erreur à l'utilisateur, par exemple en utilisant une alerte
+  }
+}
+</script>
 
 <template>
-    <div class="app-container">
-      <div class="header">
-        <Logo class="logo" />
-        <SettingButton class="settings" />
-      </div>
-  
-      <div class="main-content">
-        <div class="two-fa-container">
-          <h2>{{ $t('twoFA.title') }}</h2>
-          <p>{{ $t('twoFA.instruction') }}</p>
-          <form @submit.prevent="verify2FA">
-            <input v-model="code" type="text" :placeholder="$t('twoFA.codePlaceholder')" required>
-            <button type="submit" class="submit-button">{{ $t('twoFA.submit') }}</button>
-          </form>
-          <p v-if="error" class="error-message">{{ error }}</p>
-        </div>
-      </div>
-  
-      <Footer class="footer" />
+  <div class="app-container">
+    <div class="header">
+      <Logo class="logo" />
+      <SettingButton class="settings" />
     </div>
-  </template>
 
-  <style scoped>
-  
-  .header {
+    <div class="main-content">
+      <div class="two-fa-container">
+        <h2>{{ t('twoFA.title') }}</h2>
+        <p>{{ t('twoFA.instruction') }}</p>
+        <form @submit.prevent="verifyTwoFA">
+          <!-- Appel de la méthode de vérification -->
+          <input v-model="code" type="text" :placeholder="t('twoFA.codePlaceholder')" required />
+          <button type="submit" class="submit-button">{{ t('twoFA.submit') }}</button>
+        </form>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        <!-- Affichage du message d'erreur -->
+      </div>
+    </div>
+
+    <Footer class="footer" />
+  </div>
+</template>
+
+<style scoped>
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -139,4 +150,4 @@ input:focus {
 .footer {
   margin-top: auto;
 }
-  </style>
+</style>
