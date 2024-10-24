@@ -159,10 +159,10 @@ export const useRestaurantStore = defineStore('Restaurant', {
     async fetchRestaurantById(id: string) {
       this.loading = true;
       this.error = null;
-      console.log('Fetching restaurant with ID:', id); // Ajoutez un log
+      
       try {
         const response = await axios.get(`http://localhost:3000/restaurants/${id}`);
-        console.log('Restaurant data:', response.data); // Ajoutez un log
+       
         const restaurant = response.data;
         if (!this.restaurants.find((r) => r._id === id)) {
           this.restaurants.push(restaurant);

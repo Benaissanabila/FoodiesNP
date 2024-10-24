@@ -168,12 +168,11 @@ async function createRestaurant() {
       owner: userStore.user?._id,
      schedule: JSON.parse(JSON.stringify(restaurant.schedule))
     }
-    console.log("restaurant.schedule avant",restaurant.schedule)
+  
 
     // Utilisez FormData pour envoyer les données et le fichier
     const formData = new FormData();
-   console.log("formdata", formData)
-   console.log("restaurant.schedule apres",restaurant.schedule)
+  
 
    // Ajoutez toutes les autres données du restaurant à FormData
    for (const [key, value] of Object.entries(restaurantData)) {
@@ -188,7 +187,7 @@ async function createRestaurant() {
 
     const newRestaurant = await restaurantStore.createRestaurant(formData);
 
-    console.log('Nouveau restaurant créé:', newRestaurant)
+  
     alert(t('createMyRestaurant.success'))
     router.push('/')
   } catch (error) {

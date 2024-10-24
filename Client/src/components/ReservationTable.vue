@@ -175,7 +175,7 @@ const onDateSelected = (dateObject: any) => {
 const onTimeSelected = (time: string) => {
   selectedTime.value = time
   stepMessages.value[1] = `${selectedTime.value}`
-  console.log('Heure sélectionnée:', time)
+  
   currentStep.value = 2 // Passer à l'étape de sélection des invités
 }
 

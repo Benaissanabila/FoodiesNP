@@ -51,20 +51,19 @@ export const useUserStore = defineStore('UserStore', {
     async loginUser(email: string, password: string): Promise<LoginResult> {
       this.loading = true
       this.error = null
-      console.log('userlogin', this.user)
+     
 
       try {
         // Effectuer la connexion
         const response = await axios.post('http://localhost:3000/users/login', { email, password })
 
-        console.log('userlogin', this.user)
+    
 
         // Vérifier la réponse de connexion
         if (response.data.message === 'Veuillez vérifier votre email pour le code 2FA') {
           this.tempToken = response.data.tempToken
           this.twoFactorCode = response.data.twoFactorCode
-          console.log('data.twoFactorCode', this.twoFactorCode)
-          console.log('temptoken temporaire ', this.tempToken)
+         
           return { needsTwoFA: true, success: true }
         } else {
           throw new Error('Unexpected response from server')
@@ -110,8 +109,7 @@ export const useUserStore = defineStore('UserStore', {
       this.twoFactorCode = code
     },
     async verifyTwoFA(tempToken: string, twoFactorCode: string) {
-      console.log('Code 2FA reçu:', twoFactorCode)
-      console.log('Token temporaire:', tempToken)
+   
 
       if (!twoFactorCode) {
         console.error('Code 2FA manquant')
@@ -129,7 +127,7 @@ export const useUserStore = defineStore('UserStore', {
           console.error('Échec de la vérification 2FA:', response.data.error)
           throw new Error(response.data.error)
         } else if (response.data.accessToken) {
-          console.log('Vérification 2FA réussie:', response.data)
+         
           const { user, accessToken } = response.data // Assurez-vous que le champ s'appelle accessToken
 
           // Mettez à jour l'utilisateur et le token ici
@@ -180,7 +178,7 @@ export const useUserStore = defineStore('UserStore', {
       localStorage.removeItem('user')
       localStorage.removeItem('token')
       delete axios.defaults.headers.common['Authorization']
-      console.log('User logged out')
+     
     },
 
     // Token management

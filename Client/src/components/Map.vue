@@ -47,12 +47,12 @@ const getUserLocation = () => {
         // Création ou mise à jour du marqueur de l'utilisateur
         if (userLocationMarker.value) {
           userLocationMarker.value.setLngLat([longitude, latitude])
-          console.log('Position utilisateur:', position.coords)
+         
         } else {
           userLocationMarker.value = new mapboxgl.Marker(el) // Utilisation de l'élément HTML comme marqueur
             .setLngLat([longitude, latitude])
             .addTo(map.value!)
-          console.log('Création du marqueur à la position:', latitude, longitude)
+         
         }
       },
       (error) => {

@@ -11,7 +11,7 @@ const { t } = useI18n()
 const showDropdown = ref(false)
 const showRestaurateurSubmenu = ref(false)
 const imageError = ref(false)
-
+/*
 // Intercepteur pour gérer l'expiration du token
 axios.interceptors.response.use(
   (response) => response,
@@ -35,7 +35,7 @@ axios.interceptors.response.use(
     }
     return Promise.reject(error)
   }
-)
+)*/
 
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value

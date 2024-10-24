@@ -98,10 +98,10 @@ async function handlePhotoChange(event: Event) {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
     const file = target.files[0];
-    console.log('Nouvelle photo sélectionnée:', file.name);
+    
     try {
       await userStore.updateProfilePhoto(file);
-      console.log('Photo mise à jour avec succès');
+     
       // Forcer la mise à jour de l'URL de la photo
       if (userStore.user) {
         userStore.user = { 

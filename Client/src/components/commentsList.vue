@@ -37,7 +37,7 @@ onMounted(async () => {
       const userId = comment.user;
       if (!userPhotos.value[userId]) {
         const user = await userStore.fetchUserById(userId);
-        console.log("user",user)
+       
         userPhotos.value[userId] = user.UserPhoto;
         
         userNames.value[userId] = user.name;

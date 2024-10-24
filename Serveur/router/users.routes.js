@@ -7,7 +7,7 @@ import {verifyRole,verifyToken} from "../controllers/users.controller.js"
 
 router.post('/', controller.createUser);
 router.post('/admin', controller.createAdminUser);
-router.get('/', controller.getUsers);
+//router.get('/', controller.getUsers);
 router.get('/admin', verifyToken, verifyRole('admin'), controller.getUsers); 
 router.get('/:id', controller.getUser);
 router.get('/email/:email', controller.getUserByEmail);
